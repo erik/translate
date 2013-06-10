@@ -1,7 +1,8 @@
+*.egg-info/
 .ropeproject/
+build/
 docs/_build/
 env/
-*.egg-info/
 
-.coverage
 *.pyc
+.coverage
