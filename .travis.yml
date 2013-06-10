@@ -5,7 +5,7 @@ python:
   - 3.3
 script:
   - flake8 translate
-  - nosetests
+  - py.test test/
 install:
   - pip install -r requirements.txt --use-mirrors
 notifications:

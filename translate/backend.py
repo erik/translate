@@ -2,6 +2,7 @@
 
 from abc import ABCMeta, abstractproperty
 
+
 class AbstractBackend:
     """Base backend class definition for any additional backends.
 
@@ -18,7 +19,6 @@ class AbstractBackend:
     """
 
     __metaclass__ = ABCMeta
-
 
     @abstractproperty
     def language_pairs():

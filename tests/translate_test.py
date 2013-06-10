@@ -1,9 +1,4 @@
-from nose.tools import *
 import translate
 
-def setup():
-    pass
-
-def teardown():
-    pass
-
+def test_dummy():
+    assert True
