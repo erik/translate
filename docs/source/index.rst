@@ -1,5 +1,5 @@
 .. translate documentation master file, created by
-   sphinx-quickstart on Sun Jun  9 19:32:45 2013.
+   sphinx-quickstart on Mon Jun 10 01:18:03 2013.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -11,6 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   User Guide <user/index>
+   Developer Guide <dev/index>
 
 
 Indices and tables
@@ -19,4 +21,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
