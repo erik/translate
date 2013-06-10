@@ -1,3 +1,5 @@
+.ropeproject/
 *.pyc
-docs/_build
+docs/_build/
 env/
+*.egg-info/
