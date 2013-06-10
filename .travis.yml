@@ -4,9 +4,9 @@ python:
   - 2.7
   - 3.3
 script:
-  - ./setup.py lint
-  - ./setup.py nosetests
+  - flake8 translate
+  - nosetests
 install:
-  - pip install -r requirements.txt --use-mirror
+  - pip install -r requirements.txt --use-mirrors
 notifications:
   email: false
