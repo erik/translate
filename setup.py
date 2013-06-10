@@ -7,6 +7,19 @@ import subprocess
 from setuptools import setup, Command
 
 
+class PyLint(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        subprocess.check_call(['flake8', 'translate', 'bin'])
+
+
 class PyTest(Command):
     user_options = []
 
@@ -18,6 +31,7 @@ class PyTest(Command):
 
     def run(self):
         subprocess.check_call(['py.test', 'tests/'])
+
 
 packages = [
     'translate'
@@ -32,7 +46,6 @@ setup(name='translate',
       long_description=open('README.rst').read(),
       author='Erik Price',
       tests_require=['pytest'],
-      cmdclass= {'test': PyTest},
-      test_suite='nose.collector',
+      cmdclass={'test': PyTest, 'lint': PyLint},
       install_requires=requires,
-      license=open('LICENSE').read())
+      license=open('COPYING').read())
