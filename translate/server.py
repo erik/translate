@@ -15,6 +15,7 @@ from flask import Flask, render_template
 log = logging.getLogger(__name__)
 app = Flask(__name__)
 
+
 def start(debug=False):
     """
     Start the flask Server using gevent's WSGIServer. This function doesn't
@@ -24,7 +25,6 @@ def start(debug=False):
     app.debug = debug
 
     log.info("Starting...")
-
 
     # If we're using debug mode, using flask itself to run so we can hotswap
     # code.
@@ -40,6 +40,16 @@ def index():
     return render_template('index.html', version=__version__)
 
 
-@app.route('/api')
+@app.route('/api/v1/')
 def api():
+    pass
+
+
+@app.route('/api/v1/translators')
+def list_translators():
+    pass
+
+
+@app.route('/api/v1/translate')
+def translate_text():
     pass
