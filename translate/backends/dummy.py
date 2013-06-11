@@ -4,8 +4,8 @@ from translate.backend import IBackend
 
 
 class DummyBackend(IBackend):
-    """This dummy backend is a temporary test of translator abilities until some
-    real backends are implemented.
+    """This dummy backend is a temporary test of translator abilities until
+    some real backends are implemented.
     """
 
     def name():

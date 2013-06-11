@@ -6,14 +6,28 @@ handling HTTP requests and generating responses.
 """
 
 from . import __version__
+from backend import BackendManager
 
 import logging
+import flask
 
 from gevent.wsgi import WSGIServer
-from flask import Flask, render_template
+from flask import render_template, request
 
 log = logging.getLogger(__name__)
-app = Flask(__name__)
+app = flask.Flask(__name__)
+
+manager = BackendManager()
+
+
+class APIException(Exception):
+
+    def __init__(self, method, error):
+        self.method = method
+        self.error = error
+
+    def __str__(self):
+        return "{0}: {1}".format(self.method, self.error)
 
 
 def start(debug=False):
@@ -47,9 +61,30 @@ def api():
 
 @app.route('/api/v1/translators')
 def list_translators():
-    pass
+    backends = [b.name for b in manager.backends]
+    return repr(backends)
 
 
 @app.route('/api/v1/translate')
 def translate_text():
-    pass
+
+    text = request.args.get('text', None)
+    if not text:
+        raise APIException('translate', 'No translation text given')
+
+    source_lang = request.args.get('from', None)
+    if not source_lang:
+        raise APIException('translate', 'No source language given')
+
+    dest_lang = request.args.get('to', None)
+    if not dest_lang:
+        raise APIException('translate', 'No destination language given')
+
+    backend = manager.find_best(source_lang, dest_lang)
+
+    # TODO: JSON-ify
+
+    if backend is None:
+        return "No translators can handle this language pair"
+
+    return backend.translate(text, source_lang, dest_lang)
