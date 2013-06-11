@@ -61,7 +61,7 @@ def api():
 
 @app.route('/api/v1/translators')
 def list_translators():
-    backends = [b.name for b in manager.backends]
+    backends = [b.name() for b in manager.backends]
     return repr(backends)
 
 

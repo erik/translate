@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import pkgutil
+import sys
 import logging
 import inspect
 
@@ -14,30 +16,31 @@ class BackendManager:
         self.backends = []
 
         # Load the default backends
-        self.load_backends('translate.backends')
+        self.load_backends('translate/backends')
 
-    def load_backends(self, module_name):
-        """Load all backends from the given module name"""
+    def load_backends(self, dir_name):
+        """Load all backends from the given relative directory name"""
 
         def class_filter(klass):
             return inspect.isclass(klass) and issubclass(klass, IBackend) and \
                 klass != IBackend
 
-        for name, module in inspect.getmembers(__import__(module_name),
-                                               inspect.ismodule):
-            print(name + repr(module))
-            for _, plugin in inspect.getmembers(module, class_filter):
-                print("Loading backend {0}... ".format(plugin.name))
+        for imp, pkg_name, _ in pkgutil.iter_modules([dir_name]):
+            full_name = '%s.%s' % (dir_name, pkg_name)
+            if full_name not in sys.modules:
+                module = imp.find_module(pkg_name) \
+                    .load_module(full_name)
 
-                backend = plugin()
-                self.backends.append(backend)
+                for _, plugin in inspect.getmembers(module, class_filter):
+                    backend = plugin()
+
+                    print("Loading backend {0}... ".format(backend.name()))
+                    self.backends.append(backend)
 
     def find_best(self, src, dst):
         """Find the best backend service for a given language pair"""
 
         best = (None, -1)
-
-        print(repr(self.backends))
 
         for backend in self.backends:
             if (src, dst) in backend.language_pairs():
@@ -71,7 +74,7 @@ class IBackend:
 
         .. _ISO-639: http://www.loc.gov/standards/iso639-2/php/English_list.php
         """
-        pass
+        return []
 
     def preference():
         """Return an integer representing the overall precedence this

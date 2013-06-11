@@ -8,13 +8,13 @@ class DummyBackend(IBackend):
     some real backends are implemented.
     """
 
-    def name():
+    def name(self):
         return "Dummy"
 
-    def description():
+    def description(self):
         return "A dummy implementation of a translation backend"
 
-    def preference():
+    def preference(self):
         return 0
 
     def translate(self, text, from_lang, to_lang):
