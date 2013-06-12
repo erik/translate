@@ -34,7 +34,7 @@ class BackendManager:
                 for _, plugin in inspect.getmembers(module, class_filter):
                     backend = plugin()
 
-                    print("Loading backend {0}... ".format(backend.name()))
+                    print("Loading backend {0}... ".format(backend.name))
                     self.backends.append(backend)
 
     def find_best(self, src, dst):
@@ -76,8 +76,9 @@ class IBackend:
         """
         return []
 
-    def preference():
-        """Return an integer representing the overall precedence this
+    name = """Name of this translation backend."""
+    description = """Short description of this translation backend."""
+    preference = """Return an integer representing the overall precedence this
         translation backend should use.
 
         If two backends overlap for a language pair, the one with the highest
@@ -85,12 +86,3 @@ class IBackend:
 
         Higher values indicate a higher precedence.
         """
-        pass
-
-    def name():
-        """Name of this translation backend."""
-        pass
-
-    def description():
-        """Short description of this translation backend."""
-        pass

@@ -58,13 +58,17 @@ def index():
 
 @app.route('/api/v1/')
 def api():
-    pass
+    return render_template('api.html')
 
 
 @app.route('/api/v1/translators')
 def list_translators():
-    backends = [b.name() for b in manager.backends]
-    return repr(backends)
+    return flask.jsonify(
+        backends=[{
+            'name': b.name,
+            'description': b.description,
+            'preference': b.preference,
+        } for b in manager.backends])
 
 
 @app.route('/api/v1/translate')
