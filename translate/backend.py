@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import pkgutil
-import sys
 import logging
-import inspect
+import utils
 
 log = logging.getLogger(__name__)
 
@@ -19,23 +17,13 @@ class BackendManager:
         self.load_backends('translate/backends')
 
     def load_backends(self, dir_name):
-        """Load all backends from the given relative directory name"""
+        """Load all backends from the given absolute directory name"""
 
-        def class_filter(klass):
-            return inspect.isclass(klass) and issubclass(klass, IBackend) and \
-                klass != IBackend
+        for subclass in utils.find_subclasses(dir_name, IBackend):
+            backend = subclass()
 
-        for imp, pkg_name, _ in pkgutil.iter_modules([dir_name]):
-            full_name = '%s.%s' % (dir_name, pkg_name)
-            if full_name not in sys.modules:
-                module = imp.find_module(pkg_name) \
-                    .load_module(full_name)
-
-                for _, plugin in inspect.getmembers(module, class_filter):
-                    backend = plugin()
-
-                    print("Loading backend {0}... ".format(backend.name))
-                    self.backends.append(backend)
+            print("Loading backend {0}... ".format(backend.name))
+            self.backends.append(backend)
 
     def find_best(self, src, dst):
         """Find the best backend service for a given language pair"""
