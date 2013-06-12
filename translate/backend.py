@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import abc
 import logging
 import utils
 
@@ -45,6 +46,8 @@ class IBackend:
     members/functions present here.
     """
 
+    __metaclass__ = abc.ABCMeta
+
     def translate(self, text, from_lang, to_lang):
         """Translate the given text from `from_lang` to `to_lang`.
 
@@ -53,6 +56,29 @@ class IBackend:
         """
         pass
 
+    @abc.abstractproperty
+    def name(self):
+        """Name of this translation backend."""
+        pass
+
+    @abc.abstractproperty
+    def description(self):
+        """Short description of this translation backend."""
+        pass
+
+    @abc.abstractproperty
+    def preference(self):
+        """Return an integer representing the overall precedence this
+        translation backend should use.
+
+        If two backends overlap for a language pair, the one with the highest
+        preference is used.
+
+        Higher values indicate a higher precedence.
+        """
+        pass
+
+    @abc.abstractproperty
     def language_pairs(self):
         """Return a list of tuples containing ("from-lang", "to-lang") to
         indicate language pair support.
@@ -62,15 +88,4 @@ class IBackend:
 
         .. _ISO-639: http://www.loc.gov/standards/iso639-2/php/English_list.php
         """
-        return []
-
-    name = """Name of this translation backend."""
-    description = """Short description of this translation backend."""
-    preference = """Return an integer representing the overall precedence this
-        translation backend should use.
-
-        If two backends overlap for a language pair, the one with the highest
-        preference is used.
-
-        Higher values indicate a higher precedence.
-        """
+        pass
