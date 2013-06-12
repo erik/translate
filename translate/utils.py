@@ -4,7 +4,8 @@ import logging
 import os
 import flask
 import werkzeug
-
+import imp
+import inspect
 
 log = logging.getLogger(__name__)
 
@@ -47,19 +48,14 @@ def find_subclasses(path, cls):
 
     subclasses = []
 
-    def look_for_subclass(modulename):
+    def look_for_subclass(modulename, path):
         log.debug("searching %s" % (modulename))
-        module = __import__(modulename)
-
-        #walk the dictionaries to get to the last one
-        d = module.__dict__
-        for m in modulename.split('.')[1:]:
-            d = d[m].__dict__
+        module = imp.load_source(modulename, path)
 
         #look through this dictionary for things
         #that are subclass of Job
         #but are not Job itself
-        for key, entry in d.items():
+        for key, entry in inspect.getmembers(module, inspect.isclass):
             if key == cls.__name__:
                 continue
 
@@ -78,6 +74,6 @@ def find_subclasses(path, cls):
             if name.endswith(".py") and not name.startswith("__"):
                 path = os.path.join(root, name)
                 modulename = path.rsplit('.', 1)[0].replace('/', '.')
-                look_for_subclass(modulename)
+                look_for_subclass(modulename, path)
 
     return subclasses
