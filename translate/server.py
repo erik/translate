@@ -7,6 +7,7 @@ handling HTTP requests and generating responses.
 
 from . import __version__
 from backend import BackendManager
+import utils
 
 import logging
 import flask
@@ -18,16 +19,6 @@ log = logging.getLogger(__name__)
 app = flask.Flask(__name__)
 
 manager = BackendManager()
-
-
-class APIException(Exception):
-
-    def __init__(self, method, error):
-        self.method = method
-        self.error = error
-
-    def __str__(self):
-        return "{0}: {1}".format(self.method, self.error)
 
 
 def start(debug=False):
@@ -47,6 +38,17 @@ def start(debug=False):
     else:
         http_server = WSGIServer(('', 5000), app)
         http_server.serve_forever()
+
+
+@app.errorhandler(400)
+def bad_request(error):
+
+    # if this is an API request, return JSON
+    if error.kind == 'api':
+        return flask.jsonify(method=error.method,
+                             message=error.description), 400
+    else:
+        raise error
 
 
 @app.route('/')
@@ -70,21 +72,25 @@ def translate_text():
 
     text = request.args.get('text', None)
     if not text:
-        raise APIException('translate', 'No translation text given')
+        utils.api_abort('translate', 'No translation text given')
 
     source_lang = request.args.get('from', None)
     if not source_lang:
-        raise APIException('translate', 'No source language given')
+        utils.api_abort('translate', 'No source language given')
 
     dest_lang = request.args.get('to', None)
     if not dest_lang:
-        raise APIException('translate', 'No destination language given')
+        utils.api_abort('translate', 'No destination language given')
 
     backend = manager.find_best(source_lang, dest_lang)
 
     # TODO: JSON-ify
 
     if backend is None:
-        return "No translators can handle this language pair"
+        utils.api_abort('translate', 'No translators can handle this' +
+                        'language pair')
 
-    return backend.translate(text, source_lang, dest_lang)
+    trans = backend.translate(text, source_lang, dest_lang)
+
+    return flask.jsonify(source_lang=source_lang, dest_lang=dest_lang,
+                         result=trans)
