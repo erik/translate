@@ -16,7 +16,8 @@ from gevent.wsgi import WSGIServer
 from flask import render_template, request
 
 log = logging.getLogger(__name__)
-app = flask.Flask(__name__)
+app = flask.Flask(__name__,
+                  static_folder="./static")
 
 manager = BackendManager()
 

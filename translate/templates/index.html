@@ -3,10 +3,47 @@
 <html>
   <head>
     <title>Translate v{{ version }}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="static/js/kickstart.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/chosen/0.9.15/chosen.jquery.min.js"></script>
+
+    <link rel="stylesheet" href="static/css/kickstart.css" media="all" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/0.9.15/chosen.css" />
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $(".select").chosen();
+        $(".select").chosen();
+      });
+    </script>
   </head>
 
-  <body>
-    <h1> Translation Server </h1>
-    <p> TODO: Some kind of general information goes here.</p>
+  <body class="subpage">
+    <div class="grid" id="wrapper">
+      <h1 class="center"> Translation Server </h1>
+
+      <hr />
+
+      <div class="col_5">
+        <select tabindex="2" class="col_12 select" data-placeholder="Source language">
+          <option value=""></option>
+        </select>
+      </div>
+
+      <span class="col_2 center">
+        <i class="icon-exchange"></i>
+      </span>
+
+      <div class="col_5">
+        <select tabindex="2" class="col_12 select" data-placeholder="Destination language">
+          <option value=""></option>
+        </select>
+      </div>
+
+      <textarea class="col_6" id="textarea1" placeholder="Hello, world!"></textarea>
+      <textarea class="col_6" id="textarea1" placeholder="Hallo, Welt!"></textarea>
+
+      <hr />
+
+    </div>
   </body>
 </html>

@@ -1,5 +1,3 @@
-import pytest
-
 import translate
 import translate.backend
 
