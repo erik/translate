@@ -23,6 +23,9 @@ class TestBackendManager:
         self.mgr.load_backends('tests/test_backends')
         diff = set(self.mgr.backends) - set(before)
 
+        assert 'tests.test_backends.bad_backend' not in \
+            [m.__module__ for m in diff]
+
         assert len(diff) == 1
         assert list(diff)[0].__module__ == 'tests.test_backends.test_backend'
 

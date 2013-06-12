@@ -21,9 +21,16 @@ class BackendManager:
         """Load all backends from the given absolute directory name"""
 
         for subclass in utils.find_subclasses(dir_name, IBackend):
-            backend = subclass()
+            try:
+                backend = subclass()
+            except TypeError as e:
+                log.warning('Failed to load backend {0}, does it implement ' +
+                            'all necessary functions and properties?'
+                            .format(subclass.__name__))
+                log.warning(repr(e))
+                continue
 
-            print("Loading backend {0}... ".format(backend.name))
+            log.info("Loading backend {0}... ".format(backend.name))
             self.backends.append(backend)
 
     def find_best(self, src, dst):
