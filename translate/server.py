@@ -42,12 +42,16 @@ def start(debug=False):
 
 
 @app.errorhandler(400)
+@utils.jsonp
 def bad_request(error):
 
     # if this is an API request, return JSON
     if error.kind == 'api':
-        return flask.jsonify(method=error.method,
-                             message=error.description), 400
+        resp = flask.make_response(flask.jsonify(method=error.method,
+                                                 message=error.description),
+                                   400)
+        resp.mimetype = 'application/javascript'
+        return resp
     else:
         raise error
 
@@ -63,6 +67,7 @@ def api():
 
 
 @app.route('/api/v1/translators')
+@utils.jsonp
 def list_translators():
     return flask.jsonify(
         backends=[{
@@ -73,6 +78,7 @@ def list_translators():
 
 
 @app.route('/api/v1/translate')
+@utils.jsonp
 def translate_text():
 
     text = request.args.get('text', None)
@@ -92,7 +98,7 @@ def translate_text():
     # TODO: JSON-ify
 
     if backend is None:
-        utils.api_abort('translate', 'No translators can handle this' +
+        utils.api_abort('translate', 'No translators can handle this ' +
                         'language pair')
 
     trans = backend.translate(text, source_lang, dest_lang)

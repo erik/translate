@@ -7,6 +7,8 @@ import werkzeug
 import imp
 import inspect
 
+from functools import wraps
+
 log = logging.getLogger(__name__)
 
 
@@ -77,3 +79,21 @@ def find_subclasses(path, cls):
                 look_for_subclass(modulename, path)
 
     return subclasses
+
+
+def jsonp(func):
+    """Wraps JSONified output for JSONP requests.
+
+    From: https://gist.github.com/aisipos/1094140
+    """
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        callback = flask.request.args.get('callback', False)
+        if callback:
+            data = str(func(*args, **kwargs).data)
+            content = str(callback) + '(' + data + ')'
+            mimetype = 'application/javascript'
+            return flask.current_app.response_class(content, mimetype=mimetype)
+        else:
+            return func(*args, **kwargs)
+    return decorated_function
