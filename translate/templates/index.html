@@ -12,7 +12,6 @@
     <script type="text/javascript">
       $(document).ready(function() {
         $(".select").chosen();
-        $(".select").chosen();
       });
     </script>
   </head>
@@ -24,25 +23,37 @@
       <hr />
 
       <div class="col_5">
+        <textarea class="col_12" id="textarea1" placeholder="Hello, world!"></textarea>
+
         <select tabindex="2" class="col_12 select" data-placeholder="Source language">
           <option value=""></option>
         </select>
       </div>
 
-      <span class="col_2 center">
-        <i class="icon-exchange"></i>
-      </span>
+      <div class="col_2" style="margin-top: 20px;">
+        <button style="width:100%" id="switch" class="small center">
+          <i class="center icon-exchange"></i>
+        </button>
+        <button style="width:100%; margin-top: 20px"
+                id="translate" class="small center">
+          Translate
+        </button>
+      </div>
 
-      <div class="col_5 right">
+      <div class="col_5">
+        <textarea readonly class="col_12" id="textarea1" placeholder="Hallo, Welt!"></textarea>
         <select tabindex="2" class="col_12 select" data-placeholder="Destination language">
           <option value=""></option>
         </select>
       </div>
 
-      <textarea class="col_6" id="textarea1" placeholder="Hello, world!"></textarea>
-      <textarea readonly class="col_6" id="textarea1" placeholder="Hallo, Welt!"></textarea>
-
       <hr />
+
+      <div class="footer">
+        <p>
+          <a href="https://github.com/boredomist/translate">Source</a> available under GPLv3
+        </p>
+      </div>
 
     </div>
   </body>

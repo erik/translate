@@ -95,8 +95,6 @@ def translate_text():
 
     backend = manager.find_best(source_lang, dest_lang)
 
-    # TODO: JSON-ify
-
     if backend is None:
         utils.api_abort('translate', 'No translators can handle this ' +
                         'language pair')
