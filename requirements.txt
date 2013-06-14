@@ -1,0 +1,17 @@
+Flask==0.9
+Jinja2==2.7
+MarkupSafe==0.18
+Pygments==1.6
+Sphinx==1.2b1
+Werkzeug==0.8.3
+docutils==0.10
+flake8==2.0
+gevent==0.13.8
+greenlet==0.4.1
+mccabe==0.2.1
+pep8==1.4.5
+py==1.4.14
+pyflakes==0.7.2
+pytest==2.3.5
+-e git+git@github.com:boredomist/translate.git@1bbc06de2f3dafd6a5f5fbccfedf7ba50bcd4c67#egg=translate-dev
+wsgiref==0.1.2
