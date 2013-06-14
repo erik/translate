@@ -7,7 +7,7 @@ before_script:
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 script:
   - flake8 translate
-  - py.test test/
+  - py.test tests
 install:
   - sudo apt-get install libevent-dev
   - sudo apt-get install python-all-dev
