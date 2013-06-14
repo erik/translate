@@ -15,7 +15,7 @@ class TestBackendManager:
         self.mgr = mgr
 
     def test_default_loads(self):
-        assert len(self.mgr.backends) == 1
+        assert len(self.mgr.backends) != 0
         assert self.mgr.backends[0].__module__ == 'translate.backends.dummy'
 
     def test_load_extra(self):

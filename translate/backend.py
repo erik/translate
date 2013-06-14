@@ -29,6 +29,11 @@ class BackendManager:
                             .format(subclass.__name__))
                 log.warning(repr(e))
                 continue
+            except Exception as e:
+                log.warning('Failed to load backend {0} due to exception'
+                            .format(subclass.__name__))
+                log.warning(repr(e))
+                continue
 
             log.info("Loading backend {0}... ".format(backend.name))
             self.backends.append(backend)
