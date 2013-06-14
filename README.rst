@@ -2,6 +2,9 @@
 translate
 =========
 
+.. image:: https://travis-ci.org/boredomist/translate.png?branch=master
+   :target: https://travis-ci.org/boredomist/translate
+
 About
 _____
 
