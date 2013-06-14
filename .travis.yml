@@ -3,6 +3,8 @@ python:
   - 2.6
   - 2.7
   - 3.3
+before_script:
+  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 script:
   - flake8 translate
   - py.test test/
