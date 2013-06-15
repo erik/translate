@@ -2,9 +2,11 @@
 
 from translate.backend import IBackend
 
-import subprocess
+import glob
 import logging
+import os
 import re
+import subprocess
 
 log = logging.getLogger(__name__)
 
@@ -20,8 +22,15 @@ class ApertiumBackend(IBackend):
 
             self.pairs = set()
 
-            for pair in subprocess.check_output(['apertium', '-l']).split():
-                self.pairs.add(re.search('(.*?)-([^_-]*)', pair).groups())
+            modes_dir = os.path.join(os.path.dirname(self.exe), '..', 'share',
+                                     'apertium', 'modes')
+
+            for file_name in [os.path.basename(f) for f in
+                              glob.glob(modes_dir + '/*.mode')]:
+
+                matches = re.search('(.*?)-([^_-]*).*\.mode', file_name)
+
+                self.pairs.add(matches.groups())
 
             self.pairs = list(self.pairs)
 
