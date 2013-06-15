@@ -6,6 +6,7 @@ import flask
 import werkzeug
 import imp
 import inspect
+import subprocess
 
 from functools import wraps
 
@@ -97,3 +98,22 @@ def jsonp(func):
         else:
             return func(*args, **kwargs)
     return decorated_function
+
+
+if "check_output" not in dir(subprocess):
+    """Python 2.6 doesn't support subprocess.check_output, so add that in"""
+    def f(*popenargs, **kwargs):
+        if 'stdout' in kwargs:
+            raise ValueError('stdout argument not allowed, ' +
+                             'it will be overridden.')
+        process = subprocess.Popen(stdout=subprocess.PIPE,
+                                   *popenargs, **kwargs)
+        output, unused_err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            raise subprocess.CalledProcessError(retcode, cmd)
+        return output
+    subprocess.check_output = f
