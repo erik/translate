@@ -32,13 +32,19 @@ class ApertiumBackend(IBackend):
             log.warning("apertium not available, ignoring...")
 
     def translate(self, text, from_lang, to_lang):
-        proc = subprocess.Popen(['apertium',
-                                 '{0}-{1}'.format(from_lang, to_lang)],
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE)
-        proc.stdin.write(text + '\n')
-        proc.stdin.close()
-        return proc.stdout.read()
+        try:
+            proc = subprocess.Popen(['apertium',
+                                     '{0}-{1}'.format(from_lang, to_lang)],
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE)
+            proc.stdin.write((text + u'\n').encode('utf-8'))
+            proc.stdin.close()
+            output = proc.stdout.read()[:-1].decode('utf-8')
+        except Exception as e:
+            log.error('Failed to translate text {0}'.format(repr(e)))
+            output = None
+
+        return output
 
     def language_pairs(self):
         return self.pairs

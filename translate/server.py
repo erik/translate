@@ -101,5 +101,9 @@ def translate_text():
 
     trans = backend.translate(text, source_lang, dest_lang)
 
+    if trans is None:
+        utils.api_abort('translate', '{0} failed to translate text'
+                        .format(trans))
+
     return flask.jsonify(source_lang=source_lang, dest_lang=dest_lang,
                          result=trans)
