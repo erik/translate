@@ -26,8 +26,11 @@ class TestBackendManager:
         assert 'tests.test_backends.bad_backend' not in \
             [m.__module__ for m in diff]
 
-        assert len(diff) == 1
-        assert list(diff)[0].__module__ == 'tests.test_backends.test_backend'
+        assert len(diff) != 0
+
+        modules = [m.__module__ for m in list(diff)]
+
+        assert 'tests.test_backends.test_backend' in modules
 
     def test_find_best(self):
         backend = self.mgr.find_best('en', 'en')
