@@ -7,3 +7,6 @@ backends:
     active: false
   apertium:
     active: true
+  apertiumweb:
+    active: true
+    key: 'foobarbaz'
