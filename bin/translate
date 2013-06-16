@@ -4,20 +4,41 @@ import translate
 import translate.server
 
 import argparse
-import logging
+import yaml
+import os
 
 parser = argparse.ArgumentParser(description='Pluggable translation server')
 parser.add_argument('--debug', dest='debug', help='Whether or not to use run' +
                     'the application in debug mode', action='store_true',
                     default=False)
+parser.add_argument('--config', dest='config', help='Configuration file to use',
+                    default=None)
 
 args = parser.parse_args()
 
-print('Translate v{0}'.format(translate.__version__))
+config = args.config
 
-if args.debug:
-    logging.basicConfig(level=logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.INFO)
+# fall back to the default locations for config file
+if config is None:
+    for f in ['./config.yaml', '~/.config/translate/config.yaml']:
+        if os.path.exists(f):
+            config = f
+            break
+
+    if config is None:
+        print('No valid configuration file found')
+        exit(1)
+
+elif not os.path.exists(config):
+    print("Specified configuration file '{0}' does not exist".format(config))
+    exit(1)
+
+try:
+    config = yaml.load(open(config))
+except yaml.YAMLError as err:
+    print("Failed to parse configuration file")
+    exit(1)
+
+print('Translate v{0}'.format(translate.__version__))
 
 translate.server.start(args.debug)
