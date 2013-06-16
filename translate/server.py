@@ -20,22 +20,24 @@ app = flask.Flask(__name__,
 manager = BackendManager()
 
 
-def start(debug=False):
-    """
-    Start the flask Server using gevent's WSGIServer. This function doesn't
+def start(config, debug=False):
+    """Start the flask Server using gevent's WSGIServer. This function doesn't
     return.
     """
 
-    app.debug = debug
+    server_conf = config.get('server', dict())
 
-    log.info("Starting...")
+    host = server_conf.get('bind', '0.0.0.0')
+    port = server_conf.get('port', 5000)
+
+    log.info("Starting server on port {0}, using host {1}".format(port, host))
 
     # If we're using debug mode, using flask itself to run so we can hotswap
     # code.
     if debug:
-        app.run()
+        app.run(host=host, port=port, debug=True)
     else:
-        http_server = WSGIServer(('', 5000), app)
+        http_server = WSGIServer((host, port), app)
         http_server.serve_forever()
 
 

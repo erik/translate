@@ -41,4 +41,4 @@ except yaml.YAMLError as err:
 
 print('Translate v{0}'.format(translate.__version__))
 
-translate.server.start(args.debug)
+translate.server.start(config, args.debug)
