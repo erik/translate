@@ -5,6 +5,9 @@ class TestBackend(translate.backend.IBackend):
     description = "A test backend"
     preference = 1000
 
+    def __init__(self, config):
+        pass
+
     def language_pairs(self): return [('en', 'en')]
 
     def translate(self, _from, _to, text):

@@ -10,8 +10,9 @@ class BackendManager:
     """Handles the loading and management of various translation service
     backends."""
 
-    def __init__(self):
+    def __init__(self, config):
         self.backends = []
+        self.config = config
 
         # Load the default backends
         self.load_backends('translate/backends')
@@ -21,7 +22,7 @@ class BackendManager:
 
         for subclass in utils.find_subclasses(dir_name, IBackend):
             try:
-                backend = subclass()
+                backend = subclass(self.config)
             except TypeError as e:
                 log.warning('Failed to load backend {0}, does it implement ' +
                             'all necessary functions and properties?'

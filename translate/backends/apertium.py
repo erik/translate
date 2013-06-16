@@ -14,7 +14,13 @@ class ApertiumBackend(IBackend):
     description = "A free/open-source machine translation platform"
     preference = 20
 
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config.get('apertium', dict())
+
+        if not self.config.get('active', True):
+            self.activated = False
+            return
+
         try:
             self.exe = subprocess.check_output(['which', 'apertium']).strip()
 

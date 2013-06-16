@@ -17,7 +17,7 @@ from flask import render_template, request
 app = flask.Flask(__name__,
                   static_folder="./static")
 
-manager = BackendManager()
+manager = None
 
 
 def start(config, debug=False):
@@ -26,9 +26,13 @@ def start(config, debug=False):
     """
 
     server_conf = config.get('server', dict())
+    backend_conf = config.get('backend', dict())
 
     host = server_conf.get('bind', '0.0.0.0')
     port = server_conf.get('port', 5000)
+
+    global manager
+    manager = BackendManager(backend_conf)
 
     log.info("Starting server on port {0}, using host {1}".format(port, host))
 

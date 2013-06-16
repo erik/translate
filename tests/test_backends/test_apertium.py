@@ -12,7 +12,7 @@ try:
 
     def test_init():
         global backend
-        backend = ApertiumBackend()
+        backend = ApertiumBackend(dict())
         assert backend.preference != -1
         assert len(backend.language_pairs()) != 0
 

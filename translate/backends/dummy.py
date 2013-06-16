@@ -12,6 +12,10 @@ class DummyBackend(IBackend):
     description = "A dummy implementation of a translation backend"
     preference = 0
 
+    def __init__(self, config):
+        self.config = config.get('dummy', dict())
+        pass
+
     def translate(self, text, from_lang, to_lang):
         return text
 
