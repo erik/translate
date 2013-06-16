@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from translate import log
 from translate.backend import IBackend
 
 import glob
-import logging
 import os
 import re
 import subprocess
-
-log = logging.getLogger(__name__)
 
 
 class ApertiumBackend(IBackend):

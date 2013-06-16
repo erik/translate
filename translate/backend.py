@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import abc
-import logging
 import utils
 
-log = logging.getLogger(__name__)
+from . import log
 
 
 class BackendManager:

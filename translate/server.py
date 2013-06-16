@@ -5,17 +5,15 @@ Server interface for translate application. This handles the process of
 handling HTTP requests and generating responses.
 """
 
-from . import __version__
+from . import __version__, log
 from backend import BackendManager
 import utils
 
-import logging
 import flask
 
 from gevent.wsgi import WSGIServer
 from flask import render_template, request
 
-log = logging.getLogger(__name__)
 app = flask.Flask(__name__,
                   static_folder="./static")
 

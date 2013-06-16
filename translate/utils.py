@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import logging
+from . import log
+
 import os
 import flask
 import werkzeug
@@ -9,8 +10,6 @@ import inspect
 import subprocess
 
 from functools import wraps
-
-log = logging.getLogger(__name__)
 
 
 def api_abort(method, message, status_code=400):
