@@ -38,6 +38,12 @@ class BackendManager:
             log.info("Loading backend {0}... ".format(backend.name))
             self.backends.append(backend)
 
+    def find_all(self, src, dst):
+        """Return all translation backends that can possibly serve this
+        request"""
+
+        return [b for b in self.backends if (src, dst) in b.language_pairs()]
+
     def find_best(self, src, dst):
         """Find the best backend service for a given language pair"""
 
