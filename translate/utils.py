@@ -2,12 +2,11 @@
 
 from . import log
 
-import os
 import flask
 import werkzeug
-import imp
 import inspect
 import subprocess
+import pkgutil
 
 from functools import wraps
 
@@ -33,30 +32,11 @@ def abort_with(status_code, description=None, **kwargs):
 
 
 def find_subclasses(path, cls):
-    """
-    Taken from:
-    http://www.executionunit.com/blog/2008/01/28/python-style-plugins-made-easy
-
-    Find all subclass of cls in py files located below path
-    (does look in sub directories)
-
-    @param path: the path to the top level folder to walk
-    @type path: str
-    @param cls: the base class that all subclasses should inherit from
-    @type cls: class
-    @rtype: list
-    @return: a list if classes that are subclasses of cls
-    """
-
     subclasses = []
 
-    def look_for_subclass(modulename, path):
-        log.debug("searching %s" % (modulename))
-        module = imp.load_source(modulename, path)
+    def look_for_subclass(module, name):
+        log.debug("searching %s" % (name))
 
-        #look through this dictionary for things
-        #that are subclass of Job
-        #but are not Job itself
         for key, entry in inspect.getmembers(module, inspect.isclass):
             if key == cls.__name__:
                 continue
@@ -66,17 +46,11 @@ def find_subclasses(path, cls):
                     log.debug("Found subclass: "+key)
                     subclasses.append(entry)
             except TypeError:
-                #this happens when a non-type is passed in to issubclass. We
-                #don't care as it can't be a subclass of Job if it isn't a
-                #type
                 continue
 
-    for root, dirs, files in os.walk(path):
-        for name in files:
-            if name.endswith(".py") and not name.startswith("__"):
-                path = os.path.join(root, name)
-                modulename = path.rsplit('.', 1)[0].replace('/', '.')
-                look_for_subclass(modulename, path)
+    for loader, name, ispkg in pkgutil.walk_packages([path]):
+        module = loader.find_module(name).load_module(name)
+        look_for_subclass(module, name)
 
     return subclasses
 
