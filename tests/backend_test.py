@@ -17,21 +17,20 @@ class TestBackendManager:
     def test_default_loads(self):
         assert len(self.mgr.backends) != 0
         modules = [m.__module__ for m in self.mgr.backends]
-        assert 'translate.backends.dummy' in modules
+        assert 'dummy' in modules
 
     def test_load_extra(self):
         before = self.mgr.backends[:]
         self.mgr.load_backends('tests/test_backends')
         diff = set(self.mgr.backends) - set(before)
 
-        assert 'tests.test_backends.bad_backend' not in \
-            [m.__module__ for m in diff]
+        assert 'bad_backend' not in [m.__module__ for m in diff]
 
         assert len(diff) != 0
 
         modules = [m.__module__ for m in list(diff)]
 
-        assert 'tests.test_backends.test_backend' in modules
+        assert 'test_backend' in modules
 
     def test_find_best(self):
         backend = self.mgr.find_best('en', 'en')
