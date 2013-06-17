@@ -7,6 +7,7 @@ import requests
 import json
 
 API_URL = 'http://api.apertium.org/json/'
+API_TIMEOUT = 5
 API_ERRORS = {
     400: 'Bad parameters',
     451: 'Not supported language pair',
@@ -31,6 +32,7 @@ translation platform Apertium"""
             return
 
         self.key = self.config.get('key')
+        self.timeout = self.config.get('timeout', 5)
 
         response = self.api_request('listPairs')
 
@@ -71,6 +73,6 @@ translation platform Apertium"""
         if self.key is not None:
             kwargs['key'] = self.key
 
-        r = requests.get(API_URL + method, params=kwargs)
+        r = requests.get(API_URL + method, params=kwargs, timeout=self.timeout)
 
         return json.loads(r.text)
