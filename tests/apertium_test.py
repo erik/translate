@@ -12,12 +12,13 @@ try:
 
     def test_init():
         global backend
-        backend = ApertiumBackend(dict())
+        backend = ApertiumBackend()
+        backend.activate(dict())
         assert backend.preference != -1
-        assert len(backend.language_pairs()) != 0
+        assert len(backend.language_pairs) != 0
 
     def test_translate():
-        pair = backend.language_pairs()[0]
+        pair = backend.language_pairs[0]
 
         trans = backend.translate('hello', pair[0], pair[1])
         assert trans is not None

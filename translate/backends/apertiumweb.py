@@ -6,6 +6,10 @@ from translate.backend import IBackend
 import requests
 import json
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+
 API_URL = 'http://api.apertium.org/json/'
 API_TIMEOUT = 5
 API_ERRORS = {
@@ -17,19 +21,18 @@ API_ERRORS = {
 }
 
 
-class ApertiumBackend(IBackend):
+class ApertiumWebBackend(IBackend):
     name = "Apertium Web"
-    description = """Web translation API using the free/open-source machine
-translation platform Apertium"""
+    description = ("Web translation API using the free/open-source machine" +
+                   " translation platform Apertium")
     preference = 40
+    language_pairs = []
 
-    def __init__(self, config):
+    def activate(self, config):
         self.config = config.get('apertiumweb', dict())
 
-        self.activated = False
-
         if not self.config.get('active', True):
-            return
+            return False
 
         self.key = self.config.get('key')
         self.timeout = self.config.get('timeout', 5)
@@ -38,19 +41,19 @@ translation platform Apertium"""
 
         if response.get('responseStatus') != 200:
             log.warning('Apertium Web API request failed, bailing out')
-            return
+            return False
 
-        self.pairs = []
+        self.language_pairs = []
 
         for pair in response.get('responseData'):
             source = pair.get('sourceLanguage')
             dest = pair.get('targetLanguage')
 
-            self.pairs.append((source, dest))
+            self.language_pairs.append((source, dest))
 
         # just in case the API returns duplicates for whatever reason
-        self.pairs = list(set(self.pairs))
-        self.activated = True
+        self.language_pairs = list(set(self.language_pairs))
+        return True
 
     def translate(self, text, from_lang, to_lang):
         langpair = "{0}|{1}".format(from_lang, to_lang)
@@ -66,8 +69,8 @@ translation platform Apertium"""
 
         return resp.get('responseData').get('translatedText')
 
-    def language_pairs(self):
-        return self.pairs
+    def deactivate(self):
+        pass
 
     def api_request(self, method, **kwargs):
         if self.key is not None:

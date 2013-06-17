@@ -22,10 +22,10 @@ class BackendManager:
 
         for subclass in utils.find_subclasses(dir_name, IBackend):
             try:
-                backend = subclass(self.config)
+                backend = subclass()
             except TypeError as e:
-                log.warning('Failed to load backend {0}, does it implement ' +
-                            'all necessary functions and properties?'
+                log.warning(('Failed to load backend {0}, does it implement ' +
+                            'all necessary functions and properties?')
                             .format(subclass.__name__))
                 log.warning(repr(e))
                 continue
@@ -35,14 +35,17 @@ class BackendManager:
                 log.warning(repr(e))
                 continue
 
-            log.info("Loading backend {0}... ".format(backend.name))
-            self.backends.append(backend)
+            if backend.activate(self.config):
+                log.info("Loading backend {0}... ".format(backend.name))
+                self.backends.append(backend)
+            else:
+                log.info("Disabling backend {0}...".format(backend.name))
 
     def find_all(self, src, dst):
         """Return all translation backends that can possibly serve this
         request"""
 
-        return [b for b in self.backends if (src, dst) in b.language_pairs()]
+        return [b for b in self.backends if (src, dst) in b.language_pairs]
 
     def find_best(self, src, dst):
         """Find the best backend service for a given language pair"""
@@ -50,7 +53,7 @@ class BackendManager:
         best = (None, -1)
 
         for backend in self.backends:
-            if (src, dst) in backend.language_pairs():
+            if (src, dst) in backend.language_pairs:
                 if backend.preference > best[1]:
                     best = (backend, backend.preference)
 
@@ -65,6 +68,24 @@ class IBackend:
     """
 
     __metaclass__ = abc.ABCMeta
+
+    def activate(self, config):
+        """Called upon initial activation of the backend. Should return either
+        True or false to indicate whether or not activation was successful and
+        the backend can be used.
+
+        Config passed to this function is a dict, containing {'backend1':
+        config_dict(), 'backend2': config_dict2(), ...}
+        """
+        pass
+
+    def deactivate(self):
+        """Called upon backend deactivation (so on shutdown/reload/etc.).
+
+        This function should perform any required clean up that needs to be
+        done.
+        """
+        pass
 
     def translate(self, text, from_lang, to_lang):
         """Translate the given text from `from_lang` to `to_lang`.
@@ -98,7 +119,7 @@ class IBackend:
 
     @abc.abstractproperty
     def language_pairs(self):
-        """Return a list of tuples containing ("from-lang", "to-lang") to
+        """A list of tuples containing ("from-lang", "to-lang") to
         indicate language pair support.
 
         The languages should be in ISO-639_ format, using ISO-639-1 if possible

@@ -1,14 +1,17 @@
 import translate.backend
 
+
 class TestBackend(translate.backend.IBackend):
     name = "Test Backend"
     description = "A test backend"
     preference = 1000
+    language_pairs = [('en', 'en')]
 
-    def __init__(self, config):
+    def activate(self, config):
+        return True
+
+    def deactivate(self):
         pass
-
-    def language_pairs(self): return [('en', 'en')]
 
     def translate(self, _from, _to, text):
         return text

@@ -8,23 +8,26 @@ import os
 import re
 import subprocess
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 
 class ApertiumBackend(IBackend):
     name = "Apertium"
     description = "A free/open-source machine translation platform"
     preference = 20
+    language_pairs = []
 
-    def __init__(self, config):
+    def activate(self, config):
         self.config = config.get('apertium', dict())
 
         if not self.config.get('active', True):
-            self.activated = False
-            return
+            return False
 
         try:
             self.exe = subprocess.check_output(['which', 'apertium']).strip()
 
-            self.pairs = set()
+            self.language_pairs = set()
 
             modes_dir = os.path.join(os.path.dirname(self.exe), '..', 'share',
                                      'apertium', 'modes')
@@ -34,15 +37,19 @@ class ApertiumBackend(IBackend):
 
                 matches = re.search('(.*?)-([^_-]*).*\.mode', file_name)
 
-                self.pairs.add(matches.groups())
+                self.language_pairs.add(matches.groups())
 
-            self.pairs = list(self.pairs)
+            self.language_pairs = list(self.language_pairs)
 
         except subprocess.CalledProcessError:
-            assert False
-            self.preference = -1
-            self.pairs = []
+            self.language_pairs = []
             log.warning("apertium not available, ignoring...")
+            return False
+
+        return True
+
+    def deactivate(self):
+        pass
 
     def translate(self, text, from_lang, to_lang):
         try:
@@ -58,6 +65,3 @@ class ApertiumBackend(IBackend):
             output = None
 
         return output
-
-    def language_pairs(self):
-        return self.pairs

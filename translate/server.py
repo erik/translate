@@ -78,7 +78,7 @@ def list_translators():
             'name': b.name,
             'description': b.description,
             'preference': b.preference,
-            'pairs': b.language_pairs()
+            'pairs': b.language_pairs
         } for b in manager.backends])
 
 
@@ -89,7 +89,7 @@ def list_pairs():
     pairs = set()
 
     for backend in manager.backends:
-        for pair in backend.language_pairs():
+        for pair in backend.language_pairs:
             pairs.add(pair)
 
     return flask.jsonify(pairs=list(pairs))

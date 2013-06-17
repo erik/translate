@@ -35,7 +35,7 @@ def find_subclasses(path, cls):
     subclasses = []
 
     def look_for_subclass(module, name):
-        log.debug("searching %s" % (name))
+        log.debug("Searching module %s" % (name))
 
         for key, entry in inspect.getmembers(module, inspect.isclass):
             if key == cls.__name__:

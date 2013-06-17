@@ -11,13 +11,15 @@ class DummyBackend(IBackend):
     name = "Dummy"
     description = "A dummy implementation of a translation backend"
     preference = 0
+    language_pairs = [('en', 'en')]
 
-    def __init__(self, config):
+    def activate(self, config):
         self.config = config.get('dummy', dict())
+
+        return self.config.get('active', False)
+
+    def deactivate(self):
         pass
 
     def translate(self, text, from_lang, to_lang):
         return text
-
-    def language_pairs(self):
-        return [('en', 'en')]

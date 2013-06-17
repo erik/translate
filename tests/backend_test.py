@@ -6,7 +6,7 @@ mgr = None
 
 def setup_module():
     global mgr
-    mgr = translate.backend.BackendManager(dict())
+    mgr = translate.backend.BackendManager({'dummy': {'active': True}})
 
 
 class TestBackendManager:
