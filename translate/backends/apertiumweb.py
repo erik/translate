@@ -76,6 +76,13 @@ class ApertiumWebBackend(IBackend):
         if self.key is not None:
             kwargs['key'] = self.key
 
-        r = requests.get(API_URL + method, params=kwargs, timeout=self.timeout)
+        try:
+            r = requests.get(API_URL + method, params=kwargs,
+                             timeout=self.timeout)
+        except requests.exceptions.RequestException as exc:
+            log.error('API request {0} params={1} failed!'
+                      .format(method, kwargs))
+            log.error(repr(exc))
+            return dict()
 
         return json.loads(r.text)

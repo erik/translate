@@ -1,7 +1,18 @@
  # -*- coding: utf-8 -*-
 
+from translate.app import app
+from translate import __version__
+
+import translate.utils
+
+import flask
+from flask import render_template, request
+
+manager = None
+
+
 @app.errorhandler(400)
-@utils.jsonp
+@translate.utils.jsonp
 def bad_request(error):
 
     # if this is an API request, return JSON
@@ -26,7 +37,7 @@ def api():
 
 
 @app.route('/api/v1/translators')
-@utils.jsonp
+@translate.utils.jsonp
 def list_translators():
     return flask.jsonify(
         backends=[{
@@ -38,7 +49,7 @@ def list_translators():
 
 
 @app.route('/api/v1/pairs')
-@utils.jsonp
+@translate.utils.jsonp
 def list_pairs():
 
     pairs = set()
@@ -51,32 +62,32 @@ def list_pairs():
 
 
 @app.route('/api/v1/translate')
-@utils.jsonp
+@translate.utils.jsonp
 def translate_text():
 
     text = request.args.get('text', None)
     if not text:
-        utils.api_abort('translate', 'No translation text given')
+        translate.utils.api_abort('translate', 'No translation text given')
 
     source_lang = request.args.get('from', None)
     if not source_lang:
-        utils.api_abort('translate', 'No source language given')
+        translate.utils.api_abort('translate', 'No source language given')
 
     dest_lang = request.args.get('to', None)
     if not dest_lang:
-        utils.api_abort('translate', 'No destination language given')
+        translate.utils.api_abort('translate', 'No destination language given')
 
     backend = manager.find_best(source_lang, dest_lang)
 
     if backend is None:
-        utils.api_abort('translate', 'No translators can handle this ' +
-                        'language pair')
+        translate.utils.api_abort('translate', 'No translators can handle ' +
+                                  'this language pair')
 
     trans = backend.translate(text, source_lang, dest_lang)
 
     if trans is None:
-        utils.api_abort('translate', '{0} failed to translate text'
-                        .format(trans))
+        translate.utils.api_abort('translate', '{0} failed to translate text'
+                                  .format(trans))
 
     return flask.jsonify(source_lang=source_lang, dest_lang=dest_lang,
                          result=trans)

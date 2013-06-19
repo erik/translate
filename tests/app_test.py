@@ -1,6 +1,7 @@
 import translate
-import translate.server
+import translate.app
 
+# TODO: Write this
 
 def test_dummy():
     assert True
