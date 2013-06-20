@@ -17,7 +17,6 @@ import translate.utils
 class RateLimit(object):
     mutex = Lock()
     limit_dict = {}
-    expiration_window = 10
 
     enabled = False
     limit = 0
@@ -32,8 +31,7 @@ class RateLimit(object):
         self.add_request(user, key)
         self.trim_requests()
 
-        print(repr(RateLimit.limit_dict))
-        self.current = len(RateLimit.limit_dict[key][user])
+        self.current = len(RateLimit.limit_dict.get(key, {}).get(user, []))
 
         RateLimit.mutex.release()
 
