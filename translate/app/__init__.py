@@ -15,6 +15,7 @@ from gevent.wsgi import WSGIServer
 app = flask.Flask(__name__, static_folder="./static")
 
 from translate.app import views
+from translate.app.ratelimit import RateLimit
 
 
 def start(config, debug=False):
@@ -29,6 +30,12 @@ def start(config, debug=False):
     port = server_conf.get('port', 5000)
 
     views.manager = BackendManager(backend_conf)
+
+    ratelimit = server_conf.get('ratelimit', None)
+    if ratelimit is not None:
+        RateLimit.enabled = ratelimit.get('enabled', False)
+        RateLimit.limit = ratelimit.get('limit', 0)
+        RateLimit.per = ratelimit.get('per', 0)
 
     log.info("Starting server on port {0}, using host {1}".format(port, host))
 

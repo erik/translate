@@ -1,6 +1,7 @@
  # -*- coding: utf-8 -*-
 
 from translate.app import app
+from translate.app.ratelimit import get_view_rate_limit, ratelimit
 from translate import __version__
 
 import translate.utils
@@ -9,6 +10,20 @@ import flask
 from flask import render_template, request
 
 manager = None
+
+
+@app.after_request
+def inject_x_rate_headers(response):
+    """Add ratelimit headers to response if the requested URL is an API
+    endpoint that requires rate-limiting
+    """
+
+    limit = get_view_rate_limit()
+    if limit and limit.send_x_headers:
+        h = response.headers
+        h.add('X-RateLimit-Remaining', str(limit.remaining))
+        h.add('X-RateLimit-Limit', str(limit.limit))
+    return response
 
 
 @app.errorhandler(400)
@@ -37,6 +52,7 @@ def api():
 
 
 @app.route('/api/v1/translators')
+@ratelimit()
 @translate.utils.jsonp
 def list_translators():
     return flask.jsonify(
@@ -49,6 +65,7 @@ def list_translators():
 
 
 @app.route('/api/v1/pairs')
+@ratelimit()
 @translate.utils.jsonp
 def list_pairs():
 
@@ -62,6 +79,7 @@ def list_pairs():
 
 
 @app.route('/api/v1/translate')
+@ratelimit()
 @translate.utils.jsonp
 def translate_text():
 
