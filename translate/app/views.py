@@ -1,7 +1,7 @@
  # -*- coding: utf-8 -*-
 
 from translate.app import app
-from translate.app.ratelimit import get_view_rate_limit, ratelimit
+from translate.app.ratelimit import get_view_rate_limit, ratelimit, RateLimit
 from translate import __version__
 
 import translate.utils
@@ -25,6 +25,7 @@ def inject_x_rate_headers(response):
         h = response.headers
         h.add('X-RateLimit-Remaining', str(limit.remaining))
         h.add('X-RateLimit-Limit', str(limit.limit))
+        h.add('X-RateLimit-Duration', str(RateLimit.per))
     return response
 
 
