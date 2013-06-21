@@ -9,6 +9,8 @@ import translate.utils
 import flask
 from flask import render_template, request
 
+import json
+
 manager = None
 
 
@@ -107,5 +109,6 @@ def translate_text():
         translate.utils.api_abort('translate', '{0} failed to translate text'
                                   .format(trans))
 
-    return flask.jsonify(source_lang=source_lang, dest_lang=dest_lang,
-                         result=trans)
+    return flask.Response(json.dumps({'from': source_lang, 'to': dest_lang,
+                                      'result': trans}),
+                          mimetype='application/json')
