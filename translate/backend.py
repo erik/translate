@@ -40,9 +40,13 @@ class BackendManager:
 
     def find_all(self, src, dst):
         """Return all translation backends that can possibly serve this
-        request"""
+        request, sorted by preference (high first)
+        """
 
-        return [b for b in self.backends if (src, dst) in b.language_pairs]
+        backends = [b for b in self.backends
+                    if (src, dst) in b.language_pairs]
+
+        return sorted(backends, key=lambda b: b.preference)
 
     def find_best(self, src, dst):
         """Find the best backend service for a given language pair"""

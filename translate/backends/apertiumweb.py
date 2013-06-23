@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 API_URL = 'http://api.apertium.org/json/'
 API_TIMEOUT = 5
 API_ERRORS = {
+    -1:  'Request timed out',
     400: 'Bad parameters',
     451: 'Not supported language pair',
     452: 'Not supported format',
@@ -45,9 +46,13 @@ class ApertiumWebBackend(IBackend):
 
         self.language_pairs = []
 
-        for pair in response.get('responseData'):
+        for pair in response.get('responseData', {}):
             source = pair.get('sourceLanguage')
             dest = pair.get('targetLanguage')
+
+            if source is None or dest is None:
+                log.error('Badly formatted responseData, skipping')
+                continue
 
             self.language_pairs.append((source, dest))
 
@@ -62,8 +67,9 @@ class ApertiumWebBackend(IBackend):
                                 format="txt")
 
         # TODO: Actual error handling should go here
-        if resp.get('responseStatus') != 200:
-            error = API_ERRORS.get(resp.get('responseStatus'), 'Unknown error')
+        if resp.get('responseStatus', -1) != 200:
+            error = API_ERRORS.get(resp.get('responseStatus', -1),
+                                   'Unknown error')
             log.error(error)
             return None
 
