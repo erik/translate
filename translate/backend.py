@@ -70,6 +70,7 @@ class IBackend:
 
     __metaclass__ = abc.ABCMeta
 
+    @abc.abstractmethod
     def activate(self, config):
         """Called upon initial activation of the backend. Should return either
         True or false to indicate whether or not activation was successful and
@@ -81,6 +82,7 @@ class IBackend:
         """
         pass
 
+    @abc.abstractmethod
     def deactivate(self):
         """Called upon backend deactivation (so on shutdown/reload/etc.).
 
@@ -89,6 +91,7 @@ class IBackend:
         """
         pass
 
+    @abc.abstractmethod
     def translate(self, text, from_lang, to_lang):
         """Translate the given text from `from_lang` to `to_lang`.
 
