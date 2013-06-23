@@ -22,6 +22,28 @@ well as a Python API to utilize this server.
 
 And yes, the actual name is pending.
 
+Setup
+_____
+
+Setting this up should be pretty straightforward. Open an issue on the tracker
+if you run into any issues getting this to work. I'd suggest doing this in a
+virtualenv.
+
+Currently working with Python 2.6 and 2.7. 3.x support may be included at some
+point in the future, but don't count on it.
+
+Setup process::
+
+    pip install -r requirements.txt
+    python setup.py develop
+    cp config.yaml.sample config.yaml
+    # edit config.yaml as needed
+
+That should be it. Installing isn't currently working. To run::
+
+    ./bin/translate [--debug] [--config /path/to/config]
+
+
 License
 ______
 
