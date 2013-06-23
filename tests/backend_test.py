@@ -1,3 +1,5 @@
+import pytest
+
 import translate
 import translate.backend
 
@@ -22,12 +24,26 @@ class TestBackendManager:
         modules = [m.__module__ for m in self.mgr.backends]
         assert 'dummy' in modules
 
+    def test_bad_backend(self):
+        from tests.test_backends.bad_backend import BadBackend
+
+        # it's a subclass, but doesn't implement all methods, so it's not an
+        # instance
+        assert issubclass(BadBackend, translate.backend.IBackend)
+
+        # ABCMeta should stop this from being instantiated
+        backend = None
+        with pytest.raises(TypeError):
+            backend = BadBackend()
+
+        assert not isinstance(backend, translate.backend.IBackend)
+
     def test_load_extra(self):
         before = self.mgr.backends[:]
         self.mgr.load_backends('tests/test_backends')
         diff = set(self.mgr.backends) - set(before)
 
-        assert 'bad_backend' not in [m.__module__ for m in diff]
+        assert 'bad_backend' not in [m.__module__ for m in self.mgr.backends]
 
         assert len(diff) != 0
 
