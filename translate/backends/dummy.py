@@ -14,7 +14,7 @@ class DummyBackend(IBackend):
     language_pairs = [('en', 'en')]
 
     def activate(self, config):
-        self.config = config.get('dummy', dict())
+        self.config = config
 
         return self.config.get('active', False)
 

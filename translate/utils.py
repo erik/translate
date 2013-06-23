@@ -32,9 +32,15 @@ def abort_with(status_code, description=None, **kwargs):
 
 
 def find_subclasses(path, cls):
+    """Return a list of tuples containing (subclass, modulename).
+
+    path: path to search for subclasses
+    cls: class to find subclasses of
+    """
     subclasses = []
 
-    def look_for_subclass(module, name):
+    for loader, name, ispkg in pkgutil.walk_packages([path]):
+        module = loader.find_module(name).load_module(name)
         log.debug("Searching module %s" % (name))
 
         for key, entry in inspect.getmembers(module, inspect.isclass):
@@ -44,13 +50,9 @@ def find_subclasses(path, cls):
             try:
                 if issubclass(entry, cls):
                     log.debug("Found subclass: "+key)
-                    subclasses.append(entry)
+                    subclasses.append((entry, name))
             except TypeError:
                 continue
-
-    for loader, name, ispkg in pkgutil.walk_packages([path]):
-        module = loader.find_module(name).load_module(name)
-        look_for_subclass(module, name)
 
     return subclasses
 

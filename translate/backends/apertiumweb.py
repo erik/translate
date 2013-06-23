@@ -29,7 +29,7 @@ class ApertiumWebBackend(IBackend):
     language_pairs = []
 
     def activate(self, config):
-        self.config = config.get('apertiumweb', dict())
+        self.config = config
 
         if not self.config.get('active', True):
             return False

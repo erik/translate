@@ -20,22 +20,19 @@ class BackendManager:
     def load_backends(self, dir_name):
         """Load all backends from the given absolute directory name"""
 
-        for subclass in utils.find_subclasses(dir_name, IBackend):
+        for subclass, module in utils.find_subclasses(dir_name, IBackend):
+            backend_conf = self.config.get(module, dict())
+
             try:
                 backend = subclass()
-            except TypeError as e:
-                log.warning(('Failed to load backend {0}, does it implement ' +
-                            'all necessary functions and properties?')
-                            .format(subclass.__name__))
-                log.warning(repr(e))
-                continue
             except Exception as e:
-                log.warning('Failed to load backend {0} due to exception'
-                            .format(subclass.__name__))
+                log.warning('Failed to load backend {0} due to exception. ' +
+                            'Make sure it implements all required properties' +
+                            ' and members'.format(subclass.__name__))
                 log.warning(repr(e))
                 continue
 
-            if backend.activate(self.config):
+            if backend.activate(backend_conf):
                 log.info("Loading backend {0}... ".format(backend.name))
                 self.backends.append(backend)
             else:
@@ -74,8 +71,9 @@ class IBackend:
         True or false to indicate whether or not activation was successful and
         the backend can be used.
 
-        Config passed to this function is a dict, containing {'backend1':
-        config_dict(), 'backend2': config_dict2(), ...}
+        Config passed to this function is a dict, taken from the configuration
+        file, using the module name of the backend as a key. e.g.
+        plugins/foo/bar.py would be passed config['backends']['bar']
         """
         pass
 
