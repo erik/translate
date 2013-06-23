@@ -8,6 +8,7 @@ class TestBackend(translate.backend.IBackend):
     language_pairs = [('en', 'en')]
 
     def activate(self, config):
+        assert config['foo'] == 'bar'
         return True
 
     def deactivate(self):
