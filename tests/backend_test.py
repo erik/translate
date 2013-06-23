@@ -39,3 +39,12 @@ class TestBackendManager:
         backend = self.mgr.find_best('en', 'en')
 
         assert backend.name == 'Test Backend'
+
+    def test_find_all(self):
+        backends = self.mgr.find_all('en', 'en')
+
+        assert 'Test Backend' in [b.name for b in backends]
+        assert 'Dummy' in [b.name for b in backends]
+
+        prefs = [b.preference for b in backends]
+        assert sorted(prefs) == prefs
