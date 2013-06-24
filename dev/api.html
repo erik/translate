@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Documentation &mdash; translate 0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="translate 0 documentation" href="../index.html" />
+    <link rel="up" title="Translate Developer Documentation" href="index.html" />
+    <link rel="next" title="Plugin Documentation" href="plugin.html" />
+    <link rel="prev" title="Translate Developer Documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plugin.html" title="Plugin Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Translate Developer Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Translate Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<p>translate provides a very straightforward API using rather simple URLs. All API
+calls are HTTP GETs, returning JSON data.</p>
+<p>URL scheme <tt class="code docutils literal"><span class="pre">/api/v&lt;version&gt;/&lt;method&gt;?&lt;params...&gt;</span></tt></p>
+<p>For each URL, the parameter <tt class="code docutils literal"><span class="pre">?callback=jsonp</span></tt> can be used to wrap the
+returned JSON data using the name <cite>jsonp</cite>. For example:</p>
+<div class="highlight-python"><pre>GET /api/v1/translators?callback=foo
+
+foo({...})</pre>
+</div>
+<div class="section" id="api-version-1">
+<h2>API Version 1<a class="headerlink" href="#api-version-1" title="Permalink to this headline">¶</a></h2>
+<p>Base URL <tt class="code docutils literal"><span class="pre">/api/v1/&lt;method&gt;?&lt;params...&gt;</span></tt></p>
+<div class="section" id="methods">
+<h3>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first"><strong>translators</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Returns information on all the available translation backends that this
+server can support.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;backends&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s">&quot;pairs&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">[</span>
+        <span class="s">&quot;from-lang&quot;</span><span class="p">,</span>
+        <span class="s">&quot;to-lang&quot;</span>
+      <span class="p">],</span> <span class="o">...</span>
+    <span class="p">],</span>
+    <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Backend Name&quot;</span><span class="p">,</span>
+    <span class="s">&quot;preference&quot;</span><span class="p">:</span> <span class="mi">999</span><span class="p">,</span>
+    <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Description of this backend&quot;</span>
+  <span class="p">},</span> <span class="o">...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p class="first"><strong>pairs</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Returns a list of every pair of (source language, destination language)
+that this server can handle.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;pairs&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">[</span>
+      <span class="s">&quot;from-language&quot;</span><span class="p">,</span>
+      <span class="s">&quot;to-language&quot;</span>
+    <span class="p">],</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p class="first"><strong>translate</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Translate a block of text between two languages.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">from:</th><td class="field-body">Language text to be translated is in</td>
+</tr>
+<tr class="field-even field"><th class="field-name">to:</th><td class="field-body">Language to translate text to</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">text:</th><td class="field-body">Text to translate from the <cite>from</cite> language to the <cite>to</cite> language.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;from&quot;</span><span class="p">:</span> <span class="s">&quot;from-language&quot;</span><span class="p">,</span>
+  <span class="s">&quot;to&quot;</span><span class="p">:</span> <span class="s">&quot;to-language&quot;</span><span class="p">,</span>
+  <span class="s">&quot;result&quot;</span><span class="p">:</span> <span class="s">&quot;Text translated into &#39;to&#39; language&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+<div class="section" id="rate-limiting">
+<h3>Rate Limiting<a class="headerlink" href="#rate-limiting" title="Permalink to this headline">¶</a></h3>
+<p>translate provides optional per-method rate limiting for the API, that will be
+reported through HTTP headers.</p>
+<p>If active, the following HTTP headers will be included in every API call:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">X-RateLimit-Remaining:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">The number of requests remaining before rate limiting kicks in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">X-RateLimit-Limit:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">The number of requests to allow with a within the specified time limit.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">X-RateLimit-Duration:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">The length in time (in seconds) that each request will be counted against the
+API limit.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="errors">
+<h3>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h3>
+<p>Errors can occur when parameters are omitted or the rate limit (if activated) is
+exceeded. The HTTP status code for errors is 400. The general scheme for errors
+is rather simple:</p>
+<div class="highlight-python"><pre>{
+  "method": "API method (or 'ratelimit') that caused the error"
+  "message": "(hopefully) human-readable description of error"
+}</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API Documentation</a><ul>
+<li><a class="reference internal" href="#api-version-1">API Version 1</a><ul>
+<li><a class="reference internal" href="#methods">Methods</a></li>
+<li><a class="reference internal" href="#rate-limiting">Rate Limiting</a></li>
+<li><a class="reference internal" href="#errors">Errors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Translate Developer Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="plugin.html"
+                        title="next chapter">Plugin Documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plugin.html" title="Plugin Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Translate Developer Documentation"
+             >previous</a> |</li>
+        <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Translate Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Erik Price.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

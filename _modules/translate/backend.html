@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>translate.backend &mdash; translate 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="translate 0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for translate.backend</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">log</span>
+
+
+<div class="viewcode-block" id="BackendManager"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager">[docs]</a><span class="k">class</span> <span class="nc">BackendManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Handles the loading and management of various translation service</span>
+<span class="sd">    backends.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="c"># Load the default backends</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_backends</span><span class="p">(</span><span class="s">&#39;translate/backends&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BackendManager.load_backends"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.load_backends">[docs]</a>    <span class="k">def</span> <span class="nf">load_backends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load all backends from the given absolute directory name&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">subclass</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_subclasses</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="n">IBackend</span><span class="p">):</span>
+            <span class="n">backend_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">backend</span> <span class="o">=</span> <span class="n">subclass</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;Failed to load backend {0} due to exception. &#39;</span> <span class="o">+</span>
+                            <span class="s">&#39;Make sure it implements all required properties&#39;</span> <span class="o">+</span>
+                            <span class="s">&#39; and members&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subclass</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">backend_conf</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Loading backend {0}... &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Disabling backend {0}...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="BackendManager.find_all"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.find_all">[docs]</a>    <span class="k">def</span> <span class="nf">find_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return all translation backends that can possibly serve this</span>
+<span class="sd">        request, sorted by preference (high first)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backends</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">language_pairs</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">backends</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">preference</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BackendManager.find_best"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.find_best">[docs]</a>    <span class="k">def</span> <span class="nf">find_best</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find the best backend service for a given language pair&quot;&quot;&quot;</span>
+
+        <span class="n">best</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backends</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span> <span class="ow">in</span> <span class="n">backend</span><span class="o">.</span><span class="n">language_pairs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">preference</span> <span class="o">&gt;</span> <span class="n">best</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">best</span> <span class="o">=</span> <span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">backend</span><span class="o">.</span><span class="n">preference</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+</div></div>
+<div class="viewcode-block" id="IBackend"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend">[docs]</a><span class="k">class</span> <span class="nc">IBackend</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Backend interface definition for any additional backends.</span>
+
+<span class="sd">    Every backend must implement inherit IBackend and define the</span>
+<span class="sd">    members/functions present here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="IBackend.activate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called upon initial activation of the backend. Should return either</span>
+<span class="sd">        True or false to indicate whether or not activation was successful and</span>
+<span class="sd">        the backend can be used.</span>
+
+<span class="sd">        Config passed to this function is a dict, taken from the configuration</span>
+<span class="sd">        file, using the module name of the backend as a key. e.g.</span>
+<span class="sd">        plugins/foo/bar.py would be passed config[&#39;backends&#39;][&#39;bar&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="IBackend.deactivate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called upon backend deactivation (so on shutdown/reload/etc.).</span>
+
+<span class="sd">        This function should perform any required clean up that needs to be</span>
+<span class="sd">        done.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="IBackend.translate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">from_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Translate the given text from `from_lang` to `to_lang`.</span>
+
+<span class="sd">        A backend will only receive this function call if has already specified</span>
+<span class="sd">        that it can accept the given from,to pair.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractproperty</span>
+<div class="viewcode-block" id="IBackend.name"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Name of this translation backend.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractproperty</span>
+<div class="viewcode-block" id="IBackend.description"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Short description of this translation backend.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractproperty</span>
+<div class="viewcode-block" id="IBackend.preference"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.preference">[docs]</a>    <span class="k">def</span> <span class="nf">preference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return an integer representing the overall precedence this</span>
+<span class="sd">        translation backend should use.</span>
+
+<span class="sd">        If two backends overlap for a language pair, the one with the highest</span>
+<span class="sd">        preference is used.</span>
+
+<span class="sd">        Higher values indicate a higher precedence.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractproperty</span>
+<div class="viewcode-block" id="IBackend.language_pairs"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.language_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">language_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of tuples containing (&quot;from-lang&quot;, &quot;to-lang&quot;) to</span>
+<span class="sd">        indicate language pair support.</span>
+
+<span class="sd">        The languages should be in ISO-639_ format, using ISO-639-1 if possible</span>
+<span class="sd">        and falling back to ISO-639-2 if necessary.</span>
+
+<span class="sd">        .. _ISO-639: http://www.loc.gov/standards/iso639-2/php/English_list.php</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Erik Price.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Translate Developer Documentation &mdash; translate 0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="translate 0 documentation" href="../index.html" />
+    <link rel="next" title="API Documentation" href="api.html" />
+    <link rel="prev" title="User Guide" href="../user/index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../user/index.html" title="User Guide"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">translate 0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="translate-developer-documentation">
+<h1>Translate Developer Documentation<a class="headerlink" href="#translate-developer-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="server-documentation">
+<h2>Server Documentation<a class="headerlink" href="#server-documentation" title="Permalink to this headline">¶</a></h2>
+<p>Documentation on administration or usage of the server itself.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#api-version-1">API Version 1</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugin.html">Plugin Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugin.html#plugin-loading">Plugin Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugin.html#code-documentation">Code Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="module-translate">
+<span id="code-documentation"></span><h2>Code Documentation<a class="headerlink" href="#module-translate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="translate">
+<h3>translate<a class="headerlink" href="#translate" title="Permalink to this headline">¶</a></h3>
+<p>TODO: Write description/documentation.</p>
+</div>
+<span class="target" id="module-translate.app"></span><p>Server interface for translate application. This handles the process of
+handling HTTP requests and generating responses.</p>
+<dl class="function">
+<dt id="translate.app.start">
+<tt class="descclassname">translate.app.</tt><tt class="descname">start</tt><big>(</big><em>config</em>, <em>debug=False</em><big>)</big><a class="reference internal" href="../_modules/translate/app.html#start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the flask Server using gevent&#8217;s WSGIServer. This function doesn&#8217;t
+return.</p>
+</dd></dl>
+
+<span class="target" id="module-translate.backend"></span><dl class="class">
+<dt id="translate.backend.BackendManager">
+<em class="property">class </em><tt class="descclassname">translate.backend.</tt><tt class="descname">BackendManager</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the loading and management of various translation service
+backends.</p>
+<dl class="method">
+<dt id="translate.backend.BackendManager.find_all">
+<tt class="descname">find_all</tt><big>(</big><em>src</em>, <em>dst</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.find_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.find_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all translation backends that can possibly serve this
+request, sorted by preference (high first)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.BackendManager.find_best">
+<tt class="descname">find_best</tt><big>(</big><em>src</em>, <em>dst</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.find_best"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.find_best" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the best backend service for a given language pair</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.BackendManager.load_backends">
+<tt class="descname">load_backends</tt><big>(</big><em>dir_name</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.load_backends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.load_backends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load all backends from the given absolute directory name</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="translate.backend.IBackend">
+<em class="property">class </em><tt class="descclassname">translate.backend.</tt><tt class="descname">IBackend</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Backend interface definition for any additional backends.</p>
+<p>Every backend must implement inherit IBackend and define the
+members/functions present here.</p>
+<dl class="method">
+<dt id="translate.backend.IBackend.activate">
+<tt class="descname">activate</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.activate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called upon initial activation of the backend. Should return either
+True or false to indicate whether or not activation was successful and
+the backend can be used.</p>
+<p>Config passed to this function is a dict, taken from the configuration
+file, using the module name of the backend as a key. e.g.
+plugins/foo/bar.py would be passed config[&#8216;backends&#8217;][&#8216;bar&#8217;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.IBackend.deactivate">
+<tt class="descname">deactivate</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called upon backend deactivation (so on shutdown/reload/etc.).</p>
+<p>This function should perform any required clean up that needs to be
+done.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.description">
+<tt class="descname">description</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short description of this translation backend.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.language_pairs">
+<tt class="descname">language_pairs</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.language_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.language_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of tuples containing (&#8220;from-lang&#8221;, &#8220;to-lang&#8221;) to
+indicate language pair support.</p>
+<p>The languages should be in <a class="reference external" href="http://www.loc.gov/standards/iso639-2/php/English_list.php">ISO-639</a> format, using ISO-639-1 if possible
+and falling back to ISO-639-2 if necessary.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.name">
+<tt class="descname">name</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of this translation backend.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.preference">
+<tt class="descname">preference</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.preference"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.preference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an integer representing the overall precedence this
+translation backend should use.</p>
+<p>If two backends overlap for a language pair, the one with the highest
+preference is used.</p>
+<p>Higher values indicate a higher precedence.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.IBackend.translate">
+<tt class="descname">translate</tt><big>(</big><em>text</em>, <em>from_lang</em>, <em>to_lang</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate the given text from <cite>from_lang</cite> to <cite>to_lang</cite>.</p>
+<p>A backend will only receive this function call if has already specified
+that it can accept the given from,to pair.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-translate.utils"></span><dl class="function">
+<dt id="translate.utils.abort_with">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">abort_with</tt><big>(</big><em>status_code</em>, <em>description=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#abort_with"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.abort_with" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise an exception containing some additional information to be handled
+by the flask application.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.utils.api_abort">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">api_abort</tt><big>(</big><em>method</em>, <em>message</em>, <em>status_code=400</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#api_abort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.api_abort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise an API exception for given method and message</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.utils.find_subclasses">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">find_subclasses</tt><big>(</big><em>path</em>, <em>cls</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#find_subclasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.find_subclasses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of tuples containing (subclass, modulename).</p>
+<p>path: path to search for subclasses
+cls: class to find subclasses of</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.utils.jsonp">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">jsonp</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#jsonp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.jsonp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wraps JSONified output for JSONP requests.</p>
+<p>From: <a class="reference external" href="https://gist.github.com/aisipos/1094140">https://gist.github.com/aisipos/1094140</a></p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Translate Developer Documentation</a><ul>
+<li><a class="reference internal" href="#server-documentation">Server Documentation</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-translate">Code Documentation</a><ul>
+<li><a class="reference internal" href="#translate">translate</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../user/index.html"
+                        title="previous chapter">User Guide</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">API Documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../user/index.html" title="User Guide"
+             >previous</a> |</li>
+        <li><a href="../index.html">translate 0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Erik Price.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
