@@ -104,6 +104,7 @@ def translate_text():
         translate.utils.api_abort('translate', 'No translators can handle ' +
                                   'this language pair')
 
+    # TODO: try each translator in sequence until one works?
     trans = backend.translate(text, source_lang, dest_lang)
 
     if trans is None:
