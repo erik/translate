@@ -1,0 +1,2 @@
+recursive-include translate/app/static/* *
+include translate/app/templates/*

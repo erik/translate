@@ -4,7 +4,7 @@ import translate
 
 import subprocess
 
-from setuptools import setup, Command
+from setuptools import setup, find_packages, Command
 
 
 class PyLint(Command):
@@ -45,7 +45,12 @@ setup(name='translate',
       description="A pluggable translation server.",
       long_description=open('README.rst').read(),
       author='Erik Price',
+      author_email='erik@erikprice.net',
+      url='https://github.com/boredomist/translate',
       tests_require=['pytest'],
       cmdclass={'test': PyTest, 'lint': PyLint},
       install_requires=requires,
-      license=open('COPYING').read())
+      license='GPLv3',
+      packages = find_packages(),
+      include_package_data = True,
+      scripts=['bin/translate'])
