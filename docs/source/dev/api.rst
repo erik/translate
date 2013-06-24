@@ -87,6 +87,25 @@ Methods
         "result": "Text translated into 'to' language"
       }
 
+Rate Limiting
+~~~~~~~~~~~~~
+
+translate provides optional per-method rate limiting for the API, that will be
+reported through HTTP headers.
+
+If active, the following HTTP headers will be included in every API call:
+
+:X-RateLimit-Remaining:
+   The number of requests remaining before rate limiting kicks in.
+
+:X-RateLimit-Limit:
+   The number of requests to allow with a within the specified time limit.
+
+:X-RateLimit-Duration:
+   The length in time (in seconds) that each request will be counted against the
+   API limit.
+
+
 Errors
 ~~~~~~
 

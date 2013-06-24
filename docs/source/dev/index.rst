@@ -10,7 +10,7 @@ Documentation on administration or usage of the server itself.
    :maxdepth: 2
 
    api
-   config
+   plugin
 
 
 Code Documentation
