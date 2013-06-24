@@ -9,7 +9,7 @@ Welcome to translate's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    User Guide <user/index>
    Developer Guide <dev/index>

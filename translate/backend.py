@@ -64,8 +64,12 @@ class BackendManager:
 class IBackend:
     """Backend interface definition for any additional backends.
 
-    Every backend must implement inherit IBackend and define the
+    Every backend must be a subclass for IBackend and override each of the
     members/functions present here.
+
+    If some members are missing when the BackendManager attempts to instantiate
+    the plugin class, a TypeError will be thrown, and the backend will be
+    unable to load.
     """
 
     __metaclass__ = abc.ABCMeta
