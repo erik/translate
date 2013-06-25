@@ -12,17 +12,42 @@
     <div class="grid" id="wrapper">
       <h3 class="center"> API Information</h3>
 
-      <hr />
+      <div class="col_12">
+        <div class="col_6">
+          <h4>Backends</h4>
 
-      <div class="col_6">
-        This server supports the following translation backends:
+          <ul class="alt" id="translators">
+        {% for backend in backends %}
+            <li>
+              <b> {{ backend.name }} </b>
+              <p> {{ backend.description }} </p>
+            </li>
+        {% endfor %}
+          </ul>
+        </div>
 
-        <ul class="alt">
-          <li>Foo</li>
-          <li>Bar</li>
-          <li>Baz</li>
-          <li>Quux</li>
-        </ul>
+        <div class="col_6">
+          <h4>Language Pairs</h4>
+
+          <table class="tight striped sortable">
+            <thead>
+              <tr>
+	        <th>From</th>
+	        <th>To</th>
+              </tr>
+            </thead>
+
+            <tbody>
+            {% for pair in pairs %}
+              <tr>
+                <td> {{ pair[0] }} </td>
+                <td> {{ pair[1] }} </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+
+          </table>
+        </div>
       </div>
     </div>
   </body>

@@ -51,7 +51,13 @@ def index():
 
 @app.route('/api/')
 def api():
-    return render_template('api.html')
+    pairs = set()
+
+    for backend in manager.backends:
+        for pair in backend.language_pairs:
+            pairs.add(pair)
+
+    return render_template('api.html', backends=manager.backends, pairs=list(pairs))
 
 
 @app.route('/api/v1/translators')
