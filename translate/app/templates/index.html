@@ -9,23 +9,68 @@
 
     <link rel="stylesheet" href="static/css/kickstart.css" media="all" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/0.9.15/chosen.css" />
+    <script src="static/js/index.js"></script>
+
     <script type="text/javascript">
-      $(document).ready(function() {
-        $(".select").chosen();
+      $(function() {
+        Translate.init();
+
+        $("#from").chosen();
+        $("#to").chosen();
+
+        for(var idx in Translate.pairs) {
+          var pair = Translate.pairs[idx];
+          $("#from").append("<option>" + pair[0] + "</option>");
+          $("#to").append("<option>" + pair[1] + "</option>");
+        }
+        $("#from").trigger("liszt:updated");
+        $("#to").trigger("liszt:updated");
+
+        $("#from").chosen().change(function() {
+            var selected = $("#from").val();
+
+            var choices = Translate.getToChoices(selected);
+
+            $("#to").html("");
+
+            for(var idx in choices) {
+              var choice = choices[idx];
+
+              $("#to").append("<option>" + choice + "</option>");
+            }
+            $("#to").trigger("liszt:updated");
+          });
+
+        $("#to").chosen().change(function() {
+            var selected = $("#to").val();
+
+            var choices = Translate.getToChoices(selected);
+
+            $("#from").html("");
+
+            for(var idx in choices) {
+              var choice = choices[idx];
+
+              $("#from").append("<option>" + choice + "</option>");
+            }
+            $("#from").trigger("liszt:updated");
+          });
+
       });
     </script>
   </head>
 
   <body class="subpage">
     <div class="grid" id="wrapper">
-      <h1 class="center"> Translation Server </h1>
+      <h3 class="center"> Translation Server </h3>
 
       <hr />
 
       <div class="col_5">
         <textarea class="col_12" id="textarea1" placeholder="Hello, world!"></textarea>
 
-        <select tabindex="2" class="col_12 select" data-placeholder="Source language">
+        <select tabindex="2" id="from" class="col_12 select"
+                data-placeholder="Source language">
           <option value=""></option>
         </select>
       </div>
@@ -42,7 +87,8 @@
 
       <div class="col_5">
         <textarea readonly class="col_12" id="textarea1" placeholder="Hallo, Welt!"></textarea>
-        <select tabindex="2" class="col_12 select" data-placeholder="Destination language">
+        <select tabindex="2" id="to" class="col_12 select"
+                data-placeholder="Destination language">
           <option value=""></option>
         </select>
       </div>
