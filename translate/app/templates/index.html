@@ -18,43 +18,53 @@
         $("#from").chosen();
         $("#to").chosen();
 
+        var from = [], to = [];
+
         for(var idx in Translate.pairs) {
           var pair = Translate.pairs[idx];
-          $("#from").append("<option>" + pair[0] + "</option>");
-          $("#to").append("<option>" + pair[1] + "</option>");
+
+          if(from.indexOf(pair[0]) < 0)
+            from.push(pair[0]);
+
+          if(to.indexOf(pair[1]) < 0)
+            to.push(pair[1]);
         }
+
+        from.sort().map(function(elem) {
+            $("#from").append("<option>" + elem + "</option>");
+        });
+
+        to.sort().map(function(elem) {
+            $("#to").append("<option>" + elem + "</option>");
+        });
+
+
         $("#from").trigger("liszt:updated");
         $("#to").trigger("liszt:updated");
 
         $("#from").chosen().change(function() {
             var selected = $("#from").val();
 
-            var choices = Translate.getToChoices(selected);
+            $("#to").html("<option value=''></option>");
 
-            $("#to").html("");
-
-            for(var idx in choices) {
-              var choice = choices[idx];
-
+            Translate.getToChoices(selected).map(function(choice) {
               $("#to").append("<option>" + choice + "</option>");
-            }
+            });
+
             $("#to").trigger("liszt:updated");
           });
 
-        $("#to").chosen().change(function() {
-            var selected = $("#to").val();
+        $("#translate").click(function() {
+            var text = $("#from_area").val();
+            var from = $("#from").val(), to = $("#to").val();
 
-            var choices = Translate.getToChoices(selected);
-
-            $("#from").html("");
-
-            for(var idx in choices) {
-              var choice = choices[idx];
-
-              $("#from").append("<option>" + choice + "</option>");
+            if(from == "" || to == "") {
+              Translate.error("Select a language!");
+              return;
             }
-            $("#from").trigger("liszt:updated");
-          });
+
+            Translate.translateText(text, from, to);
+        });
 
       });
     </script>
@@ -66,8 +76,11 @@
 
       <hr />
 
+      <div id="flash" class="col_12">
+      </div>
+
       <div class="col_5">
-        <textarea class="col_12" id="textarea1" placeholder="Hello, world!"></textarea>
+        <textarea class="col_12" id="from_area" placeholder="Hello, world!"></textarea>
 
         <select tabindex="2" id="from" class="col_12 select"
                 data-placeholder="Source language">
@@ -76,17 +89,14 @@
       </div>
 
       <div class="col_2" style="margin-top: 20px;">
-        <button style="width:100%" id="switch" class="small center">
-          <i class="center icon-exchange"></i>
-        </button>
-        <button style="width:100%; margin-top: 20px"
+        <button style="width:100%"
                 id="translate" class="small center">
           Translate
         </button>
       </div>
 
       <div class="col_5">
-        <textarea readonly class="col_12" id="textarea1" placeholder="Hallo, Welt!"></textarea>
+        <textarea readonly class="col_12" id="to_area" placeholder="Hallo, Welt!"></textarea>
         <select tabindex="2" id="to" class="col_12 select"
                 data-placeholder="Destination language">
           <option value=""></option>
