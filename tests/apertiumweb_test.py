@@ -1,5 +1,3 @@
-import subprocess
-
 from translate.backends.apertiumweb import ApertiumWebBackend, API_URL
 
 import requests
