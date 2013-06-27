@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from translate import log
-from translate.backend import IBackend
+from translate.backend import IBackend, TranslationException
 
 import glob
 import os
@@ -62,6 +62,6 @@ class ApertiumBackend(IBackend):
             output = proc.stdout.read()[:-1].decode('utf-8')
         except Exception as e:
             log.error('Failed to translate text {0}'.format(repr(e)))
-            output = None
+            raise TranslationException(repr(e))
 
         return output

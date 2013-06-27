@@ -61,6 +61,13 @@ class BackendManager:
         return best[0]
 
 
+class TranslationException(Exception):
+    """Exception to be raised when a translation backend fails to translate a
+    given block of text for whatever reason.
+    """
+    pass
+
+
 class IBackend:
     """Backend interface definition for any additional backends.
 

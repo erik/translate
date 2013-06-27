@@ -2,6 +2,7 @@
 
 from translate.app import app
 from translate.app.ratelimit import get_view_rate_limit, ratelimit, RateLimit
+from translate.backend import TranslationException
 from translate import __version__
 
 import translate.utils
@@ -114,12 +115,14 @@ def translate_text():
                                   'this language pair')
 
     # TODO: try each translator in sequence until one works?
-    trans = backend.translate(text, source_lang, dest_lang)
 
-    if trans is None:
-        translate.utils.api_abort('translate', '{0} failed to translate text'
-                                  .format(trans))
+    try:
+        trans = backend.translate(text, source_lang, dest_lang)
+        return flask.Response(json.dumps({'from': source_lang, 'to': dest_lang,
+                                          'result': trans}),
+                              mimetype='application/json')
 
-    return flask.Response(json.dumps({'from': source_lang, 'to': dest_lang,
-                                      'result': trans}),
-                          mimetype='application/json')
+    except TranslationException as exc:
+        translate.utils.api_abort('translate', '{0} failed to translate \
+        text: {1}'
+                                  .format(backend.name, exc))
