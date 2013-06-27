@@ -58,6 +58,11 @@ class ApertiumWebBackend(IBackend):
 
         # just in case the API returns duplicates for whatever reason
         self.language_pairs = list(set(self.language_pairs))
+
+        if len(self.language_pairs) == 0:
+            log.error('Got zero translation pairs, aborting.')
+            return False
+
         return True
 
     def translate(self, text, from_lang, to_lang):

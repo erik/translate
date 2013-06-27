@@ -3,10 +3,15 @@ import subprocess
 from translate.backends.apertiumweb import ApertiumWebBackend, API_URL
 
 import requests
+import json
 
 try:
     # If this times out, just give up with the test
-    requests.get(API_URL, timeout=5)
+    r = requests.get(API_URL + 'listPairs', timeout=5)
+    obj = json.loads(r.text)
+
+    # It seems Apertium Web API sometimes returns a nothing response
+    assert obj['responseData'] != []
 
     class TestApertiumWeb:
 
@@ -23,5 +28,5 @@ try:
             trans = self.backend.translate('hello', pair[0], pair[1])
             assert trans is not None
 
-except requests.exceptions.RequestException as exc:
+except:
     print('Skipping apertiumweb backend tests')
