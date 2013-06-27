@@ -58,6 +58,7 @@ def api():
             pairs.add(pair)
 
     return render_template('api.html',
+                           version=translate.__version__,
                            backends=manager.backends,
                            pairs=list(pairs))
 

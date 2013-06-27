@@ -100,8 +100,8 @@ Translate.translateText = function(text, from_lang, to_lang) {
 
 
 Translate.error = function(message) {
-    $("#flash").append('<div class="notice error">' +
-                       '<i class="icon-warning-sign icon-large"></i>' +
-                       message +
-                       '<a href="#close" class="icon-remove"></a></div>');
+    $("#flash").html('<div class="notice error">' +
+                     '<i class="icon-warning-sign icon-large"></i>' +
+                     message +
+                     '<a href="#close" class="icon-remove"></a></div>');
 };

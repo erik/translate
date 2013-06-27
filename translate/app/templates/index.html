@@ -58,6 +58,11 @@
             var text = $("#from_area").val();
             var from = $("#from").val(), to = $("#to").val();
 
+            if(text == "") {
+              // Don't need to be noisy, just exit
+              return;
+            }
+
             if(from == "" || to == "") {
               Translate.error("Select a language!");
               return;
@@ -73,8 +78,6 @@
   <body class="subpage">
     <div class="grid" id="wrapper">
       <h3 class="center"> Translation Server </h3>
-
-      <hr />
 
       <div id="flash" class="col_12">
       </div>
