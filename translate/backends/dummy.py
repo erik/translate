@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from translate.backend import IBackend
+from translate.backend import IBackend, TranslationException
 
 
 class DummyBackend(IBackend):
@@ -22,4 +22,7 @@ class DummyBackend(IBackend):
         pass
 
     def translate(self, text, from_lang, to_lang):
+        if (from_lang, to_lang) not in self.language_pairs:
+            raise TranslationException('Bad input')
+
         return text

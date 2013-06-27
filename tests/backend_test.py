@@ -64,3 +64,13 @@ class TestBackendManager:
 
         prefs = [b.preference for b in backends]
         assert sorted(prefs) == prefs
+
+    def test_raise_bad_data(self):
+        """Make sure all backends fail on bad input"""
+
+        for backend in self.mgr.backends:
+
+            with pytest.raises(translate.backend.TranslationException):
+                print(backend.name)
+                backend.translate('foo', from_lang='this-is-no-language',
+                                  to_lang='dont-even-pretend-this-is-a-lang')

@@ -60,6 +60,12 @@ class ApertiumBackend(IBackend):
             proc.stdin.write((text + u'\n').encode('utf-8'))
             proc.stdin.close()
             output = proc.stdout.read()[:-1].decode('utf-8')
+
+            # Check that apertium process exited successfully
+            if proc.wait() != 0:
+                raise TranslationException('Apertium process exited with \
+non-zero status')
+
         except Exception as e:
             log.error('Failed to translate text {0}'.format(repr(e)))
             raise TranslationException(repr(e))

@@ -14,5 +14,9 @@ class TestBackend(translate.backend.IBackend):
     def deactivate(self):
         pass
 
-    def translate(self, _from, _to, text):
+    def translate(self, text, from_lang, to_lang):
+
+        if (from_lang, to_lang) not in self.language_pairs:
+            raise translate.backend.TranslationException('Bad data')
+
         return text
