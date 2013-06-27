@@ -108,6 +108,12 @@ class IBackend:
 
         A backend will only receive this function call if has already specified
         that it can accept the given from,to pair.
+
+        If the backend fails to produce a valid response for the given text, it
+        should raise a translate.backend.TranslationException, which is a
+        simple, featureless subclass of Exception. This way, the BackendManager
+        will know that the request failed, and a proper error message can be
+        issued to the user -- or whatever the proper course of action may be.
         """
         pass
 
