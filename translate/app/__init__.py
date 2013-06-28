@@ -24,7 +24,7 @@ def start(config, debug=False):
     """
 
     server_conf = config.get('server', dict())
-    backend_conf = config.get('backend', dict())
+    backend_conf = config.get('backends', dict())
 
     host = server_conf.get('bind', '0.0.0.0')
     port = server_conf.get('port', 5000)

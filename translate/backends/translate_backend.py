@@ -34,8 +34,8 @@ class TranslateBackend(IBackend):
             logging.warning("Don't know which port to use, defaulting to {0}"
                             .format(self.config['port']))
 
-        self.api_url = '{0}:{1}/api/v1/'.format(self.config['host'],
-                                                self.config['port'])
+        self.api_url = 'http://{0}:{1}/api/v1/'.format(self.config['host'],
+                                                       self.config['port'])
 
         try:
             pairs = self.api_request('pairs').get('pairs', [])
