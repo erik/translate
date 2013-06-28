@@ -113,8 +113,12 @@
 <div class="viewcode-block" id="IBackend"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend">[docs]</a><span class="k">class</span> <span class="nc">IBackend</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Backend interface definition for any additional backends.</span>
 
-<span class="sd">    Every backend must implement inherit IBackend and define the</span>
+<span class="sd">    Every backend must be a subclass for IBackend and override each of the</span>
 <span class="sd">    members/functions present here.</span>
+
+<span class="sd">    If some members are missing when the BackendManager attempts to instantiate</span>
+<span class="sd">    the plugin class, a TypeError will be thrown, and the backend will be</span>
+<span class="sd">    unable to load.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>

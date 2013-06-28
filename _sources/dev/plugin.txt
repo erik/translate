@@ -37,6 +37,10 @@ the list of valid plugins.
 
 From here on, the plugin will be sent various requests for translating text.
 
+It is excepted that a plugin will raise a TranslationException when the
+:code:`translate` function is called with bad input, or the request otherwise
+fails.
+
 On server shutdown, each active plugin will have its `deactivate` method called,
 where it should do any cleanup, if required.
 

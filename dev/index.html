@@ -75,7 +75,8 @@
 <span id="code-documentation"></span><h2>Code Documentation<a class="headerlink" href="#module-translate" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="translate">
 <h3>translate<a class="headerlink" href="#translate" title="Permalink to this headline">¶</a></h3>
-<p>TODO: Write description/documentation.</p>
+<p>Translate is a front end server application to provide a consistent interface
+to multiple machine translation services.</p>
 </div>
 <span class="target" id="module-translate.app"></span><p>Server interface for translate application. This handles the process of
 handling HTTP requests and generating responses.</p>
@@ -116,8 +117,11 @@ request, sorted by preference (high first)</p>
 <dt id="translate.backend.IBackend">
 <em class="property">class </em><tt class="descclassname">translate.backend.</tt><tt class="descname">IBackend</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Backend interface definition for any additional backends.</p>
-<p>Every backend must implement inherit IBackend and define the
+<p>Every backend must be a subclass for IBackend and override each of the
 members/functions present here.</p>
+<p>If some members are missing when the BackendManager attempts to instantiate
+the plugin class, a TypeError will be thrown, and the backend will be
+unable to load.</p>
 <dl class="method">
 <dt id="translate.backend.IBackend.activate">
 <tt class="descname">activate</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.activate" title="Permalink to this definition">¶</a></dt>
@@ -174,8 +178,20 @@ preference is used.</p>
 <dd><p>Translate the given text from <cite>from_lang</cite> to <cite>to_lang</cite>.</p>
 <p>A backend will only receive this function call if has already specified
 that it can accept the given from,to pair.</p>
+<p>If the backend fails to produce a valid response for the given text, it
+should raise a translate.backend.TranslationException, which is a
+simple, featureless subclass of Exception. This way, the BackendManager
+will know that the request failed, and a proper error message can be
+issued to the user &#8211; or whatever the proper course of action may be.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="exception">
+<dt id="translate.backend.TranslationException">
+<em class="property">exception </em><tt class="descclassname">translate.backend.</tt><tt class="descname">TranslationException</tt><a class="headerlink" href="#translate.backend.TranslationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception to be raised when a translation backend fails to translate a
+given block of text for whatever reason.</p>
 </dd></dl>
 
 <span class="target" id="module-translate.utils"></span><dl class="function">

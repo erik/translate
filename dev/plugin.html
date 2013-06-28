@@ -77,6 +77,9 @@ regardless</em></p>
 <p>If the method returns <cite>True</cite>, the plugin is considered active and is added to
 the list of valid plugins.</p>
 <p>From here on, the plugin will be sent various requests for translating text.</p>
+<p>It is excepted that a plugin will raise a TranslationException when the
+<tt class="code docutils literal"><span class="pre">translate</span></tt> function is called with bad input, or the request otherwise
+fails.</p>
 <p>On server shutdown, each active plugin will have its <cite>deactivate</cite> method called,
 where it should do any cleanup, if required.</p>
 </div>
@@ -87,8 +90,11 @@ where it should do any cleanup, if required.</p>
 <dt id="translate.backend.IBackend">
 <em class="property">class </em><tt class="descclassname">translate.backend.</tt><tt class="descname">IBackend</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Backend interface definition for any additional backends.</p>
-<p>Every backend must implement inherit IBackend and define the
+<p>Every backend must be a subclass for IBackend and override each of the
 members/functions present here.</p>
+<p>If some members are missing when the BackendManager attempts to instantiate
+the plugin class, a TypeError will be thrown, and the backend will be
+unable to load.</p>
 <dl class="method">
 <dt id="translate.backend.IBackend.activate">
 <tt class="descname">activate</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.activate" title="Permalink to this definition">¶</a></dt>
@@ -145,6 +151,11 @@ preference is used.</p>
 <dd><p>Translate the given text from <cite>from_lang</cite> to <cite>to_lang</cite>.</p>
 <p>A backend will only receive this function call if has already specified
 that it can accept the given from,to pair.</p>
+<p>If the backend fails to produce a valid response for the given text, it
+should raise a translate.backend.TranslationException, which is a
+simple, featureless subclass of Exception. This way, the BackendManager
+will know that the request failed, and a proper error message can be
+issued to the user &#8211; or whatever the proper course of action may be.</p>
 </dd></dl>
 
 </dd></dl>
