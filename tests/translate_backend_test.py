@@ -4,6 +4,8 @@ from translate.backends.translate_backend import TranslateBackend
 
 import time
 import yaml
+import requests
+
 from multiprocessing import Process
 
 
@@ -25,14 +27,21 @@ backends:
 """)
 
         # Hackiness to make sure this is always prefered
-        TranslateBackend.preference = 10000
+        TranslateBackend.preference = 1000
+
         self.backend = TranslateBackend()
 
         self.thread = Process(target=translate.app.start, args=(config, True))
         self.thread.start()
 
-        # Wait 5 secs for the server to spin up
-        time.sleep(5)
+        # Wait for the server to spin up
+        while True:
+            time.sleep(0.5)
+            try:
+                requests.get('http://localhost:9876')
+                break
+            except:
+                pass
 
     def teardown_class(self):
         if self.thread.is_alive():
