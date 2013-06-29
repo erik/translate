@@ -10,8 +10,8 @@ script:
   - flake8 translate
   - py.test tests
 install:
-  - sudo apt-get install libevent-dev python-all-dev
-  - sudo apt-get install apertium apertium-en-ca apertium-en-es apertium-eo-ca
+  - sudo apt-get install python-all-dev
+  - sudo apt-get install apertium apertium-en-es
   - pip install -r requirements.txt --use-mirrors
 notifications:
   email: false
