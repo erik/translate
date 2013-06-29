@@ -6,9 +6,6 @@ Sphinx==1.2b1
 Werkzeug==0.8.3
 docutils==0.10
 flake8==2.0
-gevent==0.13.8
-greenlet==0.4.1
-mccabe==0.2.1
 pep8==1.4.5
 py==1.4.14
 pyflakes==0.7.2

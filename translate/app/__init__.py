@@ -10,8 +10,6 @@ from translate.backend import BackendManager
 
 import flask
 
-from gevent.wsgi import WSGIServer
-
 app = flask.Flask(__name__, static_folder="./static")
 
 from translate.app import views
@@ -19,8 +17,8 @@ from translate.app.ratelimit import RateLimit
 
 
 def start(config, debug=False):
-    """Start the flask Server using gevent's WSGIServer. This function doesn't
-    return.
+    """Start the flask Server using flask's built in Werkzeug server. This
+    function doesn't return.
     """
 
     server_conf = config.get('server', dict())
@@ -39,10 +37,4 @@ def start(config, debug=False):
 
     log.info("Starting server on port {0}, using host {1}".format(port, host))
 
-    # If we're using debug mode, using flask itself to run so we can hotswap
-    # code.
-    if debug:
-        app.run(host=host, port=port, debug=True)
-    else:
-        http_server = WSGIServer((host, port), app)
-        http_server.serve_forever()
+    app.run(host=host, port=port, debug=debug)
