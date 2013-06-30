@@ -62,13 +62,20 @@ class TranslateBackend(IBackend):
             params = {'from': from_lang, 'to': to_lang, 'text': text}
 
             resp = self.api_request('translate', **params)
-            return resp['result']
+            translated = resp.get('result')
+
+            if translated is None:
+                raise TranslationException('Server returned bad data: {0}'
+                                           .format(resp))
+
+            return translated
 
         except requests.exceptions.RequestException as exc:
             raise TranslationException('Request failed: {0}'.format(exc))
 
     def api_request(self, method, **kwargs):
         try:
+            # TODO: handle 400 errors
             req = requests.get(self.api_url + method, params=kwargs,
                                timeout=self.timeout)
             return json.loads(req.text)

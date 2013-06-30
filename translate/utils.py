@@ -7,6 +7,7 @@ import werkzeug
 import inspect
 import subprocess
 import pkgutil
+import collections
 
 from functools import wraps
 
@@ -92,3 +93,22 @@ if "check_output" not in dir(subprocess):
             raise subprocess.CalledProcessError(retcode, cmd)
         return output
     subprocess.check_output = f
+
+
+def update(d, u, depth=-1):
+    """Recursively merge or update dict-like objects.
+    >>> update({'k1': {'k2': 2}}, {'k1': {'k2': {'k3': 3}}, 'k4': 4})
+    {'k1': {'k2': {'k3': 3}}, 'k4': 4}
+
+    Code from: http://stackoverflow.com/a/14048316
+    """
+
+    for k, v in u.iteritems():
+        if isinstance(v, collections.Mapping) and not depth == 0:
+            r = update(d.get(k, {}), v, depth=max(depth - 1, -1))
+            d[k] = r
+        elif isinstance(d, collections.Mapping):
+            d[k] = u[k]
+        else:
+            d = {k: u[k]}
+    return d

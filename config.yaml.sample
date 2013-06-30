@@ -1,4 +1,4 @@
-server:
+SERVER:
   bind: '0.0.0.0'
   port: 5151
 
@@ -7,7 +7,7 @@ server:
     limit: 10
     per: 30
 
-backends:
+BACKENDS:
   dummy:
     active: false
   apertium:

@@ -8,32 +8,47 @@ handling HTTP requests and generating responses.
 from translate import log
 from translate.backend import BackendManager
 
+import translate.utils
+
 import flask
 
 app = flask.Flask(__name__, static_folder="./static")
+
+app.config.from_object('translate.app.defaultsettings')
 
 from translate.app import views
 from translate.app.ratelimit import RateLimit
 
 
-def start(config, debug=False):
-    """Start the flask Server using flask's built in Werkzeug server. This
-    function doesn't return.
+@app.before_first_request
+def initialize_flask():
+    """Make sure that the flask application is properly configured before it
+    serves any requests
     """
 
-    server_conf = config.get('server', dict())
-    backend_conf = config.get('backends', dict())
-
-    host = server_conf.get('bind', '0.0.0.0')
-    port = server_conf.get('port', 5000)
+    server_conf = app.config['SERVER']
+    backend_conf = app.config['BACKENDS']
 
     views.manager = BackendManager(backend_conf)
 
     ratelimit = server_conf.get('ratelimit', None)
     if ratelimit is not None:
-        RateLimit.enabled = ratelimit.get('enabled', False)
-        RateLimit.limit = ratelimit.get('limit', 0)
-        RateLimit.per = ratelimit.get('per', 0)
+        RateLimit.enabled = ratelimit['enabled']
+        RateLimit.limit = ratelimit['limit']
+        RateLimit.per = ratelimit['per']
+
+
+def start_server(custom_config={}, debug=True):
+    """Start the flask Server using flask's built in Werkzeug server. This
+    function doesn't return.
+    """
+
+    app.config = translate.utils.update(app.config, custom_config)
+
+    server_conf = app.config['SERVER']
+
+    host = server_conf.get('bind', '0.0.0.0')
+    port = server_conf.get('port', 5000)
 
     log.info("Starting server on port {0}, using host {1}".format(port, host))
 

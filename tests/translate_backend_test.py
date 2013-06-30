@@ -5,6 +5,7 @@ from translate.backends.translate_backend import TranslateBackend
 import time
 import yaml
 import requests
+import flask
 
 from multiprocessing import Process
 
@@ -13,11 +14,11 @@ class TestTranslateBackend():
 
     def setup_class(self):
         config = yaml.load("""
-server:
+SERVER:
   bind: '0.0.0.0'
   port: 9876
 
-backends:
+BACKENDS:
   dummy:
     active: true
   apertium:
@@ -29,9 +30,14 @@ backends:
         # Hackiness to make sure this is always prefered
         TranslateBackend.preference = 1000
 
+        # Reset the backends
+        translate.app.views.manager = translate.backend.BackendManager(
+            config['BACKENDS'])
+
         self.backend = TranslateBackend()
 
-        self.thread = Process(target=translate.app.start, args=(config, True))
+        self.thread = Process(target=translate.app.start_server,
+                              args=(config, True))
         self.thread.start()
 
         # Wait for the server to spin up
