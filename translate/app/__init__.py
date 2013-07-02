@@ -15,6 +15,7 @@ import flask
 app = flask.Flask(__name__, static_folder="./static")
 
 app.config.from_object('translate.app.defaultsettings')
+app.config.from_object('settings')
 
 from translate.app import views
 from translate.app.ratelimit import RateLimit
