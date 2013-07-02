@@ -1,2 +1,3 @@
 recursive-include translate/app/static/* *
 include translate/app/templates/*
+include settings.py

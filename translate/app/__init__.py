@@ -48,8 +48,8 @@ def start_server(custom_config={}, debug=True):
 
     server_conf = app.config['SERVER']
 
-    host = server_conf.get('bind', '0.0.0.0')
-    port = server_conf.get('port', 5000)
+    host = server_conf['bind']
+    port = server_conf['port']
 
     log.info("Starting server on port {0}, using host {1}".format(port, host))
 
