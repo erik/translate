@@ -36,8 +36,7 @@ Setup process::
 
     pip install -r requirements.txt
     python setup.py develop
-    cp config.yaml.sample config.yaml
-    # edit config.yaml as needed
+    # edit settings.py as needed
 
 That should be it. Installing isn't currently working. To run::
 
