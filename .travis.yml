@@ -5,7 +5,6 @@ python:
 #  - 3.3
 before_script:
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  - mv config.yaml.sample config.yaml
 script:
   - flake8 translate
   - py.test tests
