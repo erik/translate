@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 class ApertiumBackend(IBackend):
     name = "Apertium"
     description = "A free/open-source machine translation platform"
+    url = 'http://apertium.org'
     preference = 20
     language_pairs = []
 

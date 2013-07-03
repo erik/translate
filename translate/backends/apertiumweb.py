@@ -26,6 +26,7 @@ class ApertiumWebBackend(IBackend):
     name = "Apertium Web"
     description = ("Web translation API using the free/open-source machine" +
                    " translation platform Apertium")
+    url = 'http://api.apertium.org'
     preference = 40
     language_pairs = []
 

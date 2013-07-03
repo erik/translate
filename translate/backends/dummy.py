@@ -10,6 +10,7 @@ class DummyBackend(IBackend):
 
     name = "Dummy"
     description = "A dummy implementation of a translation backend"
+    url = 'about:blank'
     preference = 0
     language_pairs = [('en', 'en')]
 

@@ -72,6 +72,7 @@ def list_translators():
         backends=[{
             'name': b.name,
             'description': b.description,
+            'url': b.url,
             'preference': b.preference,
             'pairs': b.language_pairs
         } for b in manager.backends])

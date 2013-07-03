@@ -23,7 +23,9 @@
           <ul class="alt" id="translators">
         {% for backend in backends %}
             <li>
-              <b> {{ backend.name }} </b>
+              <a href="{{ backend.url }}">
+                <b> {{ backend.name }} </b>
+              </a>
               <p> {{ backend.description }} </p>
             </li>
         {% endfor %}

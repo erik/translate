@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 class TranslateBackend(IBackend):
     name = "Translate"
     description = "Interface to another instance of the translate server"
+    url = 'https://github.com/boredomist/translate'
     preference = 10
     language_pairs = []
 

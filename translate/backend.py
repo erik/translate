@@ -150,3 +150,8 @@ class IBackend:
         .. _ISO-639: http://www.loc.gov/standards/iso639-2/php/English_list.php
         """
         pass
+
+    @abc.abstractproperty
+    def url(self):
+        """A link to where to find more information on this URL."""
+        pass

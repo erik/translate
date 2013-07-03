@@ -4,6 +4,7 @@ import translate.backend
 class TestBackend(translate.backend.IBackend):
     name = "Test Backend"
     description = "A test backend"
+    url = 'example.com'
     preference = 1000
     language_pairs = [('en', 'en')]
 
