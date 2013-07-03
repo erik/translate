@@ -38,9 +38,20 @@ Setup process::
     python setup.py develop
     # edit settings.py as needed
 
-That should be it. Installing isn't currently working. To run::
+That should be it. Installing is currently working, but not terrible useful. To
+run::
 
-    ./bin/translate [--debug] [--config /path/to/config]
+    ./bin/translate [--debug]
+
+The debug flag is useful if you're doing any kind of development, as it will
+reload the server when a changed file is detected.
+
+Alternatively, using uWSGI (other systems should be similar)::
+
+    uwsgi -s /tmp/mysock.sock -w translate.app:app [--http 127.0.0.1:8080]
+
+The http flag tells uwsgi to use it's HTTP server. Don't use it if
+you're using some other server (Apache, nginx, ...).
 
 
 License
