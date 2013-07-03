@@ -50,7 +50,7 @@ Alternatively, using uWSGI (other systems should be similar)::
 
     uwsgi -s /tmp/mysock.sock -w translate.app:app [--http 127.0.0.1:8080]
 
-The http flag tells uwsgi to use it's HTTP server. Don't use it if
+The http flag tells uwsgi to use its HTTP server. Don't use it if
 you're using some other server (Apache, nginx, ...).
 
 
