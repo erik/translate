@@ -38,7 +38,7 @@ Setup process::
     python setup.py develop
     # edit settings.py as needed
 
-That should be it. Installing is currently working, but not terrible useful. To
+That should be it. Installing is currently working, but not terribly useful. To
 run::
 
     ./bin/translate [--debug]
