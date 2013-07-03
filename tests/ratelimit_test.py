@@ -68,7 +68,7 @@ class TestRateLimit():
 
     def test_limit_clear(self):
         # wait until old requests expire
-        secs = (self.last_req + RateLimit.per + .25) - time.time()
+        secs = (self.last_req + RateLimit.per + .5) - time.time()
 
         if secs > 0:
             time.sleep(secs)

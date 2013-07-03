@@ -1,6 +1,6 @@
  # -*- coding: utf-8 -*-
 
-from translate.app import app
+from translate.app import app, log
 from translate.app.ratelimit import get_view_rate_limit, ratelimit, RateLimit
 from translate.backend import TranslationException
 from translate import __version__
@@ -108,21 +108,19 @@ def translate_text():
     if not dest_lang:
         translate.utils.api_abort('translate', 'No destination language given')
 
-    backend = manager.find_best(source_lang, dest_lang)
+    # Try each translator sequentially (sorted by preference) until one works
+    for backend in manager.find_all(source_lang, dest_lang):
+        try:
+            trans = backend.translate(text, source_lang, dest_lang)
+            return flask.Response(json.dumps({
+                'from': source_lang,
+                'to': dest_lang,
+                'result': trans
+            }), mimetype='application/json')
 
-    if backend is None:
-        translate.utils.api_abort('translate', 'No translators can handle ' +
-                                  'this language pair')
+        except TranslationException as exc:
+            log.warning('{0} failed to translate text: {1}'
+                        .format(backend.name, exc))
 
-    # TODO: try each translator in sequence until one works?
-
-    try:
-        trans = backend.translate(text, source_lang, dest_lang)
-        return flask.Response(json.dumps({'from': source_lang, 'to': dest_lang,
-                                          'result': trans}),
-                              mimetype='application/json')
-
-    except TranslationException as exc:
-        translate.utils.api_abort('translate', '{0} failed to translate \
-        text: {1}'
-                                  .format(backend.name, exc))
+    translate.utils.api_abort('translate', 'No translators can handle ' +
+                              'this language pair')

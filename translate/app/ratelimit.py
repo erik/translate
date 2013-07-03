@@ -53,6 +53,7 @@ class RateLimit(object):
         RateLimit.limit_dict = dict(
             (key,
              dict((user,
+                   # Take only the requests that are still valid
                    [r for r in reqs if r > cutoff]) for (user, reqs)
                   in users.items()))
 
