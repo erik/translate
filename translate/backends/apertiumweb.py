@@ -24,8 +24,8 @@ API_ERRORS = {
 
 class ApertiumWebBackend(IBackend):
     name = "Apertium Web"
-    description = ("Web translation API using the free/open-source machine" +
-                   " translation platform Apertium")
+    description = "Web translation API using the free/open-source machine\
+translation platform Apertium"
     url = 'http://api.apertium.org'
     preference = 40
     language_pairs = []
@@ -37,7 +37,7 @@ class ApertiumWebBackend(IBackend):
             return False
 
         self.key = self.config.get('key')
-        self.timeout = self.config.get('timeout', 5)
+        self.timeout = self.config.get('timeout', API_TIMEOUT)
 
         response, _ = self.api_request('listPairs')
 
@@ -74,7 +74,8 @@ class ApertiumWebBackend(IBackend):
 
         # TODO: Actual error handling should go here
         if resp.get('responseStatus', -1) != 200:
-            error = API_ERRORS.get(resp.get('responseStatus', -1), None)
+            error = API_ERRORS.get(resp.get('responseStatus', -1),
+                                   "Unknown error!")
             log.error(error)
 
             if error is None:

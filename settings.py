@@ -1,5 +1,7 @@
 # -*- coding: utf-8; -*-
 
+import os
+
 # Customize this file if necessary. (Hopefully) sane defaults are applied
 # automatically, and any settings here take preference over those.
 
@@ -52,5 +54,14 @@ BACKENDS = {
         'host': '0.0.0.0',
         # Port of the translation server
         'port': 12345
+    },
+
+    # Yandex free translation service
+    'yandex': {
+        'active': True,
+        # Sign up for a key at https://translate.yandex.com/apikeys
+        'key': os.environ.get('YANDEX_KEY', None),
+        # Timeout afterwhich to give up on request
+        'timeout': 5
     }
 }

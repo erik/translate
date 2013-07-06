@@ -27,5 +27,9 @@ BACKENDS = {
 
     'translate_backend': {
         'active': False
+    },
+
+    'yandex': {
+        'active': False
     }
 }
