@@ -26,6 +26,10 @@ SERVER = {
 }
 
 # Configuration for the various translation backends
+#
+# Each backend has a preset preference that can be overridden using the
+# 'preference' key here. Use this if you want to try a specific backend before
+# other possibilities.
 BACKENDS = {
     # Dummy backend, doesn't do anything useful (translates between en-en)
     'dummy': {

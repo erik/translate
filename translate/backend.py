@@ -23,6 +23,10 @@ class BackendManager:
         for subclass, module in utils.find_subclasses(dir_name, IBackend):
             backend_conf = self.config.get(module, dict())
 
+            # Update the preference according the configuration
+            if 'preference' in backend_conf:
+                subclass.preference = backend_conf['preference']
+
             try:
                 backend = subclass()
             except Exception as e:
@@ -136,6 +140,9 @@ class IBackend:
         preference is used.
 
         Higher values indicate a higher precedence.
+
+        This value can be overridden by the user by changing the relevant
+        'preference' key in the settings.
         """
         pass
 

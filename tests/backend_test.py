@@ -10,7 +10,8 @@ def setup_module():
     global mgr
     mgr = translate.backend.BackendManager({
         'dummy': {'active': True},
-        'test_backend': {'foo': 'bar'}
+        'test_backend': {'foo': 'bar',
+                         'preference': 1000}
     })
 
 
@@ -55,6 +56,7 @@ class TestBackendManager:
         backend = self.mgr.find_best('en', 'en')
 
         assert backend.name == 'Test Backend'
+        assert backend.preference == 1000
 
     def test_find_all(self):
         backends = self.mgr.find_all('en', 'en')
