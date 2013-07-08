@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+"""This module contains the BackendManager class, which is used to load and use
+translation backends, as well as the interface for translation backends to
+inherit from.
+"""
+
 import abc
 import utils
 
@@ -38,11 +43,11 @@ class BackendManager:
 
             try:
                 backend = subclass()
-            except Exception as e:
+            except Exception as exc:
                 log.warning('Failed to load backend {0} due to exception. ' +
                             'Make sure it implements all required properties' +
                             ' and members'.format(subclass.__name__))
-                log.warning(repr(e))
+                log.warning(repr(exc))
                 continue
 
             if backend.activate(backend_conf):

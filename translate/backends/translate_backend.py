@@ -11,6 +11,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 class TranslateBackend(IBackend):
+    """This backend is simply a proxy to another instance of the translate
+    server, and will forward any possible requests to it.
+    """
+
     name = "Translate"
     description = "Interface to another instance of the translate server"
     url = 'https://github.com/boredomist/translate'

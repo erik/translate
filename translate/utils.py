@@ -40,7 +40,7 @@ def find_subclasses(path, cls):
     """
     subclasses = []
 
-    for loader, name, ispkg in pkgutil.walk_packages([path]):
+    for loader, name, _ in pkgutil.walk_packages([path]):
         module = loader.find_module(name).load_module(name)
         log.debug("Searching module %s" % (name))
 
@@ -76,15 +76,15 @@ def jsonp(func):
     return decorated_function
 
 
+# Python 2.6 doesn't support subprocess.check_output, so monkey-patch it in
 if "check_output" not in dir(subprocess):
-    """Python 2.6 doesn't support subprocess.check_output, so add that in"""
     def f(*popenargs, **kwargs):
         if 'stdout' in kwargs:
             raise ValueError('stdout argument not allowed, ' +
                              'it will be overridden.')
         process = subprocess.Popen(stdout=subprocess.PIPE,
                                    *popenargs, **kwargs)
-        output, unused_err = process.communicate()
+        output, _ = process.communicate()
         retcode = process.poll()
         if retcode:
             cmd = kwargs.get("args")

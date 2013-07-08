@@ -36,6 +36,11 @@ class RateLimit(object):
         RateLimit.mutex.release()
 
     def add_request(self, user, key):
+        """Note that the given user made a request to the API method `key`.
+        Will only append the request onto the list of requests if the user is
+        under their limit (so as not to further penalize duplicate requests
+        after the limit is hit).
+        """
         key_dict = RateLimit.limit_dict.get(key, {})
         user_reqs = key_dict.get(user, [])
 
@@ -46,6 +51,7 @@ class RateLimit(object):
         RateLimit.limit_dict[key] = key_dict
 
     def trim_requests(self):
+        """Automatically remove requests older than the limit."""
         cutoff = int(time.time()) - RateLimit.per
 
         # TODO: This is horrifying, rewrite it.
@@ -66,10 +72,12 @@ class RateLimit(object):
 
 
 def get_view_rate_limit():
+    """Get the ratelimit for the current requester/API method"""
     return getattr(flask.g, '_view_rate_limit', None)
 
 
 def on_over_limit(limit):
+    """Callback function to call when API method goes over the ratelimit"""
     return translate.utils.api_abort('ratelimit',
                                      'Rate limit hit, slow down!')
 
