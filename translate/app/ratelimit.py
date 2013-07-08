@@ -72,7 +72,7 @@ class RateLimit(object):
 
 
 def get_view_rate_limit():
-    """Get the ratelimit for the current requester/API method"""
+    """Get the ratelimit for the current requester / API method"""
     return getattr(flask.g, '_view_rate_limit', None)
 
 
