@@ -46,7 +46,7 @@ class TranslateBackend(IBackend):
 
             if len(self.language_pairs) == 0:
                 log.error('No language pairs available, aborting')
-                raise False
+                return False
 
         except requests.exceptions.RequestException:
             log.error('Failed to load pairs, aborting.')
@@ -54,7 +54,7 @@ class TranslateBackend(IBackend):
 
         return True
 
-    def deactivate(self, config):
+    def deactivate(self):
         pass
 
     def translate(self, text, from_lang, to_lang):

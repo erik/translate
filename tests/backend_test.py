@@ -4,6 +4,7 @@ import translate
 import translate.backend
 
 mgr = None
+DEACTIVATE_WAS_CALLED = False
 
 
 def setup_module():
@@ -76,3 +77,12 @@ class TestBackendManager:
                 print(backend.name)
                 backend.translate('foo', from_lang='this-is-no-language',
                                   to_lang='dont-even-pretend-this-is-a-lang')
+
+    def test_shutdown(self):
+        global DEACTIVATE_WAS_CALLED
+        DEACTIVATE_WAS_CALLED = False
+
+        self.mgr.shutdown()
+
+        # This is set when shutdown is called.
+        assert DEACTIVATE_WAS_CALLED

@@ -17,6 +17,15 @@ class BackendManager:
         # Load the default backends
         self.load_backends('translate/backends')
 
+    def shutdown(self):
+        """Calls the deactivate functions for each of the backends to give them
+        a chance to clean up after themselves if necessary.
+
+        Called on server exit"""
+
+        for backend in self.backends:
+            backend.deactivate()
+
     def load_backends(self, dir_name):
         """Load all backends from the given absolute directory name"""
 

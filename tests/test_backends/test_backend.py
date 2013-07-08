@@ -1,7 +1,10 @@
 import translate.backend
 
+import tests.backend_test
 
 class TestBackend(translate.backend.IBackend):
+    DEACTIVATE_WAS_CALLED = False
+
     name = "Test Backend"
     description = "A test backend"
     url = 'example.com'
@@ -13,7 +16,8 @@ class TestBackend(translate.backend.IBackend):
         return True
 
     def deactivate(self):
-        pass
+        # Just so we know it was called.
+        tests.backend_test.DEACTIVATE_WAS_CALLED = True
 
     def translate(self, text, from_lang, to_lang):
 

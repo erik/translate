@@ -39,6 +39,14 @@ def initialize_flask():
         RateLimit.per = ratelimit['per']
 
 
+def deinitialize_flask():
+    """Do any cleanup that needs to be done (for backends in particular) before
+    the server terminates."""
+
+    log.info("Shutting down server...")
+    views.manager.shutdown()
+
+
 def start_server(custom_config={}, debug=True):
     """Start the flask Server using flask's built in Werkzeug server. This
     function doesn't return.
@@ -54,3 +62,8 @@ def start_server(custom_config={}, debug=True):
     log.info("Starting server on port {0}, using host {1}".format(port, host))
 
     app.run(host=host, port=port, debug=debug)
+
+
+# Cleanup the server on ^C
+import atexit
+atexit.register(deinitialize_flask)
