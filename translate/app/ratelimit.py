@@ -11,7 +11,7 @@ import flask
 
 from threading import Lock
 from functools import update_wrapper
-import translate.utils
+from translate.exceptions import APIException
 
 
 class RateLimit(object):
@@ -78,8 +78,8 @@ def get_view_rate_limit():
 
 def on_over_limit(limit):
     """Callback function to call when API method goes over the ratelimit"""
-    return translate.utils.api_abort('ratelimit',
-                                     'Rate limit hit, slow down!')
+    raise APIException.ratelimit(details={'limit': limit.limit,
+                                          'per': limit.per})
 
 
 def ratelimit(send_x_headers=True, over_limit_func=on_over_limit):

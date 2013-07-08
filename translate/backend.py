@@ -79,13 +79,6 @@ class BackendManager:
         return best[0]
 
 
-class TranslationException(Exception):
-    """Exception to be raised when a translation backend fails to translate a
-    given block of text for whatever reason.
-    """
-    pass
-
-
 class IBackend:
     """Backend interface definition for any additional backends.
 
@@ -128,7 +121,7 @@ class IBackend:
         that it can accept the given from,to pair.
 
         If the backend fails to produce a valid response for the given text, it
-        should raise a translate.backend.TranslationException, which is a
+        should raise a translate.exceptions.TranslationException, which is a
         simple, featureless subclass of Exception. This way, the BackendManager
         will know that the request failed, and a proper error message can be
         issued to the user -- or whatever the proper course of action may be.

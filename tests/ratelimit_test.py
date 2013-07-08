@@ -55,7 +55,7 @@ class TestRateLimit():
 
         resp = self.client.get('/api/v1/pairs')
         assert json.loads(resp.data) is not None
-        assert resp.status_code == 400
+        assert resp.status_code == 429
 
         self.last_req = time.time()
 
@@ -63,7 +63,7 @@ class TestRateLimit():
         assert time.time() < self.last_req + RateLimit.per
         resp = self.client.get('/api/v1/pairs')
 
-        assert resp.status_code == 400
+        assert resp.status_code == 429
         assert json.loads(resp.data) is not None
 
     def test_limit_clear(self):
@@ -85,4 +85,4 @@ class TestRateLimit():
 
         resp = self.client.get('/api/v1/pairs')
         assert json.loads(resp.data) is not None
-        assert resp.status_code == 400
+        assert resp.status_code == 429

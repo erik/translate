@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from translate.backend import IBackend, TranslationException
+from translate.backend import IBackend
+from translate.exceptions import TranslationException
 
 
 class DummyBackend(IBackend):

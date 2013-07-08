@@ -2,9 +2,10 @@
 
 from translate.app import app, log
 from translate.app.ratelimit import get_view_rate_limit, ratelimit, RateLimit
-from translate.backend import TranslationException
+from translate.exceptions import APIException, TranslationException
 from translate import __version__
 
+import translate.app
 import translate.utils
 
 import flask
@@ -30,19 +31,11 @@ def inject_x_rate_headers(response):
     return response
 
 
-@app.errorhandler(400)
+@app.errorhandler(APIException)
 @translate.utils.jsonp
 def bad_request(error):
 
-    # if this is an API request, return JSON
-    if error.kind == 'api':
-        resp = flask.make_response(flask.jsonify(method=error.method,
-                                                 message=error.description),
-                                   400)
-        resp.mimetype = 'application/javascript'
-        return resp
-    else:
-        raise error
+    return error.jsonify()
 
 
 @app.route('/')
@@ -99,18 +92,19 @@ def translate_text():
 
     text = request.args.get('text', None)
     if not text:
-        translate.utils.api_abort('translate', 'No translation text given')
+        raise APIException.translate(msg='No translation text given')
 
     source_lang = request.args.get('from', None)
     if not source_lang:
-        translate.utils.api_abort('translate', 'No source language given')
+        raise APIException.translate(msg='No source language given')
 
     dest_lang = request.args.get('to', None)
     if not dest_lang:
-        translate.utils.api_abort('translate', 'No destination language given')
+        raise APIException.translate(msg='No destination language given')
 
     # Try each translator sequentially (sorted by preference) until one works
-    for backend in manager.find_all(source_lang, dest_lang):
+    backends = manager.find_all(source_lang, dest_lang)
+    for backend in backends:
         try:
             trans = backend.translate(text, source_lang, dest_lang)
             return flask.Response(json.dumps({
@@ -123,5 +117,9 @@ def translate_text():
             log.warning('{0} failed to translate text: {1}'
                         .format(backend.name, exc))
 
-    translate.utils.api_abort('translate', 'No translators can handle ' +
-                              'this language pair')
+    raise APIException.translate(msg='No translators can handle this language\
+ pair',
+                                 details={
+                                     'from': source_lang, 'to': dest_lang,
+                                     'text': text,
+                                     'tried': [b.name for b in backends]})

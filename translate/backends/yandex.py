@@ -8,7 +8,8 @@ http://api.yandex.com/translate/
 """
 
 from translate import log
-from translate.backend import IBackend, TranslationException
+from translate.backend import IBackend
+from translate.exceptions import TranslationException
 
 import requests
 import json

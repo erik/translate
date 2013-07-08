@@ -2,6 +2,7 @@ import pytest
 
 import translate
 import translate.backend
+import translate.exceptions
 
 mgr = None
 DEACTIVATE_WAS_CALLED = False
@@ -73,7 +74,7 @@ class TestBackendManager:
 
         for backend in self.mgr.backends:
 
-            with pytest.raises(translate.backend.TranslationException):
+            with pytest.raises(translate.exceptions.TranslationException):
                 print(backend.name)
                 backend.translate('foo', from_lang='this-is-no-language',
                                   to_lang='dont-even-pretend-this-is-a-lang')

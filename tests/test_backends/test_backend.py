@@ -1,4 +1,4 @@
-import translate.backend
+import translate.exceptions
 
 import tests.backend_test
 
@@ -22,6 +22,6 @@ class TestBackend(translate.backend.IBackend):
     def translate(self, text, from_lang, to_lang):
 
         if (from_lang, to_lang) not in self.language_pairs:
-            raise translate.backend.TranslationException('Bad data')
+            raise translate.exceptions.TranslationException('Bad data')
 
         return text
