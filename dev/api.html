@@ -193,12 +193,65 @@ API limit.</td>
 <div class="section" id="errors">
 <h3>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h3>
 <p>Errors can occur when parameters are omitted or the rate limit (if activated) is
-exceeded. The HTTP status code for errors is 400. The general scheme for errors
-is rather simple:</p>
+exceeded.</p>
+<p>The general scheme for errors is pretty simple:</p>
 <div class="highlight-python"><pre>{
-  "method": "API method (or 'ratelimit') that caused the error"
-  "message": "(hopefully) human-readable description of error"
+  "status": "HTTP Status message",
+  "url": "example.com/api/v1/api-method-that-failed",
+  "message": "Message explaining what went wrong",
+  "code": HTTP Status (int),
+  "details": {
+    optional additional data
+  }
 }</pre>
+</div>
+<div class="section" id="custom-http-status-codes">
+<h4>Custom HTTP Status Codes<a class="headerlink" href="#custom-http-status-codes" title="Permalink to this headline">¶</a></h4>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">429 Too many requests:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first">Returned when the API ratelimit is exceeded.</p>
+<div class="highlight-python"><pre>"details": {
+  "limit": request limit (int),
+  "per": length in seconds that requests count against limit
+}</pre>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">452 Translation error:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first">Returned when bad parameters are passed to the <tt class="code docutils literal"><span class="pre">translate</span></tt> API
+method. The <tt class="code docutils literal"><span class="pre">message</span></tt> key will give you a human readable form of what
+you&#8217;re missing.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">453 Translator error:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first">Returned when all of the possible translation services fail to translate the
+given text. This is likely indicative of a much larger issue, or a terrible
+case of bad luck.</p>
+<div class="highlight-python"><pre>"details": {
+  "from": "from lang",
+  "to": "to lang",
+  "text": "text to translate",
+  "tried": [ names of backends that attempted to translate this text ]
+}</pre>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">454 Bad language pair:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first">Returned when a request to translate using a nonexistent language pair is
+made.</p>
+<div class="last highlight-python"><pre>"details": {
+  "from": "from lang",
+  "to": "to lang",
+  "text": "text to translate",
+}</pre>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -216,7 +269,10 @@ is rather simple:</p>
 <li><a class="reference internal" href="#api-version-1">API Version 1</a><ul>
 <li><a class="reference internal" href="#methods">Methods</a></li>
 <li><a class="reference internal" href="#rate-limiting">Rate Limiting</a></li>
-<li><a class="reference internal" href="#errors">Errors</a></li>
+<li><a class="reference internal" href="#errors">Errors</a><ul>
+<li><a class="reference internal" href="#custom-http-status-codes">Custom HTTP Status Codes</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

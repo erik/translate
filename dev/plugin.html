@@ -143,6 +143,8 @@ translation backend should use.</p>
 <p>If two backends overlap for a language pair, the one with the highest
 preference is used.</p>
 <p>Higher values indicate a higher precedence.</p>
+<p>This value can be overridden by the user by changing the relevant
+&#8216;preference&#8217; key in the settings.</p>
 </dd></dl>
 
 <dl class="method">
@@ -152,10 +154,16 @@ preference is used.</p>
 <p>A backend will only receive this function call if has already specified
 that it can accept the given from,to pair.</p>
 <p>If the backend fails to produce a valid response for the given text, it
-should raise a translate.backend.TranslationException, which is a
+should raise a translate.exceptions.TranslationException, which is a
 simple, featureless subclass of Exception. This way, the BackendManager
 will know that the request failed, and a proper error message can be
 issued to the user &#8211; or whatever the proper course of action may be.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.url">
+<tt class="descname">url</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.url" title="Permalink to this definition">¶</a></dt>
+<dd><p>A link to where to find more information on this URL.</p>
 </dd></dl>
 
 </dd></dl>

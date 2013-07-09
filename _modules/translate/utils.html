@@ -52,34 +52,14 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">log</span>
 
 <span class="kn">import</span> <span class="nn">flask</span>
-<span class="kn">import</span> <span class="nn">werkzeug</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">pkgutil</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 
 
-<div class="viewcode-block" id="api_abort"><a class="viewcode-back" href="../../dev/index.html#translate.utils.api_abort">[docs]</a><span class="k">def</span> <span class="nf">api_abort</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raise an API exception for given method and message&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">abort_with</span><span class="p">(</span><span class="n">status_code</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s">&#39;api&#39;</span><span class="p">)</span>
-
-</div>
-<div class="viewcode-block" id="abort_with"><a class="viewcode-back" href="../../dev/index.html#translate.utils.abort_with">[docs]</a><span class="k">def</span> <span class="nf">abort_with</span><span class="p">(</span><span class="n">status_code</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raise an exception containing some additional information to be handled</span>
-<span class="sd">    by the flask application.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;kind&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="s">&#39;unknown&#39;</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status_code</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">werkzeug</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">exc</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">raise</span>
-
-</div>
 <div class="viewcode-block" id="find_subclasses"><a class="viewcode-back" href="../../dev/index.html#translate.utils.find_subclasses">[docs]</a><span class="k">def</span> <span class="nf">find_subclasses</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a list of tuples containing (subclass, modulename).</span>
 
@@ -88,7 +68,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">subclasses</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">for</span> <span class="n">loader</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ispkg</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">walk_packages</span><span class="p">([</span><span class="n">path</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">loader</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">walk_packages</span><span class="p">([</span><span class="n">path</span><span class="p">]):</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">find_module</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Searching module </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">))</span>
 
@@ -123,16 +103,16 @@
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">decorated_function</span>
 
-</div>
+
+<span class="c"># Python 2.6 doesn&#39;t support subprocess.check_output, so monkey-patch it in</span></div>
 <span class="k">if</span> <span class="s">&quot;check_output&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">subprocess</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Python 2.6 doesn&#39;t support subprocess.check_output, so add that in&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="o">*</span><span class="n">popenargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="s">&#39;stdout&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;stdout argument not allowed, &#39;</span> <span class="o">+</span>
                              <span class="s">&#39;it will be overridden.&#39;</span><span class="p">)</span>
         <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
                                    <span class="o">*</span><span class="n">popenargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">output</span><span class="p">,</span> <span class="n">unused_err</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
         <span class="n">retcode</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">retcode</span><span class="p">:</span>
             <span class="n">cmd</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;args&quot;</span><span class="p">)</span>
@@ -141,6 +121,25 @@
             <span class="k">raise</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">(</span><span class="n">retcode</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span>
     <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span> <span class="o">=</span> <span class="n">f</span>
+
+
+<div class="viewcode-block" id="update"><a class="viewcode-back" href="../../dev/index.html#translate.utils.update">[docs]</a><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recursively merge or update dict-like objects.</span>
+<span class="sd">    &gt;&gt;&gt; update({&#39;k1&#39;: {&#39;k2&#39;: 2}}, {&#39;k1&#39;: {&#39;k2&#39;: {&#39;k3&#39;: 3}}, &#39;k4&#39;: 4})</span>
+<span class="sd">    {&#39;k1&#39;: {&#39;k2&#39;: {&#39;k3&#39;: 3}}, &#39;k4&#39;: 4}</span>
+
+<span class="sd">    Code from: http://stackoverflow.com/a/14048316</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">v</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="n">d</span></div>
 </pre></div>
 
           </div>

@@ -57,44 +57,63 @@
 <span class="kn">from</span> <span class="nn">translate</span> <span class="kn">import</span> <span class="n">log</span>
 <span class="kn">from</span> <span class="nn">translate.backend</span> <span class="kn">import</span> <span class="n">BackendManager</span>
 
+<span class="kn">import</span> <span class="nn">translate.utils</span>
+
 <span class="kn">import</span> <span class="nn">flask</span>
 
-<span class="kn">from</span> <span class="nn">gevent.wsgi</span> <span class="kn">import</span> <span class="n">WSGIServer</span>
-
 <span class="n">app</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="s">&quot;./static&quot;</span><span class="p">)</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;translate.app.defaultsettings&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;settings&#39;</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">translate.app</span> <span class="kn">import</span> <span class="n">views</span>
 <span class="kn">from</span> <span class="nn">translate.app.ratelimit</span> <span class="kn">import</span> <span class="n">RateLimit</span>
 
 
-<div class="viewcode-block" id="start"><a class="viewcode-back" href="../../dev/index.html#translate.app.start">[docs]</a><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Start the flask Server using gevent&#39;s WSGIServer. This function doesn&#39;t</span>
-<span class="sd">    return.</span>
+<span class="nd">@app.before_first_request</span>
+<span class="k">def</span> <span class="nf">initialize_flask</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Make sure that the flask application is properly configured before it</span>
+<span class="sd">    serves any requests</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">server_conf</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;server&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
-    <span class="n">backend_conf</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;backend&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
-
-    <span class="n">host</span> <span class="o">=</span> <span class="n">server_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;bind&#39;</span><span class="p">,</span> <span class="s">&#39;0.0.0.0&#39;</span><span class="p">)</span>
-    <span class="n">port</span> <span class="o">=</span> <span class="n">server_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;port&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+    <span class="n">server_conf</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;SERVER&#39;</span><span class="p">]</span>
+    <span class="n">backend_conf</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;BACKENDS&#39;</span><span class="p">]</span>
 
     <span class="n">views</span><span class="o">.</span><span class="n">manager</span> <span class="o">=</span> <span class="n">BackendManager</span><span class="p">(</span><span class="n">backend_conf</span><span class="p">)</span>
 
     <span class="n">ratelimit</span> <span class="o">=</span> <span class="n">server_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ratelimit&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ratelimit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">RateLimit</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">ratelimit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;enabled&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
-        <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">ratelimit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;limit&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span> <span class="o">=</span> <span class="n">ratelimit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;per&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">ratelimit</span><span class="p">[</span><span class="s">&#39;enabled&#39;</span><span class="p">]</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">ratelimit</span><span class="p">[</span><span class="s">&#39;limit&#39;</span><span class="p">]</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span> <span class="o">=</span> <span class="n">ratelimit</span><span class="p">[</span><span class="s">&#39;per&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">deinitialize_manager</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Do any cleanup that needs to be done (for backends in particular)</span>
+<span class="sd">        before the server terminates.&quot;&quot;&quot;</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Shutting down server...&quot;</span><span class="p">)</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+
+    <span class="c"># Cleanup the server on ^C</span>
+    <span class="kn">import</span> <span class="nn">atexit</span>
+    <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">deinitialize_manager</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="start_server"><a class="viewcode-back" href="../../dev/index.html#translate.app.start_server">[docs]</a><span class="k">def</span> <span class="nf">start_server</span><span class="p">(</span><span class="n">custom_config</span><span class="o">=</span><span class="p">{},</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Start the flask Server using flask&#39;s built in Werkzeug server. This</span>
+<span class="sd">    function doesn&#39;t return.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">translate</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">custom_config</span><span class="p">)</span>
+
+    <span class="n">server_conf</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;SERVER&#39;</span><span class="p">]</span>
+
+    <span class="n">host</span> <span class="o">=</span> <span class="n">server_conf</span><span class="p">[</span><span class="s">&#39;bind&#39;</span><span class="p">]</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">server_conf</span><span class="p">[</span><span class="s">&#39;port&#39;</span><span class="p">]</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Starting server on port {0}, using host {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">host</span><span class="p">))</span>
 
-    <span class="c"># If we&#39;re using debug mode, using flask itself to run so we can hotswap</span>
-    <span class="c"># code.</span>
-    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">http_server</span> <span class="o">=</span> <span class="n">WSGIServer</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">app</span><span class="p">)</span>
-        <span class="n">http_server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span></div>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

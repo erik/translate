@@ -49,6 +49,11 @@
   <h1>Source code for translate.backend</h1><div class="highlight"><pre>
 <span class="c"># -*- coding: utf-8 -*-</span>
 
+<span class="sd">&quot;&quot;&quot;This module contains the BackendManager class, which is used to load and use</span>
+<span class="sd">translation backends, as well as the interface for translation backends to</span>
+<span class="sd">inherit from.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">utils</span>
 
@@ -66,19 +71,32 @@
         <span class="c"># Load the default backends</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_backends</span><span class="p">(</span><span class="s">&#39;translate/backends&#39;</span><span class="p">)</span>
 
+<div class="viewcode-block" id="BackendManager.shutdown"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calls the deactivate functions for each of the backends to give them</span>
+<span class="sd">        a chance to clean up after themselves if necessary.</span>
+
+<span class="sd">        Called on server exit&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backends</span><span class="p">:</span>
+            <span class="n">backend</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+</div>
 <div class="viewcode-block" id="BackendManager.load_backends"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.load_backends">[docs]</a>    <span class="k">def</span> <span class="nf">load_backends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load all backends from the given absolute directory name&quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">subclass</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_subclasses</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="n">IBackend</span><span class="p">):</span>
             <span class="n">backend_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
 
+            <span class="c"># Update the preference according the configuration</span>
+            <span class="k">if</span> <span class="s">&#39;preference&#39;</span> <span class="ow">in</span> <span class="n">backend_conf</span><span class="p">:</span>
+                <span class="n">subclass</span><span class="o">.</span><span class="n">preference</span> <span class="o">=</span> <span class="n">backend_conf</span><span class="p">[</span><span class="s">&#39;preference&#39;</span><span class="p">]</span>
+
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">backend</span> <span class="o">=</span> <span class="n">subclass</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;Failed to load backend {0} due to exception. &#39;</span> <span class="o">+</span>
                             <span class="s">&#39;Make sure it implements all required properties&#39;</span> <span class="o">+</span>
                             <span class="s">&#39; and members&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subclass</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">backend_conf</span><span class="p">):</span>
@@ -150,6 +168,12 @@
 
 <span class="sd">        A backend will only receive this function call if has already specified</span>
 <span class="sd">        that it can accept the given from,to pair.</span>
+
+<span class="sd">        If the backend fails to produce a valid response for the given text, it</span>
+<span class="sd">        should raise a translate.exceptions.TranslationException, which is a</span>
+<span class="sd">        simple, featureless subclass of Exception. This way, the BackendManager</span>
+<span class="sd">        will know that the request failed, and a proper error message can be</span>
+<span class="sd">        issued to the user -- or whatever the proper course of action may be.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 </div>
@@ -172,6 +196,9 @@
 <span class="sd">        preference is used.</span>
 
 <span class="sd">        Higher values indicate a higher precedence.</span>
+
+<span class="sd">        This value can be overridden by the user by changing the relevant</span>
+<span class="sd">        &#39;preference&#39; key in the settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 </div>
@@ -185,6 +212,11 @@
 
 <span class="sd">        .. _ISO-639: http://www.loc.gov/standards/iso639-2/php/English_list.php</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractproperty</span>
+<div class="viewcode-block" id="IBackend.url"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A link to where to find more information on this URL.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 </pre></div>
 
