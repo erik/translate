@@ -15,6 +15,10 @@ from translate.exceptions import APIException
 
 
 class RateLimit(object):
+    """This class manages all API requests, taking care of pruning and adding
+    them as necessary
+    """
+
     mutex = Lock()
     limit_dict = {}
 
@@ -86,7 +90,7 @@ def ratelimit(send_x_headers=True, over_limit_func=on_over_limit):
 
     send_x_headers -- should we add X-RateLimit-* headers to the request?
     over_limit_func -- function to call instead of API endpoint when limit is
-                       hit.
+    hit.
     """
     def decorator(f):
         def rate_limited(*args, **kwargs):
