@@ -104,6 +104,11 @@ def translate_text():
 
     # Try each translator sequentially (sorted by preference) until one works
     backends = manager.find_all(source_lang, dest_lang)
+
+    if len(backends) == 0:
+        raise APIException.pair(from_lang=source_lang, to_lang=dest_lang,
+                                text=text)
+
     for backend in backends:
         try:
             trans = backend.translate(text, source_lang, dest_lang)
