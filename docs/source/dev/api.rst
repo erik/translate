@@ -110,10 +110,55 @@ Errors
 ~~~~~~
 
 Errors can occur when parameters are omitted or the rate limit (if activated) is
-exceeded. The HTTP status code for errors is 400. The general scheme for errors
-is rather simple::
+exceeded.
 
-  {
-    "method": "API method (or 'ratelimit') that caused the error"
-    "message": "(hopefully) human-readable description of error"
-  }
+The general scheme for errors is pretty simple::
+
+    {
+      "status": "HTTP Status message",
+      "url": "example.com/api/v1/api-method-that-failed",
+      "message": "Message explaining what went wrong",
+      "code": HTTP Status (int),
+      "details": {
+        optional additional data
+      }
+    }
+
+
+Custom HTTP Status Codes
+########################
+
+:429 Too many requests:
+   Returned when the API ratelimit is exceeded. ::
+
+      "details": {
+        "limit": request limit (int),
+        "per": length in seconds that requests count against limit
+      }
+
+:452 Translation error:
+   Returned when bad parameters are passed to the :code:`translate` API
+   method. The :code:`message` key will give you a human readable form of what
+   you're missing.
+
+:453 Translator error:
+   Returned when all of the possible translation services fail to translate the
+   given text. This is likely indicative of a much larger issue, or a terrible
+   case of bad luck. ::
+
+      "details": {
+        "from": "from lang",
+        "to": "to lang",
+        "text": "text to translate",
+        "tried": [ names of backends that attempted to translate this text ]
+      }
+
+:454 Bad language pair:
+   Returned when a request to translate using a nonexistent language pair is
+   made. ::
+
+      "details": {
+        "from": "from lang",
+        "to": "to lang",
+        "text": "text to translate",
+      }
