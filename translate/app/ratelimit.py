@@ -78,8 +78,7 @@ def get_view_rate_limit():
 
 def on_over_limit(limit):
     """Callback function to call when API method goes over the ratelimit"""
-    raise APIException.ratelimit(details={'limit': limit.limit,
-                                          'per': limit.per})
+    raise APIException.ratelimit(limit=limit.limit, per=limit.per)
 
 
 def ratelimit(send_x_headers=True, over_limit_func=on_over_limit):

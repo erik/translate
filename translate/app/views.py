@@ -106,6 +106,7 @@ def translate_text():
     backends = manager.find_all(source_lang, dest_lang)
     for backend in backends:
         try:
+            raise TranslationException()
             trans = backend.translate(text, source_lang, dest_lang)
             return flask.Response(json.dumps({
                 'from': source_lang,
@@ -117,9 +118,5 @@ def translate_text():
             log.warning('{0} failed to translate text: {1}'
                         .format(backend.name, exc))
 
-    raise APIException.translate(msg='No translators can handle this language\
- pair',
-                                 details={
-                                     'from': source_lang, 'to': dest_lang,
-                                     'text': text,
-                                     'tried': [b.name for b in backends]})
+    raise APIException.translator(from_lang=source_lang, to_lang=dest_lang,
+                                  text=text, tried=[b.name for b in backends])
