@@ -60,7 +60,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">log</span>
 
 
-<div class="viewcode-block" id="BackendManager"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager">[docs]</a><span class="k">class</span> <span class="nc">BackendManager</span><span class="p">:</span>
+<div class="viewcode-block" id="BackendManager"><a class="viewcode-back" href="../../dev/code.html#translate.backend.BackendManager">[docs]</a><span class="k">class</span> <span class="nc">BackendManager</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Handles the loading and management of various translation service</span>
 <span class="sd">    backends.&quot;&quot;&quot;</span>
 
@@ -71,7 +71,7 @@
         <span class="c"># Load the default backends</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_backends</span><span class="p">(</span><span class="s">&#39;translate/backends&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BackendManager.shutdown"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BackendManager.shutdown"><a class="viewcode-back" href="../../dev/code.html#translate.backend.BackendManager.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calls the deactivate functions for each of the backends to give them</span>
 <span class="sd">        a chance to clean up after themselves if necessary.</span>
 
@@ -80,7 +80,7 @@
         <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backends</span><span class="p">:</span>
             <span class="n">backend</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
 </div>
-<div class="viewcode-block" id="BackendManager.load_backends"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.load_backends">[docs]</a>    <span class="k">def</span> <span class="nf">load_backends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">):</span>
+<div class="viewcode-block" id="BackendManager.load_backends"><a class="viewcode-back" href="../../dev/code.html#translate.backend.BackendManager.load_backends">[docs]</a>    <span class="k">def</span> <span class="nf">load_backends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load all backends from the given absolute directory name&quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">subclass</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_subclasses</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="n">IBackend</span><span class="p">):</span>
@@ -105,7 +105,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Disabling backend {0}...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 </div>
-<div class="viewcode-block" id="BackendManager.find_all"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.find_all">[docs]</a>    <span class="k">def</span> <span class="nf">find_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+<div class="viewcode-block" id="BackendManager.find_all"><a class="viewcode-back" href="../../dev/code.html#translate.backend.BackendManager.find_all">[docs]</a>    <span class="k">def</span> <span class="nf">find_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return all translation backends that can possibly serve this</span>
 <span class="sd">        request, sorted by preference (high first)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -115,7 +115,7 @@
 
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">backends</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">preference</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="BackendManager.find_best"><a class="viewcode-back" href="../../dev/index.html#translate.backend.BackendManager.find_best">[docs]</a>    <span class="k">def</span> <span class="nf">find_best</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+<div class="viewcode-block" id="BackendManager.find_best"><a class="viewcode-back" href="../../dev/code.html#translate.backend.BackendManager.find_best">[docs]</a>    <span class="k">def</span> <span class="nf">find_best</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the best backend service for a given language pair&quot;&quot;&quot;</span>
 
         <span class="n">best</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
@@ -128,7 +128,7 @@
         <span class="k">return</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 </div></div>
-<div class="viewcode-block" id="IBackend"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend">[docs]</a><span class="k">class</span> <span class="nc">IBackend</span><span class="p">:</span>
+<div class="viewcode-block" id="IBackend"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend">[docs]</a><span class="k">class</span> <span class="nc">IBackend</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Backend interface definition for any additional backends.</span>
 
 <span class="sd">    Every backend must be a subclass for IBackend and override each of the</span>
@@ -142,7 +142,7 @@
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
 
     <span class="nd">@abc.abstractmethod</span>
-<div class="viewcode-block" id="IBackend.activate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.activate"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called upon initial activation of the backend. Should return either</span>
 <span class="sd">        True or false to indicate whether or not activation was successful and</span>
 <span class="sd">        the backend can be used.</span>
@@ -154,7 +154,7 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractmethod</span>
-<div class="viewcode-block" id="IBackend.deactivate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.deactivate"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called upon backend deactivation (so on shutdown/reload/etc.).</span>
 
 <span class="sd">        This function should perform any required clean up that needs to be</span>
@@ -163,7 +163,7 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractmethod</span>
-<div class="viewcode-block" id="IBackend.translate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">from_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.translate"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">from_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Translate the given text from `from_lang` to `to_lang`.</span>
 
 <span class="sd">        A backend will only receive this function call if has already specified</span>
@@ -178,17 +178,17 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.name"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.name"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Name of this translation backend.&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.description"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.description"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Short description of this translation backend.&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.preference"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.preference">[docs]</a>    <span class="k">def</span> <span class="nf">preference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.preference"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.preference">[docs]</a>    <span class="k">def</span> <span class="nf">preference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return an integer representing the overall precedence this</span>
 <span class="sd">        translation backend should use.</span>
 
@@ -203,7 +203,7 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.language_pairs"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.language_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">language_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.language_pairs"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.language_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">language_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A list of tuples containing (&quot;from-lang&quot;, &quot;to-lang&quot;) to</span>
 <span class="sd">        indicate language pair support.</span>
 
@@ -215,7 +215,7 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.url"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.url"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A link to where to find more information on this URL.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 </pre></div>

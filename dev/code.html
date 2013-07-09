@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Code Documentation &mdash; translate 0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="translate 0 documentation" href="../index.html" />
+    <link rel="up" title="Translate Developer Documentation" href="index.html" />
+    <link rel="prev" title="Plugin Documentation" href="plugin.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plugin.html" title="Plugin Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Translate Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="code-documentation">
+<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-translate">
+<span id="translate"></span><h2>translate<a class="headerlink" href="#module-translate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>translate<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Translate is a front end server application to provide a consistent interface
+to multiple machine translation services.</p>
+</div>
+<div class="section" id="module-translate.app">
+<span id="translate-app"></span><h3>translate.app<a class="headerlink" href="#module-translate.app" title="Permalink to this headline">¶</a></h3>
+<p>Server interface for translate application. This handles the process of
+handling HTTP requests and generating responses.</p>
+<dl class="function">
+<dt id="translate.app.start_server">
+<tt class="descclassname">translate.app.</tt><tt class="descname">start_server</tt><big>(</big><em>custom_config={}</em>, <em>debug=True</em><big>)</big><a class="reference internal" href="../_modules/translate/app.html#start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.start_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the flask Server using flask&#8217;s built in Werkzeug server. This
+function doesn&#8217;t return.</p>
+</dd></dl>
+
+<div class="section" id="module-translate.app.ratelimit">
+<span id="translate-app-ratelimit"></span><h4>translate.app.ratelimit<a class="headerlink" href="#module-translate.app.ratelimit" title="Permalink to this headline">¶</a></h4>
+<p>Simple IP-based rate-limiting functionality for Flask routes.</p>
+<p>This code is derived from <a class="reference external" href="http://flask.pocoo.org/snippets/70/">http://flask.pocoo.org/snippets/70/</a> but doesn&#8217;t rely
+on redis. Opts for simple dictionary implementation instead.</p>
+<dl class="class">
+<dt id="translate.app.ratelimit.RateLimit">
+<em class="property">class </em><tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">RateLimit</tt><big>(</big><em>user</em>, <em>key</em>, <em>send_x_headers</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class manages all API requests, taking care of pruning and adding
+them as necessary</p>
+<dl class="method">
+<dt id="translate.app.ratelimit.RateLimit.add_request">
+<tt class="descname">add_request</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.add_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.add_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note that the given user made a request to the API method <cite>key</cite>.
+Will only append the request onto the list of requests if the user is
+under their limit (so as not to further penalize duplicate requests
+after the limit is hit).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.app.ratelimit.RateLimit.trim_requests">
+<tt class="descname">trim_requests</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.trim_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.trim_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically remove requests older than the limit.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.app.ratelimit.get_view_rate_limit">
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_rate_limit</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#get_view_rate_limit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.get_view_rate_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ratelimit for the current requester / API method</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.app.ratelimit.on_over_limit">
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">on_over_limit</tt><big>(</big><em>limit</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#on_over_limit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.on_over_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function to call when API method goes over the ratelimit</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.app.ratelimit.ratelimit">
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1be8578&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to allow current Flask route to be rate-limited.</p>
+<p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
+over_limit_func &#8211; function to call instead of API endpoint when limit is
+hit.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-translate.app.views">
+<span id="translate-app-views"></span><h4>translate.app.views<a class="headerlink" href="#module-translate.app.views" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="translate.app.views.inject_x_rate_headers">
+<tt class="descclassname">translate.app.views.</tt><tt class="descname">inject_x_rate_headers</tt><big>(</big><em>response</em><big>)</big><a class="reference internal" href="../_modules/translate/app/views.html#inject_x_rate_headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.views.inject_x_rate_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add ratelimit headers to response if the requested URL is an API
+endpoint that requires rate-limiting</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-translate.backend">
+<span id="translate-backend"></span><h3>translate.backend<a class="headerlink" href="#module-translate.backend" title="Permalink to this headline">¶</a></h3>
+<p>This module contains the BackendManager class, which is used to load and use
+translation backends, as well as the interface for translation backends to
+inherit from.</p>
+<dl class="class">
+<dt id="translate.backend.BackendManager">
+<em class="property">class </em><tt class="descclassname">translate.backend.</tt><tt class="descname">BackendManager</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the loading and management of various translation service
+backends.</p>
+<dl class="method">
+<dt id="translate.backend.BackendManager.find_all">
+<tt class="descname">find_all</tt><big>(</big><em>src</em>, <em>dst</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.find_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.find_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all translation backends that can possibly serve this
+request, sorted by preference (high first)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.BackendManager.find_best">
+<tt class="descname">find_best</tt><big>(</big><em>src</em>, <em>dst</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.find_best"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.find_best" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the best backend service for a given language pair</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.BackendManager.load_backends">
+<tt class="descname">load_backends</tt><big>(</big><em>dir_name</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.load_backends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.load_backends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load all backends from the given absolute directory name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.BackendManager.shutdown">
+<tt class="descname">shutdown</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the deactivate functions for each of the backends to give them
+a chance to clean up after themselves if necessary.</p>
+<p>Called on server exit</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="translate.backend.IBackend">
+<em class="property">class </em><tt class="descclassname">translate.backend.</tt><tt class="descname">IBackend</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Backend interface definition for any additional backends.</p>
+<p>Every backend must be a subclass for IBackend and override each of the
+members/functions present here.</p>
+<p>If some members are missing when the BackendManager attempts to instantiate
+the plugin class, a TypeError will be thrown, and the backend will be
+unable to load.</p>
+<dl class="method">
+<dt id="translate.backend.IBackend.activate">
+<tt class="descname">activate</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.activate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called upon initial activation of the backend. Should return either
+True or false to indicate whether or not activation was successful and
+the backend can be used.</p>
+<p>Config passed to this function is a dict, taken from the configuration
+file, using the module name of the backend as a key. e.g.
+plugins/foo/bar.py would be passed config[&#8216;backends&#8217;][&#8216;bar&#8217;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.IBackend.deactivate">
+<tt class="descname">deactivate</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called upon backend deactivation (so on shutdown/reload/etc.).</p>
+<p>This function should perform any required clean up that needs to be
+done.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.description">
+<tt class="descname">description</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short description of this translation backend.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.language_pairs">
+<tt class="descname">language_pairs</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.language_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.language_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of tuples containing (&#8220;from-lang&#8221;, &#8220;to-lang&#8221;) to
+indicate language pair support.</p>
+<p>The languages should be in <a class="reference external" href="http://www.loc.gov/standards/iso639-2/php/English_list.php">ISO-639</a> format, using ISO-639-1 if possible
+and falling back to ISO-639-2 if necessary.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.name">
+<tt class="descname">name</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of this translation backend.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.preference">
+<tt class="descname">preference</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.preference"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.preference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an integer representing the overall precedence this
+translation backend should use.</p>
+<p>If two backends overlap for a language pair, the one with the highest
+preference is used.</p>
+<p>Higher values indicate a higher precedence.</p>
+<p>This value can be overridden by the user by changing the relevant
+&#8216;preference&#8217; key in the settings.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.backend.IBackend.translate">
+<tt class="descname">translate</tt><big>(</big><em>text</em>, <em>from_lang</em>, <em>to_lang</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate the given text from <cite>from_lang</cite> to <cite>to_lang</cite>.</p>
+<p>A backend will only receive this function call if has already specified
+that it can accept the given from,to pair.</p>
+<p>If the backend fails to produce a valid response for the given text, it
+should raise a translate.exceptions.TranslationException, which is a
+simple, featureless subclass of Exception. This way, the BackendManager
+will know that the request failed, and a proper error message can be
+issued to the user &#8211; or whatever the proper course of action may be.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translate.backend.IBackend.url">
+<tt class="descname">url</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.url" title="Permalink to this definition">¶</a></dt>
+<dd><p>A link to where to find more information on this URL.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-translate.exceptions">
+<span id="translate-exceptions"></span><h3>translate.exceptions<a class="headerlink" href="#module-translate.exceptions" title="Permalink to this headline">¶</a></h3>
+<p>Custom Exception classes for use by the translation server.</p>
+<dl class="exception">
+<dt id="translate.exceptions.APIException">
+<em class="property">exception </em><tt class="descclassname">translate.exceptions.</tt><tt class="descname">APIException</tt><big>(</big><em>status_code</em>, <em>status</em>, <em>message</em>, <em>details={}</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception used for errors in API calls. Raised instances of this class
+(and instances of subclasses) will be caught by the flask app and
+rendered using APIException.jsonify</p>
+<dl class="method">
+<dt id="translate.exceptions.APIException.jsonify">
+<tt class="descname">jsonify</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.jsonify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.jsonify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a flask Response object containing a JSON representation of
+the instance of this class. This should set everything necessary for
+the request</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="translate.exceptions.APIException.pair">
+<em class="property">classmethod </em><tt class="descname">pair</tt><big>(</big><em>from_lang</em>, <em>to_lang</em>, <em>text</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.pair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.pair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class method to construct an APIException for bad language pairs
+given to the translate API method.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="translate.exceptions.APIException.ratelimit">
+<em class="property">classmethod </em><tt class="descname">ratelimit</tt><big>(</big><em>limit</em>, <em>per</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.ratelimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class method to construct an APIException for going over the
+ratelimit. The optional msg and details parameters can be used to add
+additional information to the error.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="translate.exceptions.APIException.translate">
+<em class="property">classmethod </em><tt class="descname">translate</tt><big>(</big><em>msg=None</em>, <em>details={}</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class method to construct an APIException for translate related API
+errors. The optional msg and details parameters can be used to add
+additional information to the error.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="translate.exceptions.APIException.translator">
+<em class="property">classmethod </em><tt class="descname">translator</tt><big>(</big><em>from_lang</em>, <em>to_lang</em>, <em>text</em>, <em>tried</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.translator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.translator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class method to construct an APIException for cases where each
+possible translation backend fails to translate a given piece of text.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="translate.exceptions.TranslationException">
+<em class="property">exception </em><tt class="descclassname">translate.exceptions.</tt><tt class="descname">TranslationException</tt><a class="reference internal" href="../_modules/translate/exceptions.html#TranslationException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.TranslationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception to be raised when a translation backend fails to translate a
+given block of text for whatever reason.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-translate.utils">
+<span id="translate-utils"></span><h3>translate.utils<a class="headerlink" href="#module-translate.utils" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="translate.utils.find_subclasses">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">find_subclasses</tt><big>(</big><em>path</em>, <em>cls</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#find_subclasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.find_subclasses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of tuples containing (subclass, modulename).</p>
+<p>path: path to search for subclasses
+cls: class to find subclasses of</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.utils.jsonp">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">jsonp</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#jsonp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.jsonp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wraps JSONified output for JSONP requests.</p>
+<p>From: <a class="reference external" href="https://gist.github.com/aisipos/1094140">https://gist.github.com/aisipos/1094140</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.utils.update">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">update</tt><big>(</big><em>d</em>, <em>u</em>, <em>depth=-1</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively merge or update dict-like objects.
+&gt;&gt;&gt; update({&#8216;k1&#8217;: {&#8216;k2&#8217;: 2}}, {&#8216;k1&#8217;: {&#8216;k2&#8217;: {&#8216;k3&#8217;: 3}}, &#8216;k4&#8217;: 4})
+{&#8216;k1&#8217;: {&#8216;k2&#8217;: {&#8216;k3&#8217;: 3}}, &#8216;k4&#8217;: 4}</p>
+<p>Code from: <a class="reference external" href="http://stackoverflow.com/a/14048316">http://stackoverflow.com/a/14048316</a></p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Code Documentation</a><ul>
+<li><a class="reference internal" href="#module-translate">translate</a><ul>
+<li><a class="reference internal" href="#id1">translate</a></li>
+<li><a class="reference internal" href="#module-translate.app">translate.app</a><ul>
+<li><a class="reference internal" href="#module-translate.app.ratelimit">translate.app.ratelimit</a></li>
+<li><a class="reference internal" href="#module-translate.app.views">translate.app.views</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-translate.backend">translate.backend</a></li>
+<li><a class="reference internal" href="#module-translate.exceptions">translate.exceptions</a></li>
+<li><a class="reference internal" href="#module-translate.utils">translate.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="plugin.html"
+                        title="previous chapter">Plugin Documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/code.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plugin.html" title="Plugin Documentation"
+             >previous</a> |</li>
+        <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Translate Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Erik Price.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

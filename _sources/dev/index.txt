@@ -11,19 +11,4 @@ Documentation on administration or usage of the server itself.
 
    api
    plugin
-
-
-Code Documentation
-------------------
-
-.. automodule:: translate
-   :members:
-
-.. automodule:: translate.app
-   :members:
-
-.. automodule:: translate.backend
-   :members:
-
-.. automodule:: translate.utils
-   :members:
+   code

@@ -68,168 +68,12 @@
 <li class="toctree-l2"><a class="reference internal" href="plugin.html#code-documentation">Code Documentation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="code.html#module-translate">translate</a></li>
+</ul>
+</li>
 </ul>
 </div>
-</div>
-<div class="section" id="module-translate">
-<span id="code-documentation"></span><h2>Code Documentation<a class="headerlink" href="#module-translate" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="translate">
-<h3>translate<a class="headerlink" href="#translate" title="Permalink to this headline">¶</a></h3>
-<p>Translate is a front end server application to provide a consistent interface
-to multiple machine translation services.</p>
-</div>
-<span class="target" id="module-translate.app"></span><p>Server interface for translate application. This handles the process of
-handling HTTP requests and generating responses.</p>
-<dl class="function">
-<dt id="translate.app.start_server">
-<tt class="descclassname">translate.app.</tt><tt class="descname">start_server</tt><big>(</big><em>custom_config={}</em>, <em>debug=True</em><big>)</big><a class="reference internal" href="../_modules/translate/app.html#start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.start_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start the flask Server using flask&#8217;s built in Werkzeug server. This
-function doesn&#8217;t return.</p>
-</dd></dl>
-
-<span class="target" id="module-translate.backend"></span><p>This module contains the BackendManager class, which is used to load and use
-translation backends, as well as the interface for translation backends to
-inherit from.</p>
-<dl class="class">
-<dt id="translate.backend.BackendManager">
-<em class="property">class </em><tt class="descclassname">translate.backend.</tt><tt class="descname">BackendManager</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handles the loading and management of various translation service
-backends.</p>
-<dl class="method">
-<dt id="translate.backend.BackendManager.find_all">
-<tt class="descname">find_all</tt><big>(</big><em>src</em>, <em>dst</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.find_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.find_all" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all translation backends that can possibly serve this
-request, sorted by preference (high first)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="translate.backend.BackendManager.find_best">
-<tt class="descname">find_best</tt><big>(</big><em>src</em>, <em>dst</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.find_best"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.find_best" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the best backend service for a given language pair</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="translate.backend.BackendManager.load_backends">
-<tt class="descname">load_backends</tt><big>(</big><em>dir_name</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.load_backends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.load_backends" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load all backends from the given absolute directory name</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="translate.backend.BackendManager.shutdown">
-<tt class="descname">shutdown</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#BackendManager.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.BackendManager.shutdown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calls the deactivate functions for each of the backends to give them
-a chance to clean up after themselves if necessary.</p>
-<p>Called on server exit</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="translate.backend.IBackend">
-<em class="property">class </em><tt class="descclassname">translate.backend.</tt><tt class="descname">IBackend</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Backend interface definition for any additional backends.</p>
-<p>Every backend must be a subclass for IBackend and override each of the
-members/functions present here.</p>
-<p>If some members are missing when the BackendManager attempts to instantiate
-the plugin class, a TypeError will be thrown, and the backend will be
-unable to load.</p>
-<dl class="method">
-<dt id="translate.backend.IBackend.activate">
-<tt class="descname">activate</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.activate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called upon initial activation of the backend. Should return either
-True or false to indicate whether or not activation was successful and
-the backend can be used.</p>
-<p>Config passed to this function is a dict, taken from the configuration
-file, using the module name of the backend as a key. e.g.
-plugins/foo/bar.py would be passed config[&#8216;backends&#8217;][&#8216;bar&#8217;]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="translate.backend.IBackend.deactivate">
-<tt class="descname">deactivate</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.deactivate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called upon backend deactivation (so on shutdown/reload/etc.).</p>
-<p>This function should perform any required clean up that needs to be
-done.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="translate.backend.IBackend.description">
-<tt class="descname">description</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.description" title="Permalink to this definition">¶</a></dt>
-<dd><p>Short description of this translation backend.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="translate.backend.IBackend.language_pairs">
-<tt class="descname">language_pairs</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.language_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.language_pairs" title="Permalink to this definition">¶</a></dt>
-<dd><p>A list of tuples containing (&#8220;from-lang&#8221;, &#8220;to-lang&#8221;) to
-indicate language pair support.</p>
-<p>The languages should be in <a class="reference external" href="http://www.loc.gov/standards/iso639-2/php/English_list.php">ISO-639</a> format, using ISO-639-1 if possible
-and falling back to ISO-639-2 if necessary.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="translate.backend.IBackend.name">
-<tt class="descname">name</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of this translation backend.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="translate.backend.IBackend.preference">
-<tt class="descname">preference</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.preference"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.preference" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an integer representing the overall precedence this
-translation backend should use.</p>
-<p>If two backends overlap for a language pair, the one with the highest
-preference is used.</p>
-<p>Higher values indicate a higher precedence.</p>
-<p>This value can be overridden by the user by changing the relevant
-&#8216;preference&#8217; key in the settings.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="translate.backend.IBackend.translate">
-<tt class="descname">translate</tt><big>(</big><em>text</em>, <em>from_lang</em>, <em>to_lang</em><big>)</big><a class="reference internal" href="../_modules/translate/backend.html#IBackend.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.translate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Translate the given text from <cite>from_lang</cite> to <cite>to_lang</cite>.</p>
-<p>A backend will only receive this function call if has already specified
-that it can accept the given from,to pair.</p>
-<p>If the backend fails to produce a valid response for the given text, it
-should raise a translate.exceptions.TranslationException, which is a
-simple, featureless subclass of Exception. This way, the BackendManager
-will know that the request failed, and a proper error message can be
-issued to the user &#8211; or whatever the proper course of action may be.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="translate.backend.IBackend.url">
-<tt class="descname">url</tt><a class="reference internal" href="../_modules/translate/backend.html#IBackend.url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.backend.IBackend.url" title="Permalink to this definition">¶</a></dt>
-<dd><p>A link to where to find more information on this URL.</p>
-</dd></dl>
-
-</dd></dl>
-
-<span class="target" id="module-translate.utils"></span><dl class="function">
-<dt id="translate.utils.find_subclasses">
-<tt class="descclassname">translate.utils.</tt><tt class="descname">find_subclasses</tt><big>(</big><em>path</em>, <em>cls</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#find_subclasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.find_subclasses" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of tuples containing (subclass, modulename).</p>
-<p>path: path to search for subclasses
-cls: class to find subclasses of</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="translate.utils.jsonp">
-<tt class="descclassname">translate.utils.</tt><tt class="descname">jsonp</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#jsonp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.jsonp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wraps JSONified output for JSONP requests.</p>
-<p>From: <a class="reference external" href="https://gist.github.com/aisipos/1094140">https://gist.github.com/aisipos/1094140</a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="translate.utils.update">
-<tt class="descclassname">translate.utils.</tt><tt class="descname">update</tt><big>(</big><em>d</em>, <em>u</em>, <em>depth=-1</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recursively merge or update dict-like objects.
-&gt;&gt;&gt; update({&#8216;k1&#8217;: {&#8216;k2&#8217;: 2}}, {&#8216;k1&#8217;: {&#8216;k2&#8217;: {&#8216;k3&#8217;: 3}}, &#8216;k4&#8217;: 4})
-{&#8216;k1&#8217;: {&#8216;k2&#8217;: {&#8216;k3&#8217;: 3}}, &#8216;k4&#8217;: 4}</p>
-<p>Code from: <a class="reference external" href="http://stackoverflow.com/a/14048316">http://stackoverflow.com/a/14048316</a></p>
-</dd></dl>
-
 </div>
 </div>
 
@@ -243,10 +87,6 @@ cls: class to find subclasses of</p>
   <ul>
 <li><a class="reference internal" href="#">Translate Developer Documentation</a><ul>
 <li><a class="reference internal" href="#server-documentation">Server Documentation</a><ul>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-translate">Code Documentation</a><ul>
-<li><a class="reference internal" href="#translate">translate</a></li>
 </ul>
 </li>
 </ul>

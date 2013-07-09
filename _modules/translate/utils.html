@@ -60,7 +60,7 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 
 
-<div class="viewcode-block" id="find_subclasses"><a class="viewcode-back" href="../../dev/index.html#translate.utils.find_subclasses">[docs]</a><span class="k">def</span> <span class="nf">find_subclasses</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
+<div class="viewcode-block" id="find_subclasses"><a class="viewcode-back" href="../../dev/code.html#translate.utils.find_subclasses">[docs]</a><span class="k">def</span> <span class="nf">find_subclasses</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a list of tuples containing (subclass, modulename).</span>
 
 <span class="sd">    path: path to search for subclasses</span>
@@ -86,7 +86,7 @@
     <span class="k">return</span> <span class="n">subclasses</span>
 
 </div>
-<div class="viewcode-block" id="jsonp"><a class="viewcode-back" href="../../dev/index.html#translate.utils.jsonp">[docs]</a><span class="k">def</span> <span class="nf">jsonp</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="jsonp"><a class="viewcode-back" href="../../dev/code.html#translate.utils.jsonp">[docs]</a><span class="k">def</span> <span class="nf">jsonp</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Wraps JSONified output for JSONP requests.</span>
 
 <span class="sd">    From: https://gist.github.com/aisipos/1094140</span>
@@ -123,7 +123,7 @@
     <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span> <span class="o">=</span> <span class="n">f</span>
 
 
-<div class="viewcode-block" id="update"><a class="viewcode-back" href="../../dev/index.html#translate.utils.update">[docs]</a><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="update"><a class="viewcode-back" href="../../dev/code.html#translate.utils.update">[docs]</a><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Recursively merge or update dict-like objects.</span>
 <span class="sd">    &gt;&gt;&gt; update({&#39;k1&#39;: {&#39;k2&#39;: 2}}, {&#39;k1&#39;: {&#39;k2&#39;: {&#39;k3&#39;: 3}}, &#39;k4&#39;: 4})</span>
 <span class="sd">    {&#39;k1&#39;: {&#39;k2&#39;: {&#39;k3&#39;: 3}}, &#39;k4&#39;: 4}</span>

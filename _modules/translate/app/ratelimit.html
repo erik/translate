@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>translate.app.ratelimit &mdash; translate 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="translate 0 documentation" href="../../../index.html" />
+    <link rel="up" title="translate.app" href="../app.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../app.html" accesskey="U">translate.app</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for translate.app.ratelimit</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;Simple IP-based rate-limiting functionality for Flask routes.</span>
+
+<span class="sd">This code is derived from http://flask.pocoo.org/snippets/70/ but doesn&#39;t rely</span>
+<span class="sd">on redis. Opts for simple dictionary implementation instead.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">flask</span>
+
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">update_wrapper</span>
+<span class="kn">from</span> <span class="nn">translate.exceptions</span> <span class="kn">import</span> <span class="n">APIException</span>
+
+
+<div class="viewcode-block" id="RateLimit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit">[docs]</a><span class="k">class</span> <span class="nc">RateLimit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">mutex</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+    <span class="n">limit_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">limit</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">per</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">send_x_headers</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_x_headers</span> <span class="o">=</span> <span class="n">send_x_headers</span>
+
+        <span class="c"># GIL should take care of us, but just in case, we&#39;ll obtain a lock</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_request</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trim_requests</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[]))</span>
+
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RateLimit.add_request"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.add_request">[docs]</a>    <span class="k">def</span> <span class="nf">add_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Note that the given user made a request to the API method `key`.</span>
+<span class="sd">        Will only append the request onto the list of requests if the user is</span>
+<span class="sd">        under their limit (so as not to further penalize duplicate requests</span>
+<span class="sd">        after the limit is hit).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key_dict</span> <span class="o">=</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">user_reqs</span> <span class="o">=</span> <span class="n">key_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">user_reqs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">):</span>
+            <span class="n">user_reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
+
+        <span class="n">key_dict</span><span class="p">[</span><span class="n">user</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_reqs</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">key_dict</span>
+</div>
+<div class="viewcode-block" id="RateLimit.trim_requests"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.trim_requests">[docs]</a>    <span class="k">def</span> <span class="nf">trim_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Automatically remove requests older than the limit.&quot;&quot;&quot;</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> <span class="o">-</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span>
+
+        <span class="c"># TODO: This is horrifying, rewrite it.</span>
+
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">key</span><span class="p">,</span>
+             <span class="nb">dict</span><span class="p">((</span><span class="n">user</span><span class="p">,</span>
+                   <span class="c"># Take only the requests that are still valid</span>
+                   <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reqs</span> <span class="k">if</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="n">cutoff</span><span class="p">])</span> <span class="k">for</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">reqs</span><span class="p">)</span>
+                  <span class="ow">in</span> <span class="n">users</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">users</span><span class="p">)</span> <span class="ow">in</span>
+            <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
+</div>
+    <span class="n">remaining</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
+    <span class="n">over_limit</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">current</span> <span class="o">&gt;=</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_view_rate_limit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.get_view_rate_limit">[docs]</a><span class="k">def</span> <span class="nf">get_view_rate_limit</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the ratelimit for the current requester / API method&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="s">&#39;_view_rate_limit&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="on_over_limit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.on_over_limit">[docs]</a><span class="k">def</span> <span class="nf">on_over_limit</span><span class="p">(</span><span class="n">limit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Callback function to call when API method goes over the ratelimit&quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="n">APIException</span><span class="o">.</span><span class="n">ratelimit</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="o">=</span><span class="n">limit</span><span class="o">.</span><span class="n">per</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ratelimit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.ratelimit">[docs]</a><span class="k">def</span> <span class="nf">ratelimit</span><span class="p">(</span><span class="n">send_x_headers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">over_limit_func</span><span class="o">=</span><span class="n">on_over_limit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decorator to allow current Flask route to be rate-limited.</span>
+
+<span class="sd">    send_x_headers -- should we add X-RateLimit-* headers to the request?</span>
+<span class="sd">    over_limit_func -- function to call instead of API endpoint when limit is</span>
+<span class="sd">                       hit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">rate_limited</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                <span class="n">rlimit</span> <span class="o">=</span> <span class="n">RateLimit</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="p">,</span>
+                                   <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span>
+                                   <span class="n">send_x_headers</span><span class="p">)</span>
+                <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">_view_rate_limit</span> <span class="o">=</span> <span class="n">rlimit</span>
+                <span class="k">if</span> <span class="n">over_limit_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">rlimit</span><span class="o">.</span><span class="n">over_limit</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">over_limit_func</span><span class="p">(</span><span class="n">rlimit</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">update_wrapper</span><span class="p">(</span><span class="n">rate_limited</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">decorator</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../app.html" >translate.app</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Erik Price.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>translate.exceptions &mdash; translate 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="translate 0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for translate.exceptions</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;Custom Exception classes for use by the translation server.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">flask</span>
+
+
+<div class="viewcode-block" id="APIException"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException">[docs]</a><span class="k">class</span> <span class="nc">APIException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exception used for errors in API calls. Raised instances of this class</span>
+<span class="sd">    (and instances of subclasses) will be caught by the flask app and</span>
+<span class="sd">    rendered using APIException.jsonify</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># Format:</span>
+    <span class="c">#   HTTP code: (HTTP status message, message)</span>
+    <span class="n">API_ERRORS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">429</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Too many requests&#39;</span><span class="p">,</span> <span class="s">&#39;You went over the ratelimit&#39;</span><span class="p">),</span>
+        <span class="mi">452</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Translation error&#39;</span><span class="p">,</span> <span class="s">&#39;Bad params to /translate&#39;</span><span class="p">),</span>
+        <span class="mi">453</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Translator error&#39;</span><span class="p">,</span> <span class="s">&#39;Failed to translate text&#39;</span><span class="p">),</span>
+        <span class="mi">454</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Bad language pair&#39;</span><span class="p">,</span>
+              <span class="s">&#39;No translator can handle this language pair&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">details</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="n">details</span>
+
+<div class="viewcode-block" id="APIException.jsonify"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.jsonify">[docs]</a>    <span class="k">def</span> <span class="nf">jsonify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a flask Response object containing a JSON representation of</span>
+<span class="sd">        the instance of this class. This should set everything necessary for</span>
+<span class="sd">        the request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                             <span class="n">url</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+                             <span class="n">details</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">details</span><span class="p">)</span>
+
+        <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">mimetype</span> <span class="o">=</span> <span class="s">&#39;application/javascript&#39;</span>
+
+        <span class="k">return</span> <span class="n">resp</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="APIException.ratelimit"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.ratelimit">[docs]</a>    <span class="k">def</span> <span class="nf">ratelimit</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class method to construct an APIException for going over the</span>
+<span class="sd">        ratelimit. The optional msg and details parameters can be used to add</span>
+<span class="sd">        additional information to the error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tupl</span> <span class="o">=</span> <span class="n">APIException</span><span class="o">.</span><span class="n">API_ERRORS</span><span class="p">[</span><span class="mi">429</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="mi">429</span><span class="p">,</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                   <span class="p">{</span><span class="s">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span>
+                    <span class="s">&#39;per&#39;</span><span class="p">:</span> <span class="n">per</span><span class="p">})</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="APIException.pair"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.pair">[docs]</a>    <span class="k">def</span> <span class="nf">pair</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">from_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class method to construct an APIException for bad language pairs</span>
+<span class="sd">        given to the translate API method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tupl</span> <span class="o">=</span> <span class="n">APIException</span><span class="o">.</span><span class="n">API_ERRORS</span><span class="p">[</span><span class="mi">454</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="mi">454</span><span class="p">,</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                   <span class="p">{</span><span class="s">&#39;from&#39;</span><span class="p">:</span> <span class="n">from_lang</span><span class="p">,</span>
+                    <span class="s">&#39;to&#39;</span><span class="p">:</span> <span class="n">to_lang</span><span class="p">,</span>
+                    <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">text</span><span class="p">})</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="APIException.translator"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.translator">[docs]</a>    <span class="k">def</span> <span class="nf">translator</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">from_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">tried</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class method to construct an APIException for cases where each</span>
+<span class="sd">        possible translation backend fails to translate a given piece of text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tupl</span> <span class="o">=</span> <span class="n">APIException</span><span class="o">.</span><span class="n">API_ERRORS</span><span class="p">[</span><span class="mi">453</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="mi">453</span><span class="p">,</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                   <span class="p">{</span><span class="s">&#39;from&#39;</span><span class="p">:</span> <span class="n">from_lang</span><span class="p">,</span>
+                    <span class="s">&#39;to&#39;</span><span class="p">:</span> <span class="n">to_lang</span><span class="p">,</span>
+                    <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
+                    <span class="s">&#39;tried&#39;</span><span class="p">:</span> <span class="n">tried</span><span class="p">})</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="APIException.translate"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">details</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;Class method to construct an APIException for translate related API</span>
+<span class="sd">        errors. The optional msg and details parameters can be used to add</span>
+<span class="sd">        additional information to the error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tupl</span> <span class="o">=</span> <span class="n">APIException</span><span class="o">.</span><span class="n">API_ERRORS</span><span class="p">[</span><span class="mi">452</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="mi">452</span><span class="p">,</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">msg</span> <span class="ow">or</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">details</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="TranslationException"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.TranslationException">[docs]</a><span class="k">class</span> <span class="nc">TranslationException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exception to be raised when a translation backend fails to translate a</span>
+<span class="sd">    given block of text for whatever reason.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Erik Price.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
