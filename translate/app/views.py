@@ -106,7 +106,6 @@ def translate_text():
     backends = manager.find_all(source_lang, dest_lang)
     for backend in backends:
         try:
-            raise TranslationException()
             trans = backend.translate(text, source_lang, dest_lang)
             return flask.Response(json.dumps({
                 'from': source_lang,

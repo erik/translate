@@ -19,7 +19,6 @@ class APIException(Exception):
         453: ('Translator error', 'Failed to translate text'),
         454: ('Bad language pair',
               'No translator can handle this language pair')
-
     }
 
     def __init__(self, status_code, status, message, details={}):
