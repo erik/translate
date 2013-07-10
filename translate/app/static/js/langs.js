@@ -748,14 +748,14 @@
         }
     }
     var getLanguageName = function(key) {
-        key = key.slice(0,2);
-        var lang = isoLangs[key];
-        return lang ? lang.name : undefined;
+        var code = key.slice(0,2);
+        var lang = isoLangs[code];
+        return lang ? (lang.name + ' (' + key + ')') : undefined;
     }
     var getLanguageNativeName = function(key) {
-        key = key.slice(0,2);
-        var lang = isoLangs[key];
-        return lang ? lang.nativveName : undefined;
+        var code = key.slice(0,2);
+        var lang = isoLangs[code];
+        return lang ? (lang.nativeName + ' (' + key + ')') : undefined;
     }
     window.getLanguageName = getLanguageName;
     window.getLanguageNativeName = getLanguageNativeName;
