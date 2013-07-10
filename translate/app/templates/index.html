@@ -8,6 +8,7 @@
     <script src="static/js/kickstart.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/chosen/0.9.15/chosen.jquery.min.js"></script>
 
+    <link rel="stylesheet" href="static/css/site.css" media="all" />
     <link rel="stylesheet" href="static/css/kickstart.css" media="all" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/0.9.15/chosen.css" />
     <script src="static/js/index.js"></script>
@@ -83,29 +84,29 @@
       <div id="flash" class="col_12">
       </div>
 
-      <div class="col_5">
-        <textarea class="col_12" id="from_area" placeholder="Hello, world!"></textarea>
-
-        <select tabindex="2" id="from" class="col_12 select"
+      <div class="col_12">
+        <select tabindex="2" id="from" class="select"
                 data-placeholder="Source language">
           <option value=""></option>
         </select>
-      </div>
 
-      <div class="col_2" style="margin-top: 20px;">
-        <button style="width:100%"
-                id="translate" class="small center">
-          Translate
-        </button>
-      </div>
+        <i class="icon-arrow-right"></i>
 
-      <div class="col_5">
-        <textarea readonly class="col_12" id="to_area" placeholder="Hallo, Welt!"></textarea>
-        <select tabindex="2" id="to" class="col_12 select"
+        <select tabindex="2" id="to" class="select"
                 data-placeholder="Destination language">
           <option value=""></option>
         </select>
+
+        <button  id="translate" class="small center">
+          Translate
+        </button>
+
       </div>
+
+      <textarea class="col_6" id="from_area"
+                placeholder="Text to translate... "></textarea>
+
+      <textarea readonly class="col_6" id="to_area"></textarea>
 
       <hr />
 
