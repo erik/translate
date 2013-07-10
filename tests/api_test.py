@@ -49,7 +49,8 @@ class TestAPI():
 
     def test_translate_bad_input(self):
         for params in ['', 'from=foo&to=bar&text=baz', 'to=bar&text=baz',
-                       'text=baz', 'from=en&text=foo&to=bad-lang']:
+                       'text=baz', 'from=en&text=foo&to=bad-lang',
+                       'from=en&to=en&text=']:
             resp = self.client.get('/api/v1/translate?' + params)
 
             assert resp.status_code != 200
