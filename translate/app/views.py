@@ -91,7 +91,7 @@ def list_pairs():
 def translate_text():
 
     text = request.args.get('text', None)
-    if not text:
+    if not text or text == "":
         raise APIException.translate(msg='No translation text given')
 
     source_lang = request.args.get('from', None)
@@ -112,6 +112,10 @@ def translate_text():
     for backend in backends:
         try:
             trans = backend.translate(text, source_lang, dest_lang)
+
+            if trans is None or trans == "":
+                raise TranslationException("Received empty result text")
+
             return flask.Response(json.dumps({
                 'from': source_lang,
                 'to': dest_lang,
