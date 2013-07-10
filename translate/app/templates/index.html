@@ -6,6 +6,8 @@
     <title>Translate v{{ version }}</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="static/js/kickstart.js"></script>
+    <script src="static/js/langs.js"></script>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/chosen/0.9.15/chosen.jquery.min.js"></script>
 
     <link rel="stylesheet" href="static/css/site.css" media="all" />
@@ -33,11 +35,15 @@
         }
 
         from.sort().map(function(elem) {
-            $("#from").append("<option>" + elem + "</option>");
+            var name = getLanguageName(elem) || elem;
+            $("#from").append("<option value=" + elem + ">" + name +
+                              "</option>");
         });
 
         to.sort().map(function(elem) {
-            $("#to").append("<option>" + elem + "</option>");
+            var name = getLanguageName(elem) || elem;
+            $("#to").append("<option value=" + elem + ">" + name +
+                              "</option>");
         });
 
 
@@ -50,7 +56,9 @@
             $("#to").html("<option value=''></option>");
 
             Translate.getToChoices(selected).map(function(choice) {
-              $("#to").append("<option>" + choice + "</option>");
+                var name = getLanguageName(choice) || choice;
+                $("#to").append("<option value=" + choice + ">" + name +
+                                "</option>");
             });
 
             $("#to").trigger("liszt:updated");
