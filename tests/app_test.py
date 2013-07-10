@@ -28,10 +28,9 @@ class TestApp():
         assert resp.status_code == 200
 
     def test_render_api(self):
-        # redirects to /api/
-        assert self.client.get('/api').status_code == 301
+        assert self.client.get('/api').status_code == 404
 
-        assert self.client.get('/api/').status_code == 200
+        assert self.client.get('/info').status_code == 200
 
     def test_404(self):
         resp = self.client.get('/asdasdasdasd')

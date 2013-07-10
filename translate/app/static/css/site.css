@@ -9,3 +9,19 @@ button {
     display: inline-block;
     float: right;
 }
+
+.footer span {
+    float: right;
+}
+
+.footer {
+    font-size: .8em;
+}
+
+.footer a {
+    color: #777;
+}
+
+.footer a:hover {
+    color: #000;
+}

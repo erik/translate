@@ -43,7 +43,7 @@ def index():
     return render_template('index.html', version=__version__)
 
 
-@app.route('/api/')
+@app.route('/info')
 def api():
     pairs = set()
 
@@ -51,7 +51,7 @@ def api():
         for pair in backend.language_pairs:
             pairs.add(pair)
 
-    return render_template('api.html',
+    return render_template('info.html',
                            version=translate.__version__,
                            backends=manager.backends,
                            pairs=list(pairs))
