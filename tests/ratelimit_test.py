@@ -64,7 +64,11 @@ class TestRateLimit():
         resp = self.client.get('/api/v1/pairs')
 
         assert resp.status_code == 429
-        assert json.loads(resp.data) is not None
+        js = json.loads(resp.data)
+        assert js is not None
+
+        assert js['details']['limit'] == RateLimit.limit
+        assert js['details']['per'] == RateLimit.per
 
     def test_limit_clear(self):
         # wait until old requests expire

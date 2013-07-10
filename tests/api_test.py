@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import flask
 import json
 
-import translate
-from translate.app import app
-from translate.app import views
+from translate.app import app, views
+from translate.app.ratelimit import RateLimit
 from translate.backend import BackendManager
-
-import requests
 
 
 class TestAPI():
@@ -58,3 +54,41 @@ class TestAPI():
             js = json.loads(resp.data)
 
             assert js is not None
+
+    def test_errors(self):
+        """Make sure API functions return proper error codes/information"""
+
+        # Kill the limiter for now
+        RateLimit.enabled = False
+
+        # Test format of error messages
+        resp = self.client.get('/api/v1/translate')
+        assert resp.status_code == 452
+        js = json.loads(resp.data)
+
+        assert js is not None
+
+        for pair in [('status', 'Translation error'),
+                     ('url', 'http://localhost/api/v1/translate'),
+                     ('code', 452),
+                     ('details', {})]:
+            assert js[pair[0]] == pair[1]
+
+        # Bad params
+        for params in ['', 'from=foo&to=bar', 'from=foo&to=bar&text=',
+                       'from=foo&text=bar']:
+            resp = self.client.get('/api/v1/translate?' + params)
+            assert resp.status_code == 452
+            assert resp.status == "452 Translation error"
+
+            js = json.loads(resp.data)
+            assert js is not None
+
+        # No translators
+        resp = self.client.get('/api/v1/translate?from=foo&to=bar&text=foobar')
+        assert resp.status_code == 454
+
+        js = json.loads(resp.data)
+        assert js['details']['from'] == 'foo'
+        assert js['details']['to'] == 'bar'
+        assert js['details']['text'] == 'foobar'
