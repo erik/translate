@@ -11,7 +11,7 @@ import utils
 from . import log
 
 
-class BackendManager:
+class BackendManager(object):
     """Handles the loading and management of various translation service
     backends."""
 
@@ -79,7 +79,7 @@ class BackendManager:
         return best[0]
 
 
-class IBackend:
+class IBackend(object):
     """Backend interface definition for any additional backends.
 
     Every backend must be a subclass for IBackend and override each of the

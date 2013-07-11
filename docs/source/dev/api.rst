@@ -109,8 +109,8 @@ If active, the following HTTP headers will be included in every API call:
 Errors
 ~~~~~~
 
-Errors can occur when parameters are omitted or the rate limit (if activated) is
-exceeded.
+Errors can occur when parameters are omitted or incorrect, the rate limit (if
+activated) is exceeded, or a failure with the backend translators occurs.
 
 The general scheme for errors is pretty simple::
 
