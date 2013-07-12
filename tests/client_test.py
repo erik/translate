@@ -68,6 +68,10 @@ BACKENDS:
         trans = self.client.translators(True)
         assert len(trans.items()) == 1
 
+    def test_can_translate(self):
+        assert self.client.can_translate('en', 'en')
+        assert not self.client.can_translate('foo', 'bar')
+
     def test_translate(self):
         assert self.client.translate('foobarbaz', 'en', 'en') == 'foobarbaz'
 

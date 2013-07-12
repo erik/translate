@@ -74,6 +74,13 @@ class Client(object):
         except TranslateException:
             pass
 
+    def can_translate(self, from_lang, to_lang):
+        """Returns whether or not the translate server supports the given
+        language pair
+        """
+
+        return (from_lang, to_lang) in self.language_pairs(refresh=False)
+
     def _request(self, method, **kwargs):
         """Convenience function to call an API function for the given client
         and return parsed JSON, or raise a TranslateException on error.

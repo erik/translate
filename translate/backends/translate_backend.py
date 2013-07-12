@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import translate.client
+
 from translate import log
 from translate.backend import IBackend
 from translate.exceptions import TranslationException
-
-import requests
-import json
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -40,21 +39,13 @@ class TranslateBackend(IBackend):
             logging.warning("Don't know which port to use, defaulting to {0}"
                             .format(self.config['port']))
 
-        self.api_url = 'http://{0}:{1}/api/v1/'.format(self.config['host'],
-                                                       self.config['port'])
+        self.client = translate.client.Client(config['host'],
+                                              port=self.config['port'])
 
-        try:
-            pairs = self.api_request('pairs').get('pairs', [])
+        self.language_pairs = self.client.language_pairs()
 
-            # JSON gives us 2 elem arrays instead of tuples
-            self.language_pairs = [(p[0], p[1]) for p in pairs]
-
-            if len(self.language_pairs) == 0:
-                log.error('No language pairs available, aborting')
-                return False
-
-        except requests.exceptions.RequestException:
-            log.error('Failed to load pairs, aborting.')
+        if len(self.language_pairs) == 0:
+            log.error('No language pairs available, aborting')
             return False
 
         return True
@@ -64,30 +55,13 @@ class TranslateBackend(IBackend):
 
     def translate(self, text, from_lang, to_lang):
 
+        if not self.client.can_translate(from_lang, to_lang):
+            raise TranslationException("Can't translate given pair ({0},{1})"
+                                       .format(from_lang, to_lang))
+
         try:
-            params = {'from': from_lang, 'to': to_lang, 'text': text}
+            return self.client.translate(text, from_lang, to_lang)
 
-            resp = self.api_request('translate', **params)
-            translated = resp.get('result')
-
-            if translated is None:
-                raise TranslationException('Server returned bad data: {0}'
-                                           .format(resp))
-
-            return translated
-
-        except requests.exceptions.RequestException as exc:
-            raise TranslationException('Request failed: {0}'.format(exc))
-
-    def api_request(self, method, **kwargs):
-        try:
-            # TODO: handle 400 errors
-            req = requests.get(self.api_url + method, params=kwargs,
-                               timeout=self.timeout)
-            return json.loads(req.text)
-
-        except requests.exceptions.RequestException as exc:
-            log.error('Translate API request {0}, params={1} failed!'
-                      .format(method, kwargs))
-            log.error(repr(exc))
-            raise
+        except translate.client.exceptions.TranslateException as exc:
+            raise TranslationException("Server failed to translate text: "
+                                       + repr(exc))
