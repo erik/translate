@@ -6,6 +6,7 @@ import requests
 from translate.client.exceptions import TranslateException
 
 # TODO: Handle rate limiting
+# TODO: More (i.e. some) error handling
 
 
 class Client(object):
@@ -62,8 +63,8 @@ class Client(object):
         # TODO: This could be out of date if the language pairs change between
         #       requests.
         if (from_lang, to_lang) not in self.language_pairs(refresh=False):
-            raise TranslateException("Bad language pair ({0}, {1})" %
-                                     from_lang, to_lang)
+            raise TranslateException("Bad language pair ({0}, {1})".
+                                     format(from_lang, to_lang))
 
         try:
             params = {'from': from_lang, 'to': to_lang, 'text': text}
