@@ -78,6 +78,13 @@ Methods
         Language to translate text to
      :text:
         Text to translate from the `from` language to the `to` language.
+     :exclude:
+        Optional parameter to specify translation backends that should never be
+        used for this request, ignoring if they can translate the text or
+        not. Can be included multiple times to ignore multiple
+        translators. Do note that the names must be exactly as specified by the
+        server::
+          GET /api/v1/translate?exclude=foo&exclude=bar&...
   :Returns:
      ::
 
@@ -109,8 +116,8 @@ If active, the following HTTP headers will be included in every API call:
 Errors
 ~~~~~~
 
-Errors can occur when parameters are omitted or the rate limit (if activated) is
-exceeded.
+Errors can occur when parameters are omitted or incorrect, the rate limit (if
+activated) is exceeded, or a failure with the backend translators occurs.
 
 The general scheme for errors is pretty simple::
 

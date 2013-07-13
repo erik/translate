@@ -144,17 +144,29 @@ that this server can handle.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">from:</th><td class="field-body">Language text to be translated is in</td>
+<tr class="field-odd field"><th class="field-name">from:</th><td class="field-body"><p class="first">Language text to be translated is in</p>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">to:</th><td class="field-body">Language to translate text to</td>
+<tr class="field-even field"><th class="field-name">to:</th><td class="field-body"><p class="first">Language to translate text to</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">text:</th><td class="field-body">Text to translate from the <cite>from</cite> language to the <cite>to</cite> language.</td>
+<tr class="field-odd field"><th class="field-name">text:</th><td class="field-body"><p class="first">Text to translate from the <cite>from</cite> language to the <cite>to</cite> language.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">exclude:</th><td class="field-body"><p class="first">Optional parameter to specify translation backends that should never be
+used for this request, ignoring if they can translate the text or
+not. Can be included multiple times to ignore multiple
+translators. Do note that the names must be exactly as specified by the
+server:</p>
+<div class="last highlight-python"><pre>GET /api/v1/translate?exclude=foo&amp;exclude=bar&amp;...</pre>
+</div>
+</td>
 </tr>
 </tbody>
 </table>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><div class="highlight"><pre><span class="p">{</span>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><div class="highlight"><pre><span class="p">{</span>
   <span class="s">&quot;from&quot;</span><span class="p">:</span> <span class="s">&quot;from-language&quot;</span><span class="p">,</span>
   <span class="s">&quot;to&quot;</span><span class="p">:</span> <span class="s">&quot;to-language&quot;</span><span class="p">,</span>
   <span class="s">&quot;result&quot;</span><span class="p">:</span> <span class="s">&quot;Text translated into &#39;to&#39; language&quot;</span>
@@ -192,8 +204,8 @@ API limit.</td>
 </div>
 <div class="section" id="errors">
 <h3>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h3>
-<p>Errors can occur when parameters are omitted or the rate limit (if activated) is
-exceeded.</p>
+<p>Errors can occur when parameters are omitted or incorrect, the rate limit (if
+activated) is exceeded, or a failure with the backend translators occurs.</p>
 <p>The general scheme for errors is pretty simple:</p>
 <div class="highlight-python"><pre>{
   "status": "HTTP Status message",

@@ -128,7 +128,7 @@
         <span class="k">return</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 </div></div>
-<div class="viewcode-block" id="IBackend"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend">[docs]</a><span class="k">class</span> <span class="nc">IBackend</span><span class="p">:</span>
+<div class="viewcode-block" id="IBackend"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend">[docs]</a><span class="k">class</span> <span class="nc">IBackend</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Backend interface definition for any additional backends.</span>
 
 <span class="sd">    Every backend must be a subclass for IBackend and override each of the</span>
@@ -142,7 +142,7 @@
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
 
     <span class="nd">@abc.abstractmethod</span>
-<div class="viewcode-block" id="IBackend.activate"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.activate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called upon initial activation of the backend. Should return either</span>
 <span class="sd">        True or false to indicate whether or not activation was successful and</span>
 <span class="sd">        the backend can be used.</span>
@@ -154,7 +154,7 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractmethod</span>
-<div class="viewcode-block" id="IBackend.deactivate"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.deactivate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called upon backend deactivation (so on shutdown/reload/etc.).</span>
 
 <span class="sd">        This function should perform any required clean up that needs to be</span>
@@ -163,7 +163,7 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractmethod</span>
-<div class="viewcode-block" id="IBackend.translate"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">from_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.translate"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">from_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Translate the given text from `from_lang` to `to_lang`.</span>
 
 <span class="sd">        A backend will only receive this function call if has already specified</span>
@@ -178,17 +178,17 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.name"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.name"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Name of this translation backend.&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.description"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.description"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Short description of this translation backend.&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.preference"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.preference">[docs]</a>    <span class="k">def</span> <span class="nf">preference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.preference"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.preference">[docs]</a>    <span class="k">def</span> <span class="nf">preference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return an integer representing the overall precedence this</span>
 <span class="sd">        translation backend should use.</span>
 
@@ -203,7 +203,7 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.language_pairs"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.language_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">language_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.language_pairs"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.language_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">language_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A list of tuples containing (&quot;from-lang&quot;, &quot;to-lang&quot;) to</span>
 <span class="sd">        indicate language pair support.</span>
 
@@ -215,7 +215,7 @@
         <span class="k">pass</span>
 </div>
     <span class="nd">@abc.abstractproperty</span>
-<div class="viewcode-block" id="IBackend.url"><a class="viewcode-back" href="../../dev/code.html#translate.backend.IBackend.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IBackend.url"><a class="viewcode-back" href="../../dev/plugin.html#translate.backend.IBackend.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A link to where to find more information on this URL.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 </pre></div>
