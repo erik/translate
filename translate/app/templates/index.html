@@ -22,42 +22,44 @@
         $("#from").chosen();
         $("#to").chosen();
 
-        var from = [], to = [];
+        var from = [];
 
         for(var idx in Translate.pairs) {
           var pair = Translate.pairs[idx];
 
-          if(from.indexOf(pair[0]) < 0)
+          // Make sure we keep only one copy of each source lang
+          if(from.indexOf(pair[0]) < 0) {
             from.push(pair[0]);
-
-          if(to.indexOf(pair[1]) < 0)
-            to.push(pair[1]);
+          }
         }
 
-        from.sort().map(function(elem) {
-            var name = getLanguageName(elem) || elem;
-            $("#from").append("<option value=" + elem + ">" + name +
+        from = from.map(function(lang) {
+            var name = getLanguageName(lang) || lang;
+            return [name, lang];
+        }).sort();
+
+        from.map(function(elem) {
+            console.log(elem);
+            $("#from").append("<option value=" + elem[1] + ">" + elem[0] +
                               "</option>");
         });
 
-        to.sort().map(function(elem) {
-            var name = getLanguageName(elem) || elem;
-            $("#to").append("<option value=" + elem + ">" + name +
-                              "</option>");
-        });
-
-
-        $("#from").trigger("liszt:updated");
         $("#to").trigger("liszt:updated");
+        $("#from").trigger("liszt:updated");
 
         $("#from").chosen().change(function() {
             var selected = $("#from").val();
 
             $("#to").html("<option value=''></option>");
 
-            Translate.getToChoices(selected).map(function(choice) {
-                var name = getLanguageName(choice) || choice;
-                $("#to").append("<option value=" + choice + ">" + name +
+            var langs = Translate.getToChoices(selected).map(function(code) {
+                var name = getLanguageName(code) || code;
+                return [code, name];
+            }).sort();
+
+
+            langs.map(function(lang) {
+                $("#to").append("<option value=" + lang[0] + ">" + lang[1] +
                                 "</option>");
             });
 
