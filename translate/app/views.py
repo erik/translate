@@ -135,7 +135,8 @@ def translate_text():
             return flask.Response(json.dumps({
                 'from': source_lang,
                 'to': dest_lang,
-                'result': trans
+                'result': trans,
+                'translator': backend.name
             }), mimetype='application/json')
 
         except TranslationException as exc:

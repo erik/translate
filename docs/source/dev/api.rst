@@ -91,7 +91,8 @@ Methods
       {
         "from": "from-language",
         "to": "to-language",
-        "result": "Text translated into 'to' language"
+        "result": "Text translated into 'to' language",
+        "translator": "Name of translator that created this translation"
       }
 
 Rate Limiting
