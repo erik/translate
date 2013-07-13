@@ -110,11 +110,22 @@ def translate_text():
     # Try each translator sequentially (sorted by preference) until one works
     backends = manager.find_all(source_lang, dest_lang)
 
+    # List of translator backend names that the client does not want to use
+    excludes = request.args.getlist('exclude')
+
     if len(backends) == 0:
         raise APIException.pair(from_lang=source_lang, to_lang=dest_lang,
                                 text=text)
 
+    tried = []
+
     for backend in backends:
+        if backend.name in excludes:
+            log.info("Skipping %s, client disapproved.", backend.name)
+            continue
+
+        tried.append(backend.name)
+
         try:
             trans = backend.translate(text, source_lang, dest_lang)
 
@@ -132,4 +143,4 @@ def translate_text():
                         .format(backend.name, exc))
 
     raise APIException.translator(from_lang=source_lang, to_lang=dest_lang,
-                                  text=text, tried=[b.name for b in backends])
+                                  text=text, tried=tried)

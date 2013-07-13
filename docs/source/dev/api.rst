@@ -78,6 +78,13 @@ Methods
         Language to translate text to
      :text:
         Text to translate from the `from` language to the `to` language.
+     :exclude:
+        Optional parameter to specify translation backends that should never be
+        used for this request, ignoring if they can translate the text or
+        not. Can be included multiple times to ignore multiple
+        translators. Do note that the names must be exactly as specified by the
+        server::
+          GET /api/v1/translate?exclude=foo&exclude=bar&...
   :Returns:
      ::
 
