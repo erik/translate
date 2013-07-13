@@ -51,10 +51,15 @@ def api():
         for pair in backend.language_pairs:
             pairs.add(pair)
 
+    pairs = list(pairs)
+
+    # Sort by from_language
+    pairs = sorted(pairs, key=lambda pair: pair[0])
+
     return render_template('info.html',
                            version=translate.__version__,
                            backends=manager.backends,
-                           pairs=list(pairs))
+                           pairs=pairs)
 
 
 @app.route('/api/v1/translators')
