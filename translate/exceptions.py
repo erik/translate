@@ -43,7 +43,7 @@ class APIException(Exception):
         return resp
 
     @classmethod
-    def ratelimit(cls, limit, per):
+    def ratelimit(cls, limit, per, reset):
         """Class method to construct an APIException for going over the
         ratelimit. The optional msg and details parameters can be used to add
         additional information to the error.
@@ -51,7 +51,8 @@ class APIException(Exception):
         tupl = APIException.API_ERRORS[429]
         return cls(429, tupl[0], tupl[1],
                    {'limit': limit,
-                    'per': per})
+                    'per': per,
+                    'reset': reset})
 
     @classmethod
     def pair(cls, from_lang, to_lang, text):
