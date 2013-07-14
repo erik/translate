@@ -8,81 +8,95 @@ on redis. Opts for simple dictionary implementation instead.
 
 import time
 import flask
+import threading
 
-from threading import Lock
 from functools import update_wrapper
 from translate.exceptions import APIException
 
 
+RATELIMIT_MUTEX = threading.Lock()
+
+
 class RateLimit(object):
-    """This class manages all API requests, taking care of pruning and adding
-    them as necessary
+    """This singleton class manages all API requests, taking care of pruning
+    and adding them as necessary
     """
 
-    mutex = Lock()
     limit_dict = {}
 
     enabled = False
     limit = 0
     per = 0
+    reset = 0
 
-    def __init__(self, user, key, send_x_headers):
-        self.send_x_headers = send_x_headers
+    @staticmethod
+    def enable(limit, per):
+        """Initialize rate limiting with given limit / per values."""
 
-        # GIL should take care of us, but just in case, we'll obtain a lock
-        RateLimit.mutex.acquire()
+        RateLimit.enabled = True
+        RateLimit.limit = limit
+        RateLimit.per = per
+        RateLimit.reset = (time.time() // per) * per + per
 
-        self.add_request(user, key)
-        self.trim_requests()
+    @staticmethod
+    def add_request(user, key, send_x_headers):
+        """TODO: rewrite this.
 
-        self.current = len(RateLimit.limit_dict.get(key, {}).get(user, []))
-
-        RateLimit.mutex.release()
-
-    def add_request(self, user, key):
-        """Note that the given user made a request to the API method `key`.
+        Note that the given user made a request to the API method `key`.
         Will only append the request onto the list of requests if the user is
         under their limit (so as not to further penalize duplicate requests
         after the limit is hit).
         """
+        RateLimit.send_x_headers = send_x_headers
+
+        # GIL should take care of us, but just in case we'll obtain a lock so
+        # concurrent requests can't do any harm.
+        RATELIMIT_MUTEX.acquire()
+
+        now = time.time()
+
+        # Limit has expired, flush requests and reset timer
+        if RateLimit.reset <= now:
+            RateLimit.reset = (now // RateLimit.per) * RateLimit.per +\
+                RateLimit.per
+
+            RateLimit.limit_dict = {}
+
         key_dict = RateLimit.limit_dict.get(key, {})
-        user_reqs = key_dict.get(user, [])
 
-        if(len(user_reqs) < self.limit):
-            user_reqs.append(int(time.time()))
+        # Add to requests this user has made
+        key_dict[user] = key_dict.get(user, 0) + 1
 
-        key_dict[user] = user_reqs
         RateLimit.limit_dict[key] = key_dict
 
-    def trim_requests(self):
-        """Automatically remove requests older than the limit."""
-        cutoff = int(time.time()) - RateLimit.per
+        RATELIMIT_MUTEX.release()
 
-        # TODO: This is horrifying, rewrite it.
+    @staticmethod
+    def remaining(user, key):
+        """Return how many request the current user has for the given API
+        method during this request period.
+        """
 
-        RateLimit.limit_dict = dict(
-            (key,
-             dict((user,
-                   # Take only the requests that are still valid
-                   [r for r in reqs if r > cutoff]) for (user, reqs)
-                  in users.items()))
+        reqs = RateLimit.limit_dict.get(key, {}).get(user, 0)
+        print("user has made {0}/{1} reqs".format(reqs, RateLimit.limit))
+        return RateLimit.limit - reqs
 
-            for (key, users) in
-            RateLimit.limit_dict.items()
-        )
-
-    remaining = property(lambda x: RateLimit.limit - x.current)
-    over_limit = property(lambda x: x.current >= RateLimit.limit)
+    @staticmethod
+    def over_limit(user, key):
+        """Is the current user over the rate limit for the given API method"""
+        return RateLimit.remaining(user, key) < 0
 
 
-def get_view_rate_limit():
+def get_view_rate_limit_remaining():
     """Get the ratelimit for the current requester / API method"""
-    return getattr(flask.g, '_view_rate_limit', None)
+    return getattr(flask.g, '_view_rate_limit_remaining', None)
 
 
-def on_over_limit(limit):
+def on_over_limit():
     """Callback function to call when API method goes over the ratelimit"""
-    raise APIException.ratelimit(limit=limit.limit, per=limit.per)
+
+    raise APIException.ratelimit(limit=RateLimit.limit, per=RateLimit.per,
+                                 reset=RateLimit.reset)
 
 
 def ratelimit(send_x_headers=True, over_limit_func=on_over_limit):
@@ -95,12 +109,19 @@ def ratelimit(send_x_headers=True, over_limit_func=on_over_limit):
     def decorator(f):
         def rate_limited(*args, **kwargs):
             if RateLimit.enabled:
-                rlimit = RateLimit(flask.request.remote_addr,
-                                   flask.request.endpoint,
-                                   send_x_headers)
-                flask.g._view_rate_limit = rlimit
-                if over_limit_func is not None and rlimit.over_limit:
-                    return over_limit_func(rlimit)
+                # Base rate limiting on IPs
+                user = flask.request.remote_addr
+                key = flask.request.endpoint
+
+                RateLimit.add_request(user, key, send_x_headers)
+
+                flask.g._view_rate_limit_remaining =\
+                    RateLimit.remaining(user, key)
+
+                if over_limit_func is not None and\
+                   RateLimit.over_limit(user, key):
+
+                    return over_limit_func()
 
             return f(*args, **kwargs)
         return update_wrapper(rate_limited, f)

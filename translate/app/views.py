@@ -1,7 +1,7 @@
  # -*- coding: utf-8 -*-
 
 from translate.app import app, log
-from translate.app.ratelimit import get_view_rate_limit, ratelimit, RateLimit
+from translate.app.ratelimit import ratelimit, RateLimit
 from translate.exceptions import APIException, TranslationException
 from translate import __version__
 
@@ -22,12 +22,13 @@ def inject_x_rate_headers(response):
     endpoint that requires rate-limiting
     """
 
-    limit = get_view_rate_limit()
-    if limit and limit.send_x_headers:
+    remaining = translate.app.ratelimit.get_view_rate_limit_remaining()
+    if RateLimit and RateLimit.send_x_headers:
         h = response.headers
-        h.add('X-RateLimit-Remaining', str(limit.remaining))
-        h.add('X-RateLimit-Limit', str(limit.limit))
+        h.add('X-RateLimit-Remaining', str(remaining))
+        h.add('X-RateLimit-Limit', str(RateLimit.limit))
         h.add('X-RateLimit-Duration', str(RateLimit.per))
+        h.add('X-RateLimit-Reset', str(RateLimit.reset))
     return response
 
 

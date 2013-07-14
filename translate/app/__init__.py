@@ -33,10 +33,8 @@ def initialize_flask():
     views.manager = BackendManager(backend_conf)
 
     ratelimit = server_conf.get('ratelimit', None)
-    if ratelimit is not None:
-        RateLimit.enabled = ratelimit['enabled']
-        RateLimit.limit = ratelimit['limit']
-        RateLimit.per = ratelimit['per']
+    if ratelimit is not None and ratelimit.get('enabled', False):
+        RateLimit.enable(limit=ratelimit['limit'], per=ratelimit['per'])
 
     def deinitialize_manager():
         """Do any cleanup that needs to be done (for backends in particular)

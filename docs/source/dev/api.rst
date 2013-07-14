@@ -113,6 +113,9 @@ If active, the following HTTP headers will be included in every API call:
    The length in time (in seconds) that each request will be counted against the
    API limit.
 
+:X-RateLimit-Reset:
+   Timestamp (seconds since epoch) of when the current rate limiting window
+   will expire.
 
 Errors
 ~~~~~~
@@ -141,7 +144,8 @@ Custom HTTP Status Codes
 
       "details": {
         "limit": request limit (int),
-        "per": length in seconds that requests count against limit
+        "per": length in seconds that requests count against limit,
+        "reset": time stamp when rate limit will reset for each client
       }
 
 :452 Translation error:
