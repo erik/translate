@@ -5,6 +5,9 @@ import requests
 
 from translate.client.exceptions import TranslateException
 
+import logging
+log = logging.basicConfig(level=logging.DEBUG)
+
 # TODO: Handle rate limiting
 # TODO: More (i.e. some) error handling
 
@@ -71,8 +74,11 @@ class Client(object):
             obj = self._request('translate', **params)
 
             return obj['result']
-        except TranslateException:
-            pass
+
+        except TranslateException as exc:
+            log.error("Failed to translate text (%s-%s): %s",
+                      from_lang, to_lang, exc)
+            raise exc
 
     def can_translate(self, from_lang, to_lang):
         """Returns whether or not the translate server supports the given
