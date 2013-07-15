@@ -39,7 +39,7 @@ class RateLimit(object):
         RateLimit.reset = (time.time() // per) * per + per
 
     @staticmethod
-    def add_request(user, key, send_x_headers):
+    def add_request(user, key):
         """TODO: rewrite this.
 
         Note that the given user made a request to the API method `key`.
@@ -47,7 +47,6 @@ class RateLimit(object):
         under their limit (so as not to further penalize duplicate requests
         after the limit is hit).
         """
-        RateLimit.send_x_headers = send_x_headers
 
         # GIL should take care of us, but just in case we'll obtain a lock so
         # concurrent requests can't do any harm.
@@ -92,6 +91,11 @@ def get_view_rate_limit_remaining():
     return getattr(flask.g, '_view_rate_limit_remaining', None)
 
 
+def get_view_send_x_headers():
+    """TODO: Writeme"""
+    return getattr(flask.g, '_send_rate_limit_x_headers', False)
+
+
 def on_over_limit():
     """Callback function to call when API method goes over the ratelimit"""
 
@@ -113,8 +117,9 @@ def ratelimit(send_x_headers=True, over_limit_func=on_over_limit):
                 user = flask.request.remote_addr
                 key = flask.request.endpoint
 
-                RateLimit.add_request(user, key, send_x_headers)
+                RateLimit.add_request(user, key)
 
+                flask.g._send_rate_limit_x_headers = send_x_headers
                 flask.g._view_rate_limit_remaining =\
                     RateLimit.remaining(user, key)
 

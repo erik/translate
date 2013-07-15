@@ -89,9 +89,10 @@ class Client(object):
         url = self.base_url + method
 
         req = requests.get(url, params=kwargs)
-        obj = json.loads(req.text)
 
         if req.status_code != 200:
-            raise TranslateException.from_json(obj)
+            raise TranslateException.from_response(req)
+
+        obj = json.loads(req.text)
 
         return obj

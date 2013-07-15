@@ -23,7 +23,7 @@ def inject_x_rate_headers(response):
     """
 
     remaining = translate.app.ratelimit.get_view_rate_limit_remaining()
-    if RateLimit and RateLimit.send_x_headers:
+    if RateLimit and translate.app.ratelimit.get_view_send_x_headers():
         h = response.headers
         h.add('X-RateLimit-Remaining', str(remaining))
         h.add('X-RateLimit-Limit', str(RateLimit.limit))
