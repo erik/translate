@@ -21,7 +21,9 @@ try:
         pair = backend.language_pairs[0]
 
         trans = backend.translate('hello', pair[0], pair[1])
-        assert trans is not None
+
+        assert trans is not ""
+        assert trans is None
 
 except subprocess.CalledProcessError:
     print('Skipping apertium backend')

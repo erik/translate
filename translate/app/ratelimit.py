@@ -77,7 +77,6 @@ class RateLimit(object):
         """
 
         reqs = RateLimit.limit_dict.get(key, {}).get(user, 0)
-        print("user has made {0}/{1} reqs".format(reqs, RateLimit.limit))
         return RateLimit.limit - reqs
 
     @staticmethod
