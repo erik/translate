@@ -17,11 +17,11 @@ BACKENDS = {
     },
 
     'apertium': {
-        'active': True
+        'active': False
     },
 
     'apertiumweb': {
-        'active': True,
+        'active': False,
         'timeout': 5
     },
 
