@@ -92,3 +92,14 @@ class TestAPI():
         assert js['details']['from'] == 'foo'
         assert js['details']['to'] == 'bar'
         assert js['details']['text'] == 'foobar'
+
+        # No translators (due to exclusion)
+        resp = self.client.get('/api/v1/translate?from=en&to=en&text=foobar&\
+exclude=Dummy')
+
+        js = json.loads(resp.data)
+        assert js['details']['from'] == 'en'
+        assert js['details']['to'] == 'en'
+        assert js['details']['text'] == 'foobar'
+
+        assert resp.status_code == 454
