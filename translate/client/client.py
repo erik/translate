@@ -17,11 +17,12 @@ log = logging.getLogger(__name__)
 class Client(object):
     """A client for interacting with translate server v1 API"""
 
-    def __init__(self, host, port=5005, scheme='http', **kwargs):
+    def __init__(self, host, port=5005, scheme='http', timeout=5, **kwargs):
         """TODO: Write me"""
         self.host = host
         self.scheme = scheme
         self.port = port
+        self.timeout = timeout
         self.options = kwargs
 
         self.base_url = "{0}://{1}:{2}/api/v1/".format(self.scheme, self.host,
@@ -81,12 +82,12 @@ class Client(object):
                       from_lang, to_lang, exc)
             raise exc
 
-    def can_translate(self, from_lang, to_lang):
+    def can_translate(self, from_lang, to_lang, refresh=False):
         """Returns whether or not the translate server supports the given
         language pair
         """
 
-        return (from_lang, to_lang) in self.language_pairs(refresh=False)
+        return (from_lang, to_lang) in self.language_pairs(refresh=refresh)
 
     def _request(self, method, **kwargs):
         """Convenience function to call an API function for the given client
@@ -96,7 +97,7 @@ class Client(object):
         url = self.base_url + method
 
         try:
-            req = requests.get(url, params=kwargs)
+            req = requests.get(url, timeout=self.timeout, params=kwargs)
         except requests.exceptions.RequestException as exc:
             raise translate.client.exceptions.HTTPException(repr(exc))
 

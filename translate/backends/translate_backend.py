@@ -38,10 +38,14 @@ class TranslateBackend(IBackend):
             logging.warning("Don't know which port to use, defaulting to {0}"
                             .format(self.config['port']))
 
-        self.client = translate.client.Client(config['host'],
-                                              port=self.config['port'])
+        try:
+            self.client = translate.client.Client(config['host'],
+                                                  port=self.config['port'])
 
-        self.language_pairs = self.client.language_pairs()
+            self.language_pairs = self.client.language_pairs()
+        except translate.client.exceptions.TranslateException as exc:
+            log.error("Failed to setup client: " + str(exc))
+            return False
 
         if len(self.language_pairs) == 0:
             log.error('No language pairs available, aborting')
