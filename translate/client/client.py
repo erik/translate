@@ -95,7 +95,10 @@ class Client(object):
 
         url = self.base_url + method
 
-        req = requests.get(url, params=kwargs)
+        try:
+            req = requests.get(url, params=kwargs)
+        except requests.exceptions.RequestException as exc:
+            raise translate.client.exceptions.HTTPException(repr(exc))
 
         if req.status_code != 200:
             raise TranslateException.from_response(req)

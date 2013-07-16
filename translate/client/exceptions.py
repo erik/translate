@@ -33,6 +33,14 @@ class TranslateException(Exception):
         return cls("Unknown error occured: " + resp.data)
 
 
+class HTTPException(TranslateException):
+    """Raised when an error occurs with the HTTP connection to the server
+    (e.g. host is not available, doesn't respond, etc.)
+    """
+
+    pass
+
+
 class RateLimitException(TranslateException):
     """Exception raised when a client goes over the ratelimit."""
 
