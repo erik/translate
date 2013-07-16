@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+
+import translate
+import translate.client
+import translate.client.exceptions
+
+import logging
+import argparse
+import os
+import sys
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Command line interface to \
+translation server')
+
+    parser.add_argument('--debug', dest='debug', help='Whether or not to print \
+    out debugging information', default=False, action='store_true')
+
+    parser.add_argument('--host', dest='host', help='Translate server host to \
+use. If not specified, the environment variable TRANSLATE_HOST will be used. \
+If that is also unavailable, then the client will default to using "localhost".')
+
+    parser.add_argument('--port', dest='port', help='Port the translate server \
+is on. If not provided, the port will be obtained from environment variable \
+TRANSLATE_PORT. If that is unavailable the default port that translate uses \
+will be used.')
+
+    parser.add_argument('-l', '--list-pairs', dest='list_pairs',
+                        action='store_true',
+                        help='List the available language pairs and quit')
+
+    parser.add_argument('language_pair', type=str, help='Language pair (in \
+src-dst format) for the languages to translate between', nargs='?')
+
+    parser.add_argument('text', type=str, nargs="*", help='Text to translate \
+between specify languages. If no arguments are specified here, text will be \
+read from STDIN, so that piping can be used.')
+
+    args = parser.parse_args()
+
+    host = args.host
+    port = args.port
+
+    if host is None:
+        host = os.environ.get('TRANSLATE_HOST', 'localhost')
+
+    if port is None:
+        port = os.environ.get('TRANSLATE_PORT', 5005)
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+
+    client = translate.client.Client(host=host, port=port)
+
+    try:
+        if args.list_pairs:
+            for pair in client.language_pairs():
+                print("{0}-{1}".format(pair[0], pair[1]))
+
+            sys.exit(0)
+
+        if args.language_pair is None:
+            parser.error("need to specify a language pair to translate")
+
+        pair = args.language_pair.split('-')
+
+        if not client.can_translate(pair[0], pair[1]):
+            print("Invalid language pair: {0}-{1}".format(pair[0], pair[1]))
+            sys.exit(1)
+
+        for text in args.text:
+            print(client.translate(text, pair[0], pair[1]))
+
+        # If no text was specified in args, drop to STDIN
+        if len(args.text) == 0:
+            for line in sys.stdin.readlines():
+                # chomp last newline
+                line = line.rstrip('\n')
+
+                # if only whitespace, don't bother translating, just print (in
+                # case preserved whitespace is desired)
+                if line.strip() == '':
+                    print(line)
+                else:
+                    print(client.translate(line, pair[0], pair[1]))
+
+    except translate.client.exceptions.TranslateException as exc:
+        print("Error: " + str(exc))
