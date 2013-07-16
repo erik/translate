@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import translate
+import translate.app.defaultsettings
 import translate.client
 import translate.client.exceptions
 
@@ -24,7 +27,7 @@ If that is also unavailable, then the client will default to using "localhost".'
     parser.add_argument('--port', dest='port', help='Port the translate server \
 is on. If not provided, the port will be obtained from environment variable \
 TRANSLATE_PORT. If that is unavailable the default port that translate uses \
-will be used.')
+(5000) will be used.')
 
     parser.add_argument('-l', '--list-pairs', dest='list_pairs',
                         action='store_true',
@@ -46,7 +49,8 @@ read from STDIN, so that piping can be used.')
         host = os.environ.get('TRANSLATE_HOST', 'localhost')
 
     if port is None:
-        port = os.environ.get('TRANSLATE_PORT', 5005)
+        defaultport = translate.app.defaultsettings.SERVER['port']
+        port = os.environ.get('TRANSLATE_PORT', defaultport)
 
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -66,7 +70,8 @@ read from STDIN, so that piping can be used.')
         pair = args.language_pair.split('-')
 
         if not client.can_translate(pair[0], pair[1]):
-            print("Invalid language pair: {0}-{1}".format(pair[0], pair[1]))
+            print("Invalid language pair: {0}-{1}".format(pair[0], pair[1]),
+                  file=sys.stderr)
             sys.exit(1)
 
         for text in args.text:
@@ -86,4 +91,4 @@ read from STDIN, so that piping can be used.')
                     print(client.translate(line, pair[0], pair[1]))
 
     except translate.client.exceptions.TranslateException as exc:
-        print("Error: " + str(exc))
+        print("Error: " + str(exc), file=sys.stderr)
