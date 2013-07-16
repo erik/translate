@@ -169,7 +169,8 @@ server:</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><div class="highlight"><pre><span class="p">{</span>
   <span class="s">&quot;from&quot;</span><span class="p">:</span> <span class="s">&quot;from-language&quot;</span><span class="p">,</span>
   <span class="s">&quot;to&quot;</span><span class="p">:</span> <span class="s">&quot;to-language&quot;</span><span class="p">,</span>
-  <span class="s">&quot;result&quot;</span><span class="p">:</span> <span class="s">&quot;Text translated into &#39;to&#39; language&quot;</span>
+  <span class="s">&quot;result&quot;</span><span class="p">:</span> <span class="s">&quot;Text translated into &#39;to&#39; language&quot;</span><span class="p">,</span>
+  <span class="s">&quot;translator&quot;</span><span class="p">:</span> <span class="s">&quot;Name of translator that created this translation&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -199,6 +200,10 @@ reported through HTTP headers.</p>
 <tr class="field-odd field"><td>&nbsp;</td><td class="field-body">The length in time (in seconds) that each request will be counted against the
 API limit.</td>
 </tr>
+<tr class="field-even field"><th class="field-name" colspan="2">X-RateLimit-Reset:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Timestamp (seconds since epoch) of when the current rate limiting window
+will expire.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -227,7 +232,8 @@ activated) is exceeded, or a failure with the backend translators occurs.</p>
 <tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first">Returned when the API ratelimit is exceeded.</p>
 <div class="highlight-python"><pre>"details": {
   "limit": request limit (int),
-  "per": length in seconds that requests count against limit
+  "per": length in seconds that requests count against limit,
+  "reset": time stamp when rate limit will reset for each client
 }</pre>
 </div>
 </td>

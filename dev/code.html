@@ -77,41 +77,61 @@ function doesn&#8217;t return.</p>
 on redis. Opts for simple dictionary implementation instead.</p>
 <dl class="class">
 <dt id="translate.app.ratelimit.RateLimit">
-<em class="property">class </em><tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">RateLimit</tt><big>(</big><em>user</em>, <em>key</em>, <em>send_x_headers</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class manages all API requests, taking care of pruning and adding
-them as necessary</p>
-<dl class="method">
+<em class="property">class </em><tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">RateLimit</tt><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>This singleton class manages all API requests, taking care of pruning
+and adding them as necessary</p>
+<dl class="staticmethod">
 <dt id="translate.app.ratelimit.RateLimit.add_request">
-<tt class="descname">add_request</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.add_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.add_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>Note that the given user made a request to the API method <cite>key</cite>.
+<em class="property">static </em><tt class="descname">add_request</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.add_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.add_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: rewrite this.</p>
+<p>Note that the given user made a request to the API method <cite>key</cite>.
 Will only append the request onto the list of requests if the user is
 under their limit (so as not to further penalize duplicate requests
 after the limit is hit).</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="translate.app.ratelimit.RateLimit.trim_requests">
-<tt class="descname">trim_requests</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.trim_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.trim_requests" title="Permalink to this definition">¶</a></dt>
-<dd><p>Automatically remove requests older than the limit.</p>
+<dl class="staticmethod">
+<dt id="translate.app.ratelimit.RateLimit.enable">
+<em class="property">static </em><tt class="descname">enable</tt><big>(</big><em>limit</em>, <em>per</em><big>)</big><a class="headerlink" href="#translate.app.ratelimit.RateLimit.enable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize rate limiting with given limit / per values.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="translate.app.ratelimit.RateLimit.over_limit">
+<em class="property">static </em><tt class="descname">over_limit</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="headerlink" href="#translate.app.ratelimit.RateLimit.over_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the current user over the rate limit for the given API method</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="translate.app.ratelimit.RateLimit.remaining">
+<em class="property">static </em><tt class="descname">remaining</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="headerlink" href="#translate.app.ratelimit.RateLimit.remaining" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return how many request the current user has for the given API
+method during this request period.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="translate.app.ratelimit.get_view_rate_limit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_rate_limit</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#get_view_rate_limit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.get_view_rate_limit" title="Permalink to this definition">¶</a></dt>
+<dt id="translate.app.ratelimit.get_view_rate_limit_remaining">
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_rate_limit_remaining</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.app.ratelimit.get_view_rate_limit_remaining" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the ratelimit for the current requester / API method</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="translate.app.ratelimit.get_view_send_x_headers">
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_send_x_headers</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.app.ratelimit.get_view_send_x_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: Writeme</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="translate.app.ratelimit.on_over_limit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">on_over_limit</tt><big>(</big><em>limit</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#on_over_limit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.on_over_limit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">on_over_limit</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#on_over_limit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.on_over_limit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback function to call when API method goes over the ratelimit</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1193230&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1b430c8&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is
@@ -278,7 +298,7 @@ given to the translate API method.</p>
 
 <dl class="classmethod">
 <dt id="translate.exceptions.APIException.ratelimit">
-<em class="property">classmethod </em><tt class="descname">ratelimit</tt><big>(</big><em>limit</em>, <em>per</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.ratelimit" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">ratelimit</tt><big>(</big><em>limit</em>, <em>per</em>, <em>reset</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class method to construct an APIException for going over the
 ratelimit. The optional msg and details parameters can be used to add
 additional information to the error.</p>
