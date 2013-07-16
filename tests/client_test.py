@@ -39,6 +39,8 @@ class TestClientExceptions():
             ex = tce.TranslateException.from_response(resp)
 
             assert isinstance(ex, err[0])
+            # Just make sure they can represent themselves
+            assert str(ex) is not None
 
             for k, v in err[3].items():
                 assert ex.__dict__[k] == v
@@ -62,6 +64,7 @@ class TestClientExceptions():
             ex = tce.TranslateException.from_response(resp)
 
             assert isinstance(ex, err[0])
+            assert str(ex) is not None
 
 
 class TestClient():
@@ -134,5 +137,5 @@ BACKENDS:
             self.client.translate('bad', 'arguments', 'here')
 
     def test_client_raises_exceptions(self):
-        # TODO: rate limiting
+        # TODO: write me
         pass

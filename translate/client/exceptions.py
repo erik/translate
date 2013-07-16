@@ -10,7 +10,11 @@ log = logging.getLogger(__name__)
 
 
 class TranslateException(Exception):
-    """Mostly empty base class for exceptions relating to translate"""
+    """Mostly empty base class for exceptions relating to translate.
+
+    This class is used as a catch-all for exceptions thrown by the server. If
+    possible, a more specific subclass of this exception will be used.
+    """
 
     @classmethod
     def from_response(cls, resp):
@@ -72,6 +76,9 @@ class TranslationException(TranslateException):
 
 
 class TranslatorException(TranslateException):
+    """Returned when bad parameters are passed to the /translate method. (This
+    probably indicates some kind of API / Client bug.)
+    """
 
     def __init__(self, lang_pair, tried):
         self.lang_pair = lang_pair
@@ -97,6 +104,9 @@ class TranslatorException(TranslateException):
 
 
 class BadLanguagePairException(TranslateException):
+    """Raised when the client tried to translate using a language pair not
+    supported by the server
+    """
 
     def __init__(self, lang_pair):
         self.lang_pair = lang_pair
