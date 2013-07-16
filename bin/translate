@@ -6,6 +6,8 @@ import translate.app
 import argparse
 import yaml
 import os
+import logging
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Pluggable translation server')
@@ -14,6 +16,9 @@ if __name__ == '__main__':
                         default=False)
 
     args = parser.parse_args()
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
 
     print('Translate v{0}'.format(translate.__version__))
 

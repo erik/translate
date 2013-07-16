@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from translate import log
 from translate.backend import IBackend
 from translate.exceptions import TranslationException
 
@@ -10,7 +9,7 @@ import re
 import subprocess
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 class ApertiumBackend(IBackend):

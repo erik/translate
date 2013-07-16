@@ -2,12 +2,11 @@
 
 import translate.client
 
-from translate import log
 from translate.backend import IBackend
 from translate.exceptions import TranslationException
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 class TranslateBackend(IBackend):

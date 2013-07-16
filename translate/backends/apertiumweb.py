@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from translate import log
 from translate.backend import IBackend
 from translate.exceptions import TranslationException
 
@@ -8,7 +7,7 @@ import requests
 import json
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 API_URL = 'http://api.apertium.org/json/'

@@ -3,10 +3,12 @@
 import json
 import requests
 
-from translate.client.exceptions import TranslateException
+import translate.client.exceptions
+from translate.client.exceptions import TranslateException,\
+    BadLanguagePairException
 
 import logging
-log = logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 # TODO: Handle rate limiting
 # TODO: More (i.e. some) error handling
@@ -66,12 +68,11 @@ class Client(object):
         # TODO: This could be out of date if the language pairs change between
         #       requests.
         if (from_lang, to_lang) not in self.language_pairs(refresh=False):
-            raise TranslateException("Bad language pair ({0}, {1})".
-                                     format(from_lang, to_lang))
+            raise BadLanguagePairException(lang_pair=(from_lang, to_lang))
 
         try:
-            params = {'from': from_lang, 'to': to_lang, 'text': text}
-            obj = self._request('translate', **params)
+            kwargs = {'from': from_lang, 'to': to_lang, 'text': text}
+            obj = self._request('translate', **kwargs)
 
             return obj['result']
 
