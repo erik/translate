@@ -54,12 +54,12 @@
 
             var langs = Translate.getToChoices(selected).map(function(code) {
                 var name = getLanguageName(code) || code;
-                return [code, name];
+                return [name, code];
             }).sort();
 
 
             langs.map(function(lang) {
-                $("#to").append("<option value=" + lang[0] + ">" + lang[1] +
+                $("#to").append("<option value=" + lang[1] + ">" + lang[0] +
                                 "</option>");
             });
 
