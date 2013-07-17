@@ -26,6 +26,7 @@ class APIException(Exception):
         self.status = status
         self.message = message
         self.details = details
+        self.url = flask.request.url
 
     def jsonify(self):
         """Return a flask Response object containing a JSON representation of
@@ -33,7 +34,7 @@ class APIException(Exception):
         the request
         """
         resp = flask.jsonify(code=self.status_code, status=self.status,
-                             url=flask.request.url, message=self.message,
+                             url=self.url, message=self.message,
                              details=self.details)
 
         resp.status_code = self.status_code

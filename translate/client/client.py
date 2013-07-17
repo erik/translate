@@ -62,13 +62,11 @@ class Client(object):
 
         return self.backends
 
-    def translate(self, text, from_lang, to_lang):
+    def translate(self, text, from_lang, to_lang, refresh=False):
         """Translate a given string of text between languages."""
 
         # Check that we're translating between valid languages
-        # TODO: This could be out of date if the language pairs change between
-        #       requests.
-        if (from_lang, to_lang) not in self.language_pairs(refresh=False):
+        if (from_lang, to_lang) not in self.language_pairs(refresh=refresh):
             raise BadLanguagePairException(lang_pair=(from_lang, to_lang))
 
         try:

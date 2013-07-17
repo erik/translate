@@ -63,6 +63,46 @@ def api():
                            pairs=pairs)
 
 
+@app.route('/api/batch', methods=['POST'])
+@translate.utils.jsonp
+def batch_api():
+    # XXX: Doesn't handle rate limiting.
+
+    # Flask raises a special error when this isn't provided
+    urls = json.loads(request.form['urls'])
+
+    responses = []
+
+    for url in urls:
+
+        ctx = app.test_request_context(url)
+        ctx.push()
+
+        # XXX: This currently ignores HTTP statuses and always returns
+        #      200. Should this maybe be the correct behavior?
+        resp = app.full_dispatch_request()
+
+        # If not requesting an API method (which shouldn't be done...) return a
+        # JSON-escaped string instead of HTML, so that the validity of the JSON
+        # response isn't ruined.
+        #
+        # XXX: This isn't a guarantee. There could be a different kind of error
+        # that causes invalid or no JSON to be returned.
+        if url.startswith("/api/v1/"):
+            responses.append(resp.data)
+        else:
+            responses.append(json.dumps(resp.data))
+
+        ctx.pop()
+
+    # XXX: This assumes the server always returns valid JSON.
+    js = '[\n' + (',\n'.join(responses)) + '\n]'
+
+    resp = flask.Response(response=js, mimetype='application/json')
+
+    return resp, 200
+
+
 @app.route('/api/v1/pairs')
 @ratelimit()
 @translate.utils.jsonp
