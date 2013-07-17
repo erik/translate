@@ -63,20 +63,6 @@ def api():
                            pairs=pairs)
 
 
-@app.route('/api/v1/translators')
-@ratelimit()
-@translate.utils.jsonp
-def list_translators():
-    return flask.jsonify(
-        backends=[{
-            'name': b.name,
-            'description': b.description,
-            'url': b.url,
-            'preference': b.preference,
-            'pairs': b.language_pairs
-        } for b in manager.backends])
-
-
 @app.route('/api/v1/pairs')
 @ratelimit()
 @translate.utils.jsonp
@@ -146,3 +132,17 @@ def translate_text():
 
     raise APIException.translator(from_lang=source_lang, to_lang=dest_lang,
                                   text=text, tried=tried)
+
+
+@app.route('/api/v1/translators')
+@ratelimit()
+@translate.utils.jsonp
+def list_translators():
+    return flask.jsonify(
+        backends=[{
+            'name': b.name,
+            'description': b.description,
+            'url': b.url,
+            'preference': b.preference,
+            'pairs': b.language_pairs
+        } for b in manager.backends])
