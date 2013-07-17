@@ -25,6 +25,10 @@ BACKENDS:
     active: false
   apertiumweb:
     active: false
+  translate_backend:
+    active: false
+  yandex:
+    active: false
 """)
 
         # Hackiness to make sure this is always prefered
@@ -34,27 +38,21 @@ BACKENDS:
         translate.app.views.manager = translate.backend.BackendManager(
             config['BACKENDS'])
 
-        self.backend = TranslateBackend()
-
         self.thread = Process(target=translate.app.start_server,
                               args=(config, True))
         self.thread.start()
 
+        self.backend = TranslateBackend()
+
         # Wait for the server to spin up
         while True:
-            time.sleep(0.5)
+            time.sleep(0.25)
             try:
                 r = requests.get('http://localhost:9876/api/v1/pairs')
                 if r.status_code == 200:
                     break
             except:
                 pass
-
-    def teardown_class(self):
-        if self.thread.is_alive():
-            self.thread.terminate()
-
-    def test_setup_backend(self):
 
         ret = self.backend.activate({
             'active': True,
@@ -63,6 +61,10 @@ BACKENDS:
         })
 
         assert ret is True
+
+    def teardown_class(self):
+        if self.thread.is_alive():
+            self.thread.terminate()
 
     def test_langpairs(self):
         assert self.backend.language_pairs == [('en', 'en')]
