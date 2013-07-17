@@ -97,8 +97,10 @@ BACKENDS:
         while True:
             time.sleep(0.25)
             try:
-                requests.get('http://localhost:8765')
-                break
+                r = requests.get('http://localhost:8765/api/v1/pairs')
+
+                if r.status_code == 200:
+                    break
             except:
                 pass
 
