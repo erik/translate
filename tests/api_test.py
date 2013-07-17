@@ -105,7 +105,7 @@ exclude=Dummy')
         assert resp.status_code == 454
 
     def test_batch_empty(self):
-        resp = self.client.post('/api/batch',
+        resp = self.client.post('/api/v1/batch',
                                 data={'urls': json.dumps([])})
 
         print(resp.data)
@@ -117,7 +117,7 @@ exclude=Dummy')
         urls = ['/api/v1/pairs', '/api/v1/translators',
                 '/api/v1/translate?from=en&to=en&text=foo']
 
-        resp = self.client.post('/api/batch',
+        resp = self.client.post('/api/v1/batch',
                                 data={'urls': json.dumps(urls)})
 
         js = json.loads(resp.data)
@@ -128,7 +128,7 @@ exclude=Dummy')
         urls = ['/api/v1/pairs', '/api/v1/translators',
                 '/api/v1/translate?from=bad']
 
-        resp = self.client.post('/api/batch',
+        resp = self.client.post('/api/v1/batch',
                                 data={'urls': json.dumps(urls)})
 
         js = json.loads(resp.data)
