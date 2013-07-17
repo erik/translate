@@ -81,19 +81,23 @@ foo({...})</pre>
 JSON object. Do note that this still takes rate limiting into account.</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>These are POST data</strong>
-:urls:</p>
-<blockquote>
-<div><p>Array of URL strings to request at once. Should be formatted as a JSON
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">urls:</th><td class="field-body"><p class="first">Array of URL strings to request at once. Should be formatted as a JSON
 array, e.g.:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">batch</span>
+<div class="last highlight-python"><div class="highlight"><pre><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">batch</span>
 <span class="n">urls</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;/api/v1/foo&quot;</span><span class="p">,</span> <span class="s">&quot;/api/v1/bar&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-</div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Unless there is an error with the batch call itself, this method will
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Unless there is an error with the batch call itself, this method will
 always return HTTP status 200 with a body in the form of a JSON array of
 dicts containing the response data for the specified API calls. Order is
 maintained, of course.</p>
