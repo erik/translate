@@ -77,12 +77,17 @@ class RateLimit(object):
         """
 
         reqs = RateLimit.limit_dict.get(key, {}).get(user, 0)
+
+        if RateLimit.limit < reqs:
+            return 0
+
         return RateLimit.limit - reqs
 
     @staticmethod
     def over_limit(user, key):
         """Is the current user over the rate limit for the given API method"""
-        return RateLimit.remaining(user, key) < 0
+        reqs = RateLimit.limit_dict.get(key, {}).get(user, 0)
+        return reqs > RateLimit.limit
 
 
 def get_view_rate_limit_remaining():

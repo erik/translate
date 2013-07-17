@@ -23,7 +23,7 @@ def inject_x_rate_headers(response):
     """
 
     remaining = translate.app.ratelimit.get_view_rate_limit_remaining()
-    if RateLimit and translate.app.ratelimit.get_view_send_x_headers():
+    if RateLimit.enabled and translate.app.ratelimit.get_view_send_x_headers():
         h = response.headers
         h.add('X-RateLimit-Remaining', str(remaining))
         h.add('X-RateLimit-Limit', str(RateLimit.limit))
@@ -66,38 +66,59 @@ def api():
 @app.route('/api/batch', methods=['POST'])
 @translate.utils.jsonp
 def batch_api():
-    # XXX: Doesn't handle rate limiting.
+    # TODO: Should there be a limit on the number of URLs here? Even though
+    #       ratelimiting is handled, this could be a potential target for
+    #       DOSing the server. This batch method is also quite a bit slower
+    #       than direct requests.
 
     # Flask raises a special error when this isn't provided
-    urls = json.loads(request.form['urls'])
+    try:
+        urls = json.loads(request.form['urls'])
+    except (KeyError, ValueError):
+        # TODO: handle this properly
+        flask.abort(400)
 
     responses = []
 
     for url in urls:
 
+        # Pretend flask was just given the specified URL
         ctx = app.test_request_context(url)
         ctx.push()
 
-        # XXX: This currently ignores HTTP statuses and always returns
-        #      200. Should this maybe be the correct behavior?
+        # Dispatch URL (error + route handling) as a normal request.
         resp = app.full_dispatch_request()
 
-        # If not requesting an API method (which shouldn't be done...) return a
-        # JSON-escaped string instead of HTML, so that the validity of the JSON
-        # response isn't ruined.
+        # If we requested an API url, load the serialized JSON so that the
+        # entire response can be loaded by the caller as a single JSON
+        # parse. If we didn't request an API method, just return a string, to
+        # be JSON-escaped when the final response is created.
         #
         # XXX: This isn't a guarantee. There could be a different kind of error
         # that causes invalid or no JSON to be returned.
         if url.startswith("/api/v1/"):
-            responses.append(resp.data)
+            # XXX: It's also kind of silly to load this and dump it back a few
+            #      lines later...
+            resp_data = json.loads(resp.data)
         else:
-            responses.append(json.dumps(resp.data))
+            resp_data = resp.data
+
+        # This will overwrite duplicate headers (resp.headers is a multimap),
+        # but we don't care about that, since there shouldn't be any duplicates
+        # returned.
+        headers = {}
+        for k, v in resp.headers.iteritems():
+            headers[k] = v
+
+        responses.append(dict(status=resp.status_code,
+                              headers=headers,
+                              url=url,
+                              data=resp_data))
 
         ctx.pop()
 
-    # XXX: This assumes the server always returns valid JSON.
-    js = '[\n' + (',\n'.join(responses)) + '\n]'
-
+    # Pretty print
+    js = json.dumps(responses, sort_keys=True, indent=4)
     resp = flask.Response(response=js, mimetype='application/json')
 
     return resp, 200
