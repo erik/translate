@@ -22,6 +22,42 @@ Base URL :code:`/api/v1/<method>?<params...>`
 Methods
 ~~~~~~~
 
+- **batch**
+
+  **Note**: *batch* is an HTTP POST method.
+
+  :Description:
+     Perform multiple API requests at once and return the results as a single
+     JSON object. Do note that this still takes rate limiting into account.
+  :Parameters:
+     **These are POST data**
+     :urls:
+        Array of URL strings to request at once. Should be formatted as a JSON
+        array, e.g.::
+
+          POST /api/v1/batch
+          urls=["/api/v1/foo", "/api/v1/bar", ...]
+  :Returns:
+     Unless there is an error with the batch call itself, this method will
+     always return HTTP status 200 with a body in the form of a JSON array of
+     dicts containing the response data for the specified API calls. Order is
+     maintained, of course.
+     ::
+
+        [
+          {
+            "status": status code for this request,
+            "url": api url requested,
+            "headers": {
+              Any http headers returned by the request e.g.:
+              "X-RateLimit-Remaining": "20",
+              ...
+            },
+            "data": JSON object returned by API call (should be a dict)
+          },
+          ...
+        ]
+
 - **translators**
 
   :Description:
