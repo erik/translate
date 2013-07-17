@@ -116,3 +116,31 @@ class TestRateLimit():
         resp = self.client.get('/api/v1/pairs')
         assert json.loads(resp.data) is not None
         assert resp.status_code == 429
+
+    def test_batch_over_limit(self):
+        # wait until old requests expire
+        secs = RateLimit.reset - time.time()
+
+        if secs > 0:
+            print("Sleeping for " + str(secs))
+            time.sleep(secs)
+
+        TestRateLimit.reset = RateLimit.reset + RateLimit.per
+
+        urls = ['/api/v1/pairs'] * (RateLimit.limit + 1)
+        resp = self.client.post('/api/v1/batch',
+                                data={'urls': json.dumps(urls)})
+
+        assert resp.status_code == 200
+
+        js = json.loads(resp.data)
+
+        assert len(js) == len(urls)
+
+        for i in xrange(RateLimit.limit):
+            rem = int(js[i]['headers']['X-RateLimit-Remaining'])
+
+            assert rem == RateLimit.limit - (i + 1)
+            assert js[i]['status'] == 200
+
+        assert js[RateLimit.limit]['status'] == 429

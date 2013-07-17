@@ -30,7 +30,6 @@ Methods
      Perform multiple API requests at once and return the results as a single
      JSON object. Do note that this still takes rate limiting into account.
   :Parameters:
-     **These are POST data**
      :urls:
         Array of URL strings to request at once. Should be formatted as a JSON
         array, e.g.::

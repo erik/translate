@@ -115,7 +115,7 @@ exclude=Dummy')
 
     def test_batch_good(self):
         urls = ['/api/v1/pairs', '/api/v1/translators',
-                '/api/v1/translate?from=en&to=en&text=foo']
+                '/api/v1/pairs']
 
         resp = self.client.post('/api/v1/batch',
                                 data={'urls': json.dumps(urls)})
@@ -123,10 +123,14 @@ exclude=Dummy')
         js = json.loads(resp.data)
         assert len(js) == 3
         assert resp.status_code == 200
+
+        assert js[0]['status'] == 200
+        assert js[1]['status'] == 200
+        assert js[2]['status'] == 200
 
     def test_batch_mixed(self):
-        urls = ['/api/v1/pairs', '/api/v1/translators',
-                '/api/v1/translate?from=bad']
+        urls = ['/api/v1/pairs', '/api/v1/translate?from=bad',
+                '/api/v1/translators']
 
         resp = self.client.post('/api/v1/batch',
                                 data={'urls': json.dumps(urls)})
@@ -134,3 +138,7 @@ exclude=Dummy')
         js = json.loads(resp.data)
         assert len(js) == 3
         assert resp.status_code == 200
+
+        assert js[0]['status'] == 200
+        assert js[1]['status'] == 452
+        assert js[2]['status'] == 200
