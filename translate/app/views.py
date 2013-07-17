@@ -63,7 +63,7 @@ def api():
                            pairs=pairs)
 
 
-@app.route('/api/batch', methods=['POST'])
+@app.route('/api/v1/batch', methods=['POST'])
 @translate.utils.jsonp
 def batch_api():
     # TODO: Should there be a limit on the number of URLs here? Even though
@@ -94,6 +94,7 @@ def batch_api():
         # parse. If we didn't request an API method, just return a string, to
         # be JSON-escaped when the final response is created.
         #
+        # TODO: Maybe require API urls only?
         # XXX: This isn't a guarantee. There could be a different kind of error
         # that causes invalid or no JSON to be returned.
         if url.startswith("/api/v1/"):
