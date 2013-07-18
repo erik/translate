@@ -2,6 +2,7 @@
 
 import json
 import requests
+import urllib
 
 import translate.client.exceptions
 from translate.client.exceptions import TranslateException,\
@@ -17,7 +18,7 @@ log = logging.getLogger(__name__)
 class Client(object):
     """A client for interacting with translate server v1 API"""
 
-    def __init__(self, host, port=5005, scheme='http', timeout=5, **kwargs):
+    def __init__(self, host, port=5000, scheme='http', timeout=5, **kwargs):
         """TODO: Write me"""
         self.host = host
         self.scheme = scheme
@@ -80,6 +81,54 @@ class Client(object):
                       from_lang, to_lang, exc)
             raise exc
 
+    def batch_translate(self, params):
+        """Translate multiple texts and language pairs in a single
+        call. Returns a list of strings containing the resulting translated
+        texts, or an Exception object, if the request failed.
+
+        This function won't raise any exceptions explicitly, so it's important
+        to check the results.
+
+        XXX: Is this Pythonic or even good API design? Not sure how else to
+             handle it.
+
+        params is a list of (text, from_lang, to_lang).
+        """
+
+        urls = []
+
+        # TODO: could do client-side checking to see if lang pair
+        #       supported. I doubt it would help much of anything.
+        for tupl in params:
+            if len(tupl) != 3:
+                raise ValueError("Badly formed argument, expected tuple \
+of (text, from, to), got " + repr(tupl))
+
+            text = urllib.quote(tupl[0], safe='')
+            from_lang = urllib.quote(tupl[1], safe='')
+            to_lang = urllib.quote(tupl[2], safe='')
+
+            urls.append("/api/v1/translate?from={0}&to={1}&text={2}"
+                        .format(from_lang, to_lang, text))
+
+        results = []
+
+        try:
+            objs = self._post_request('batch', urls=json.dumps(urls))
+
+            for obj in objs:
+                if obj['status'] != 200:
+                    # TODO: Handle errors
+                    results.append(None)
+                else:
+                    results.append(obj['data']['result'])
+
+        except TranslateException as exc:
+            log.error("Failed batch translate: %s", str(exc))
+            raise exc
+
+        return results
+
     def can_translate(self, from_lang, to_lang, refresh=False):
         """Returns whether or not the translate server supports the given
         language pair
@@ -96,6 +145,23 @@ class Client(object):
 
         try:
             req = requests.get(url, timeout=self.timeout, params=kwargs)
+        except requests.exceptions.RequestException as exc:
+            raise translate.client.exceptions.HTTPException(repr(exc))
+
+        if req.status_code != 200:
+            raise TranslateException.from_response(req)
+
+        obj = json.loads(req.text)
+
+        return obj
+
+    def _post_request(self, method, **kwargs):
+        """Similar """
+
+        url = self.base_url + method
+
+        try:
+            req = requests.post(url, timeout=self.timeout, data=kwargs)
         except requests.exceptions.RequestException as exc:
             raise translate.client.exceptions.HTTPException(repr(exc))
 
