@@ -6,6 +6,7 @@ errors. They can be constructed from a requests response object, or JSON
 ,returned from an API call.
 """
 
+import flask
 import json
 
 import logging
@@ -18,6 +19,19 @@ class TranslateException(Exception):
     This class is used as a catch-all for exceptions thrown by the server. If
     possible, a more specific subclass of this exception will be used.
     """
+
+    @classmethod
+    def from_json(cls, obj):
+        """Return the proper exception class from the JSON object returned from
+        the server.
+        """
+
+        # TODO: This needs to be tested.
+
+        # To make things simpler, just generate a temporary Response object and
+        # reuse TranslateException#from_response.
+        return flask.Response(response=json.dumps(obj),
+                              status=obj.get('code', 400))
 
     @classmethod
     def from_response(cls, resp):

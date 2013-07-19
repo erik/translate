@@ -127,8 +127,8 @@ of (text, from, to), got " + repr(tupl))
 
             for obj in objs:
                 if obj['status'] != 200:
-                    # TODO: Handle errors
-                    results.append(None)
+                    # TODO: this needs to be tested.
+                    results.append(TranslateException.from_json(obj))
                 else:
                     results.append(obj['data']['result'])
 
