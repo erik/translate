@@ -55,7 +55,7 @@ read from STDIN, so that piping can be used.')
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
 
-    client = translate.client.Client(host=host, port=port)
+    client = translate.client.Client(host=host, port=port, timeout=10)
 
     try:
         if args.list_pairs:
@@ -79,16 +79,9 @@ read from STDIN, so that piping can be used.')
 
         # If no text was specified in args, drop to STDIN
         if len(args.text) == 0:
-            for line in sys.stdin.readlines():
-                # chomp last newline
-                line = line.rstrip('\n')
+            lines = '\n'.join(sys.stdin.readlines())
 
-                # if only whitespace, don't bother translating, just print (in
-                # case preserved whitespace is desired)
-                if line.strip() == '':
-                    print(line)
-                else:
-                    print(client.translate(line, pair[0], pair[1]))
+            print(client.translate(lines, pair[0], pair[1]))
 
     except translate.client.exceptions.TranslateException as exc:
         print("Error: " + str(exc), file=sys.stderr)

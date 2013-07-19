@@ -9,6 +9,7 @@ from translate.client.exceptions import TranslateException,\
     BadLanguagePairException
 
 import logging
+logging.basicConfig()
 log = logging.getLogger(__name__)
 
 # TODO: Handle rate limiting
@@ -91,6 +92,8 @@ class Client(object):
 
         XXX: Is this Pythonic or even good API design? Not sure how else to
              handle it.
+        XXX: Should timeout change? It definitely takes longer for this (with
+             good reason)
 
         params is a list of (text, from_lang, to_lang).
         """

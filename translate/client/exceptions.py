@@ -30,7 +30,7 @@ class TranslateException(Exception):
         elif resp.status_code == 454:
             return BadLanguagePairException.from_response(resp)
 
-        return cls("Unknown error occured: " + resp.data)
+        return cls("Unknown error occured: " + resp.text)
 
 
 class HTTPException(TranslateException):
