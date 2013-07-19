@@ -78,10 +78,7 @@ translation platform Apertium"
                                    "Unknown error!")
             log.error(error)
 
-            if error is None:
-                raise TranslationException(repr(req))
-            else:
-                raise TranslationException(repr(error))
+            raise TranslationException(repr(error or req))
 
         return resp.get('responseData').get('translatedText')
 

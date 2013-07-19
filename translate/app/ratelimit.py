@@ -40,12 +40,11 @@ class RateLimit(object):
 
     @staticmethod
     def add_request(user, key):
-        """TODO: rewrite this.
+        """Record that the given user (IP-address) made a request to the
+        specified API endpoint (/api/v1/METHOD)
 
-        Note that the given user made a request to the API method `key`.
-        Will only append the request onto the list of requests if the user is
-        under their limit (so as not to further penalize duplicate requests
-        after the limit is hit).
+        If the current ratelimit window has expired, clears all requests and
+        resets the timer before adding the request in.
         """
 
         # GIL should take care of us, but just in case we'll obtain a lock so
@@ -78,7 +77,8 @@ class RateLimit(object):
 
         reqs = RateLimit.limit_dict.get(key, {}).get(user, 0)
 
-        if RateLimit.limit < reqs:
+        # Make sure we never return a negative number of requests remaining
+        if reqs > RateLimit.limit:
             return 0
 
         return RateLimit.limit - reqs
@@ -96,7 +96,7 @@ def get_view_rate_limit_remaining():
 
 
 def get_view_send_x_headers():
-    """TODO: Writeme"""
+    """Whether or not the current view should send X-RateLimit-* headers."""
     return getattr(flask.g, '_send_rate_limit_x_headers', False)
 
 

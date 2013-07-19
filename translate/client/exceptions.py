@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# TODO: Write documentation
+"""These are exception classes that are used by translate.client.Client. Most
+of these classes are simple wrappers, just to differentiate different types of
+errors. They can be constructed from a requests response object, or JSON
+,returned from an API call.
+"""
 
 import json
 

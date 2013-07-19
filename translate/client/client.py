@@ -20,7 +20,13 @@ class Client(object):
     """A client for interacting with translate server v1 API"""
 
     def __init__(self, host, port=5000, scheme='http', timeout=5, **kwargs):
-        """TODO: Write me"""
+        """Set up Client object.
+
+        host -- hostname if the translate server to connect to.
+        port (5000) -- port number translate server is on.
+        scheme (http) -- if the server is using SSL, change this to 'https'
+        timeout (5) -- number of seconds after which to give up on requests.
+        """
         self.host = host
         self.scheme = scheme
         self.port = port
