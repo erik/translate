@@ -1,0 +1,32 @@
+# For more information on uWSGI configuration, see http://uwsgi-docs.readthedocs.org/en/latest/Options.html
+# To load this configuration file, try `uwsgi --ini translate.uwsgi`. Depending
+# on your setup, you may need to run as root.
+
+[uwsgi]
+plugin = python
+master = true
+
+# This might not be needed, depending on your setup. In my case, I run uwsgi as
+# root, and then have it setuid itself to www-data. Change this as necessary.
+uid = www-data
+gid = www-data
+
+# nginx will refuse to serve if the socket file has bad perms. Modify this to
+# your needs
+chown-socket = www-data
+chgrp-socket = www-data
+chmod-socket = 777
+
+# Change this to wherever your translate directory is located
+chdir = /var/www/translate/
+virtualenv = /var/www/translate/env/
+
+# Set variables if necessary (for e.g. yandex, api.apertium.org, ...)
+# env = API_KEY=foobar
+
+# You could also use a port, but I'm opting for a UNIX socket here.
+socket = /tmp/translate.sock
+
+# These are the only options that actually need to stay as-is.
+module = translate.app
+callable = app

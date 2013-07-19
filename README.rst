@@ -54,6 +54,33 @@ The http flag tells uwsgi to use its HTTP server. Don't use it if
 you're using some other server (Apache, nginx, ...).
 
 
+Setup with nginx
+~~~~~~~~~~~~~~~~
+
+This is an example setup of translate using a internet-facing nginx server and
+uWSGI to serve up the translate app. Modify as necessary. Eventually, I'll
+create a fabric deployment script (issue #14) to make this simpler.
+
+Here is the relevant section of :code:`/etc/nginx/nginx.conf`. Make sure you
+make any necessary adjustments::
+
+  server {
+    server_name translate.example.com;
+
+    location / { try_files $uri @translate; }
+    location @translate {
+      include uwsgi_params;
+      uwsgi_pass unix:///tmp/translate.sock;
+    }
+  }
+
+
+After we have that setup, all that's left is to start uWSGI. Take a look at
+:code:`translate.uwsgi` for a base configuration. I dropped everything in
+:code:`/var/www/translate/`, but it can be placed wherever, so long as you
+update the configuration.
+
+
 License
 ______
 
