@@ -29,6 +29,9 @@ Setting this up should be pretty straightforward. Open an issue on the tracker
 if you run into any issues getting this to work. I'd suggest doing this in a
 virtualenv.
 
+if you want to build the documentation in :code:`docs/`, you'll need Sphinx
+(:code:`pip install Sphinx`).
+
 Currently working with Python 2.6 and 2.7. 3.x support may be included at some
 point in the future, but don't count on it.
 
