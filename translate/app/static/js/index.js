@@ -1,5 +1,74 @@
 "use strict";
 
+$(function() {
+    Translate.init();
+
+    $("#from").chosen();
+    $("#to").chosen();
+
+    var from = [];
+
+    for(var idx in Translate.pairs) {
+        var pair = Translate.pairs[idx];
+
+        // Make sure we keep only one copy of each source lang
+        if(from.indexOf(pair[0]) < 0) {
+            from.push(pair[0]);
+        }
+    }
+
+    from = from.map(function(lang) {
+        var name = getLanguageName(lang) || lang;
+        return [name, lang];
+    }).sort();
+
+    from.map(function(elem) {
+        $("#from").append("<option value=" + elem[1] + ">" + elem[0] +
+                          "</option>");
+    });
+
+    $("#to").trigger("liszt:updated");
+    $("#from").trigger("liszt:updated");
+
+    $("#from").chosen().change(function() {
+        var selected = $("#from").val();
+
+        $("#to").html("<option value=''></option>");
+
+        var langs = Translate.getToChoices(selected).map(function(code) {
+            var name = getLanguageName(code) || code;
+            return [name, code];
+        }).sort();
+
+
+        langs.map(function(lang) {
+            $("#to").append("<option value=" + lang[1] + ">" + lang[0] +
+                            "</option>");
+        });
+
+        $("#to").trigger("liszt:updated");
+    });
+
+    $("#translate").click(function() {
+        var text = $("#from_area").val();
+        var from = $("#from").val(), to = $("#to").val();
+
+        if(text == "") {
+            // Don't need to be noisy, just exit
+            return;
+        }
+
+        if(from == "" || to == "") {
+            Translate.error("Select a language!");
+            return;
+        }
+
+        Translate.translateText(text, from, to);
+    });
+
+});
+
+
 var Translate = {};
 
 Translate.init = function() {
