@@ -39,6 +39,18 @@ class RateLimit(object):
         RateLimit.reset = (time.time() // per) * per + per
 
     @staticmethod
+    def update_timer():
+        """Reset the RateLimit requests, if time has expired"""
+        now = time.time()
+
+        # Limit has expired, flush requests and reset timer
+        if RateLimit.reset <= now:
+            RateLimit.reset = (now // RateLimit.per) * RateLimit.per +\
+                RateLimit.per
+
+            RateLimit.limit_dict = {}
+
+    @staticmethod
     def add_request(user, key):
         """Record that the given user (IP-address) made a request to the
         specified API endpoint (/api/v1/METHOD)
@@ -51,14 +63,7 @@ class RateLimit(object):
         # concurrent requests can't do any harm.
         RATELIMIT_MUTEX.acquire()
 
-        now = time.time()
-
-        # Limit has expired, flush requests and reset timer
-        if RateLimit.reset <= now:
-            RateLimit.reset = (now // RateLimit.per) * RateLimit.per +\
-                RateLimit.per
-
-            RateLimit.limit_dict = {}
+        RateLimit.update_timer()
 
         key_dict = RateLimit.limit_dict.get(key, {})
 
@@ -119,7 +124,7 @@ def ratelimit(send_x_headers=True, over_limit_func=on_over_limit):
             if RateLimit.enabled:
                 # Base rate limiting on IPs
                 user = flask.request.remote_addr
-                key = flask.request.endpoint
+                key = flask.request.path
 
                 RateLimit.add_request(user, key)
 

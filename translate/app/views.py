@@ -139,6 +139,24 @@ def list_pairs():
     return flask.jsonify(pairs=list(pairs))
 
 
+@app.route('/api/v1/ratelimit')
+@translate.utils.jsonp
+def ratelimit_info():
+    # TODO: requires documentation / testing
+    user = flask.request.remote_addr
+
+    # Make sure the ratelimit information is up to date.
+    RateLimit.update_timer()
+
+    methods = {}
+
+    for key, users in RateLimit.limit_dict.iteritems():
+        methods[key] = RateLimit.remaining(user, key)
+
+    return flask.jsonify(limit=RateLimit.limit, per=RateLimit.per,
+                         reset=RateLimit.reset, methods=methods)
+
+
 @app.route('/api/v1/translate')
 @ratelimit()
 @translate.utils.jsonp
