@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import time
 
 from translate.app import app, views
 from translate.app.ratelimit import RateLimit
@@ -20,7 +21,8 @@ class TestAPIv1():
     def test_jsonp(self):
         for path in ['/api/v1/pairs?callback=foo',
                      '/api/v1/translators?callback=foo',
-                     '/api/v1/translate?callback=foo']:
+                     '/api/v1/translate?callback=foo',
+                     '/api/v1/ratelimit?callback=foo']:
             resp = self.client.get(path)
             assert resp.data.startswith('foo(')
 
@@ -142,3 +144,41 @@ exclude=Dummy')
         assert js[0]['status'] == 200
         assert js[1]['status'] == 452
         assert js[2]['status'] == 200
+
+    def test_ratelimit_info(self):
+        RateLimit.limit_dict = {}
+        RateLimit.enabled = True
+        RateLimit.limit = 5
+        RateLimit.per = 5
+
+        reset = time.time() + 100
+        RateLimit.reset = reset
+
+        resp = self.client.get('/api/v1/ratelimit')
+
+        assert resp.status_code == 200
+        assert json.loads(resp.data) == {
+            'reset': reset,
+            'limit': 5,
+            'per': 5,
+            'methods': {}
+        }
+
+        for _ in xrange(6):
+            self.client.get('/api/v1/translate')
+            self.client.get('/api/v1/translators')
+
+        self.client.get('/api/v1/pairs')
+
+        resp = self.client.get('/api/v1/ratelimit')
+        assert resp.status_code == 200
+
+        js = json.loads(resp.data)
+        assert js['limit'] == 5
+        assert js['per'] == 5
+        assert js['reset'] == reset
+        assert js['methods'] == {
+            '/api/v1/translate': 0,
+            '/api/v1/translators': 0,
+            '/api/v1/pairs': 4
+        }
