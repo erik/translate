@@ -1,15 +1,22 @@
 import translate.app
 import translate.client
 import translate.client.exceptions as tce
+import translate.app.ratelimit
 
 import time
 import yaml
 import requests
 import pytest
-import flask
 import json
 
 from multiprocessing import Process
+
+
+class ResponseTester():
+    """Same members as requests.models.Response, easier to construct"""
+    def __init__(self, text, status_code):
+        self.text = text
+        self.status_code = status_code
 
 
 class TestClientExceptions():
@@ -34,8 +41,7 @@ class TestClientExceptions():
         for err in errs:
             print("testing " + str(err[0]))
 
-            resp = flask.Response(response=json.dumps(err[2]),
-                                  status=err[1])
+            resp = ResponseTester(json.dumps(err[2]), err[1])
             ex = tce.TranslateException.from_response(resp)
 
             assert isinstance(ex, err[0])
@@ -59,8 +65,7 @@ class TestClientExceptions():
         for err in errs:
             print("testing " + str(err[0]))
 
-            resp = flask.Response(response='}invalid-JSON',
-                                  status=err[1])
+            resp = ResponseTester('}invalid-JSON', err[1])
             ex = tce.TranslateException.from_response(resp)
 
             assert isinstance(ex, err[0])
@@ -83,7 +88,7 @@ BACKENDS:
   apertiumweb:
     active: false
 """)
-
+        translate.app.ratelimit.RateLimit.enabled = False
         translate.app.views.manager = translate.backend.BackendManager(
             config['BACKENDS'])
 
