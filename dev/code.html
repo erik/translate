@@ -83,11 +83,10 @@ and adding them as necessary</p>
 <dl class="staticmethod">
 <dt id="translate.app.ratelimit.RateLimit.add_request">
 <em class="property">static </em><tt class="descname">add_request</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.add_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.add_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO: rewrite this.</p>
-<p>Note that the given user made a request to the API method <cite>key</cite>.
-Will only append the request onto the list of requests if the user is
-under their limit (so as not to further penalize duplicate requests
-after the limit is hit).</p>
+<dd><p>Record that the given user (IP-address) made a request to the
+specified API endpoint (/api/v1/METHOD)</p>
+<p>If the current ratelimit window has expired, clears all requests and
+resets the timer before adding the request in.</p>
 </dd></dl>
 
 <dl class="staticmethod">
@@ -109,6 +108,12 @@ after the limit is hit).</p>
 method during this request period.</p>
 </dd></dl>
 
+<dl class="staticmethod">
+<dt id="translate.app.ratelimit.RateLimit.update_timer">
+<em class="property">static </em><tt class="descname">update_timer</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.app.ratelimit.RateLimit.update_timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the RateLimit requests, if time has expired</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="function">
@@ -120,7 +125,7 @@ method during this request period.</p>
 <dl class="function">
 <dt id="translate.app.ratelimit.get_view_send_x_headers">
 <tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_send_x_headers</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.app.ratelimit.get_view_send_x_headers" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO: Writeme</p>
+<dd><p>Whether or not the current view should send X-RateLimit-* headers.</p>
 </dd></dl>
 
 <dl class="function">
@@ -131,7 +136,7 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1e79d70&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1ed2e60&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is

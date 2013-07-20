@@ -106,7 +106,7 @@ maintained, of course.</p>
     "status": status code for this request,
     "url": api url requested,
     "headers": {
-      Any http headers returned by the request e.g.:
+      Any HTTP headers returned by the request e.g.:
       "X-RateLimit-Remaining": "20",
       ...
     },
@@ -115,6 +115,45 @@ maintained, of course.</p>
   ...
 ]</pre>
 </div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p class="first"><strong>ratelimit</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Returns current ratelimit status, the number of requests remaining for
+each API endpoint.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt>::</dt>
+<dd><dl class="first docutils">
+<dt>{</dt>
+<dd><p class="first">&#8220;limit&#8221;: API rate limit,
+&#8220;per&#8221;:   Rate limit window,
+&#8220;reset&#8221;: Unix timestamp (seconds) when old requests will stop</p>
+<blockquote>
+<div><p>counting against ratelimit,</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>&#8220;methods&#8221;: {</dt>
+<dd><p class="first last">&#8220;/api/v1/METHOD&#8221;: number of requests remaining for METHOD,
+...</p>
+</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
