@@ -48,7 +48,7 @@ Methods
             "status": status code for this request,
             "url": api url requested,
             "headers": {
-              Any http headers returned by the request e.g.:
+              Any HTTP headers returned by the request e.g.:
               "X-RateLimit-Remaining": "20",
               ...
             },
@@ -56,6 +56,26 @@ Methods
           },
           ...
         ]
+
+- **ratelimit**
+
+  :Description:
+     Returns current ratelimit status, the number of requests remaining for
+     each API endpoint.
+  :Parameters:
+     None
+  :Returns:
+     ::
+        {
+          "limit": API rate limit,
+          "per":   Rate limit window,
+          "reset": Unix timestamp (seconds) when old requests will stop
+                   counting against ratelimit,
+          "methods": {
+            "/api/v1/METHOD": number of requests remaining for METHOD,
+            ...
+          }
+        }
 
 - **translators**
 
