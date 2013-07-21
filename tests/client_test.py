@@ -41,7 +41,10 @@ class TestClientExceptions():
         for err in errs:
             print("testing " + str(err[0]))
 
-            resp = ResponseTester(json.dumps(err[2]), err[1])
+            obj = err[2]
+            obj['code'] = err[1]
+
+            resp = ResponseTester(json.dumps(obj), err[1])
             ex = tce.TranslateException.from_response(resp)
 
             assert isinstance(ex, err[0])
@@ -143,6 +146,12 @@ BACKENDS:
         with pytest.raises(translate.client.exceptions.TranslateException):
             self.client.translate('bad', 'arguments', 'here')
 
-    def test_client_raises_exceptions(self):
-        # TODO: write me
-        pass
+    def test_batch_translate(self):
+        results = self.client.batch_translate([('good', 'en', 'en'),
+                                               ('bad', 'foo', 'bar'),
+                                               ('good', 'en', 'en')])
+
+        assert len(results) == 3
+        assert results[0] == 'good'
+        assert isinstance(results[1], tce.TranslateException)
+        assert results[2] == 'good'

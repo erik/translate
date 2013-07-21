@@ -4,8 +4,7 @@ import json
 import requests
 import urllib
 
-import translate.client.exceptions
-from translate.client.exceptions import TranslateException,\
+from .exceptions import HTTPException, TranslateException, \
     BadLanguagePairException
 
 import logging
@@ -127,8 +126,8 @@ of (text, from, to), got " + repr(tupl))
 
             for obj in objs:
                 if obj['status'] != 200:
-                    # TODO: this needs to be tested.
-                    results.append(TranslateException.from_json(obj))
+                    results.append(TranslateException.
+                                   from_json(obj, obj['status']))
                 else:
                     results.append(obj['data']['result'])
 
@@ -155,7 +154,7 @@ of (text, from, to), got " + repr(tupl))
         try:
             req = requests.get(url, timeout=self.timeout, params=kwargs)
         except requests.exceptions.RequestException as exc:
-            raise translate.client.exceptions.HTTPException(repr(exc))
+            raise HTTPException(repr(exc))
 
         if req.status_code != 200:
             raise TranslateException.from_response(req)
@@ -172,7 +171,7 @@ of (text, from, to), got " + repr(tupl))
         try:
             req = requests.post(url, timeout=self.timeout, data=kwargs)
         except requests.exceptions.RequestException as exc:
-            raise translate.client.exceptions.HTTPException(repr(exc))
+            raise HTTPException(repr(exc))
 
         if req.status_code != 200:
             raise TranslateException.from_response(req)

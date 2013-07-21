@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
-"""These are exception classes that are used by translate.client.Client. Most
-of these classes are simple wrappers, just to differentiate different types of
+"""
+translate.client.exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These are exception classes that are used by translate.client.Client. Most of
+these classes are simple wrappers, just to differentiate different types of
 errors. They can be constructed from a requests response object, or JSON
 ,returned from an API call.
 """
 
-import flask
 import json
 
 import logging
@@ -21,17 +24,26 @@ class TranslateException(Exception):
     """
 
     @classmethod
-    def from_json(cls, obj):
+    def from_json(cls, obj, status_code=400):
         """Return the proper exception class from the JSON object returned from
         the server.
         """
 
-        # TODO: This needs to be tested.
+        exceptions = {
+            429: RateLimitException,
+            452: TranslationException,
+            453: TranslatorException,
+            454: BadLanguagePairException
+        }
 
-        # To make things simpler, just generate a temporary Response object and
-        # reuse TranslateException#from_response.
-        return flask.Response(response=json.dumps(obj),
-                              status=obj.get('code', 400))
+        try:
+            code = obj['code'] if ('code' in obj) else status_code
+
+            klass = exceptions[code]
+            return klass.from_json(obj)
+
+        except KeyError:
+            return cls("Unknown error occured: " + repr(obj))
 
     @classmethod
     def from_response(cls, resp):
@@ -39,16 +51,12 @@ class TranslateException(Exception):
         and return it.
         """
 
-        if resp.status_code == 429:
-            return RateLimitException.from_response(resp)
-        elif resp.status_code == 452:
-            return TranslationException.from_response(resp)
-        elif resp.status_code == 453:
-            return TranslatorException.from_response(resp)
-        elif resp.status_code == 454:
-            return BadLanguagePairException.from_response(resp)
-
-        return cls("Unknown error occured: " + resp.text)
+        try:
+            obj = json.loads(resp.text)
+            return TranslateException.from_json(obj, resp.status_code)
+        except ValueError:
+            log.error("Was given invalid JSON, bailing...")
+            return TranslateException.from_json({}, resp.status_code)
 
 
 class HTTPException(TranslateException):
@@ -68,16 +76,15 @@ class RateLimitException(TranslateException):
         self.reset = reset
 
     @classmethod
-    def from_response(cls, resp):
+    def from_json(cls, obj):
         try:
-            obj = json.loads(resp.text)
             details = obj.get('details', {})
 
             return cls(limit=details['limit'], per=details['per'],
                        reset=details['reset'])
 
-        except (ValueError, KeyError):
-            log.error("Received invalid JSON: " + resp.text)
+        except KeyError:
+            log.error("Received invalid JSON: " + repr(obj))
             return cls(limit=0, per=0, reset=0)
 
     def __str__(self):
@@ -89,14 +96,13 @@ class TranslationException(TranslateException):
     """Returned on bad parameters to /translate"""
 
     @classmethod
-    def from_response(cls, resp):
+    def from_json(cls, obj):
         try:
-            obj = json.loads(resp.text)
             msg = obj['message']
 
             return cls("Bad parameters to translate API method: " + msg)
-        except (ValueError, KeyError):
-            log.error("Received invalid JSON: " + resp.text)
+        except KeyError:
+            log.error("Received invalid JSON: " + repr(obj))
             return cls("Bad parameters to translate API method.")
 
 
@@ -110,16 +116,15 @@ class TranslatorException(TranslateException):
         self.tried = tried
 
     @classmethod
-    def from_response(cls, resp):
+    def from_json(cls, obj):
         try:
-            obj = json.loads(resp.text)
             details = obj['details']
 
             pair = (details['from'], details['to'])
             return cls(lang_pair=pair, tried=details['tried'])
 
-        except (ValueError, KeyError):
-            log.error("Received invalid JSON: " + resp.text)
+        except KeyError:
+            log.error("Received invalid JSON: " + repr(obj))
 
             return cls(lang_pair=('unknown', 'unknown'), tried=['unknown'])
 
@@ -137,15 +142,14 @@ class BadLanguagePairException(TranslateException):
         self.lang_pair = lang_pair
 
     @classmethod
-    def from_response(cls, resp):
+    def from_json(cls, obj):
         try:
-            obj = json.loads(resp.text)
             details = obj['details']
 
             return cls(lang_pair=(details['from'], details['to']))
 
-        except (ValueError, KeyError):
-            log.error("Received invalid JSON: " + resp.text)
+        except KeyError:
+            log.error("Received invalid JSON: " + repr(obj))
 
             return cls(lang_pair=('unknown', 'unknown'))
 
