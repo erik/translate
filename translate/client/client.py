@@ -21,10 +21,12 @@ class Client(object):
     def __init__(self, host, port=5000, scheme='http', timeout=5, **kwargs):
         """Set up Client object.
 
-        host -- hostname if the translate server to connect to.
-        port (5000) -- port number translate server is on.
-        scheme (http) -- if the server is using SSL, change this to 'https'
-        timeout (5) -- number of seconds after which to give up on requests.
+        :param host: hostname if the translate server to connect to.
+        :param port: (5000) port number translate server is on.
+        :param scheme: ("http") if the server is using SSL, change this to
+        'https'
+        :param timeout: (5) number of seconds after which to give up on
+        requests.
         """
         self.host = host
         self.scheme = scheme
@@ -40,6 +42,8 @@ class Client(object):
     def language_pairs(self, refresh=False):
         """Get the list of supported language pairs. If refresh is True, will
         ignore previously cached results and hit the server again.
+
+        :param refresh: Whether or not to ignore cached data and redownload.
         """
 
         if refresh or (self.pairs is None):
@@ -51,6 +55,8 @@ class Client(object):
     def translators(self, refresh=False):
         """Returns a dict containing names of translation services available
         and some basic info about them
+
+        :param refresh: Whether or not to ignore cached data and redownload.
         """
 
         if refresh or (self.backends is None):
@@ -70,7 +76,13 @@ class Client(object):
         return self.backends
 
     def translate(self, text, from_lang, to_lang, refresh=False):
-        """Translate a given string of text between languages."""
+        """Translate a given string of text between languages.
+
+        :param text: String of text to translate.
+        :param from_lang: Language to translate from.
+        :param to_lang: Language to translate to.
+        :param refresh: Whether or not to ignore cached data and redownload.
+        """
 
         # Check that we're translating between valid languages
         if (from_lang, to_lang) not in self.language_pairs(refresh=refresh):
@@ -139,7 +151,11 @@ of (text, from, to), got " + repr(tupl))
 
     def can_translate(self, from_lang, to_lang, refresh=False):
         """Returns whether or not the translate server supports the given
-        language pair
+        language pair.
+
+        :param from_lang: Language to translate from.
+        :param to_lang: Language to translate to.
+        :param refresh: Whether or not to ignore cached data and redownload.
         """
 
         return (from_lang, to_lang) in self.language_pairs(refresh=refresh)
@@ -164,7 +180,8 @@ of (text, from, to), got " + repr(tupl))
         return obj
 
     def _post_request(self, method, **kwargs):
-        """Similar """
+        """Same concept as _request, this function sends a HTTP POST with the
+        given kwargs as POST data"""
 
         url = self.base_url + method
 
