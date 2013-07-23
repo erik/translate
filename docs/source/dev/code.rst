@@ -26,6 +26,11 @@ translate.backend
 .. automodule:: translate.backend
    :members:
 
+translate.client
+~~~~~~~~~~~~~~~~
+.. automodule:: translate.client
+   :members:
+
 translate.exceptions
 ~~~~~~~~~~~~~~~~~~~~
 .. automodule:: translate.exceptions

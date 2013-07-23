@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+"""
+translate.client.client
+~~~~~~~~~~~~~~~~~~~~~~~
+"""
+
 import json
 import requests
 import urllib
@@ -16,7 +21,12 @@ log = logging.getLogger(__name__)
 
 
 class Client(object):
-    """A client for interacting with translate server v1 API"""
+    """A client for interacting with translate server v1 API
+
+    Note that almost every function here may raise a
+    translate.exceptions.TranslateException, if communication to the server
+    fails.
+    """
 
     def __init__(self, host, port=5000, scheme='http', timeout=5, **kwargs):
         """Set up Client object.
@@ -112,7 +122,7 @@ class Client(object):
         XXX: Should timeout change? It definitely takes longer for this (with
              good reason)
 
-        params is a list of (text, from_lang, to_lang).
+        :param params: list of (text, from_lang, to_lang).
         """
 
         urls = []

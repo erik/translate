@@ -11,4 +11,5 @@ Documentation on administration or usage of the server itself.
 
    api
    plugin
+   client
    code

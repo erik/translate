@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
-"""Python client for translate server. Provides a simple wrapper around the
-HTTP interface.
+"""
+translate.client
+~~~~~~~~~~~~~~~~
+
+Python client for translate server. Provides a simple wrapper around the HTTP
+interface.
 """
 
 __title__ = 'client'

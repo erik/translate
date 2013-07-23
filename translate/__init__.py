@@ -2,7 +2,7 @@
 
 """
 translate
----------
+~~~~~~~~~
 
 Translate is a front end server application to provide a consistent interface
 to multiple machine translation services.
