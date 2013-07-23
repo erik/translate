@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>translate.client.exceptions &mdash; translate 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="translate 0 documentation" href="../../../index.html" />
+    <link rel="up" title="translate.client" href="../client.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../client.html" accesskey="U">translate.client</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for translate.client.exceptions</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">translate.client.exceptions</span>
+<span class="sd">~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">These are exception classes that are used by translate.client.Client. Most of</span>
+<span class="sd">these classes are simple wrappers, just to differentiate different types of</span>
+<span class="sd">errors. They can be constructed from a requests response object, or JSON</span>
+<span class="sd">,returned from an API call.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TranslateException"><a class="viewcode-back" href="../../../dev/client.html#translate.client.exceptions.TranslateException">[docs]</a><span class="k">class</span> <span class="nc">TranslateException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mostly empty base class for exceptions relating to translate.</span>
+
+<span class="sd">    This class is used as a catch-all for exceptions thrown by the server. If</span>
+<span class="sd">    possible, a more specific subclass of this exception will be used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TranslateException.from_json"><a class="viewcode-back" href="../../../dev/client.html#translate.client.exceptions.TranslateException.from_json">[docs]</a>    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the proper exception class from the JSON object returned from</span>
+<span class="sd">        the server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">exceptions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">429</span><span class="p">:</span> <span class="n">RateLimitException</span><span class="p">,</span>
+            <span class="mi">452</span><span class="p">:</span> <span class="n">TranslationException</span><span class="p">,</span>
+            <span class="mi">453</span><span class="p">:</span> <span class="n">TranslatorException</span><span class="p">,</span>
+            <span class="mi">454</span><span class="p">:</span> <span class="n">BadLanguagePairException</span>
+        <span class="p">}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s">&#39;code&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="p">(</span><span class="s">&#39;code&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">)</span> <span class="k">else</span> <span class="n">status_code</span>
+
+            <span class="n">klass</span> <span class="o">=</span> <span class="n">exceptions</span><span class="p">[</span><span class="n">code</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">klass</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="s">&quot;Unknown error occured: &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TranslateException.from_response"><a class="viewcode-back" href="../../../dev/client.html#translate.client.exceptions.TranslateException.from_response">[docs]</a>    <span class="k">def</span> <span class="nf">from_response</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a proper exception from the given requests response object</span>
+<span class="sd">        and return it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">TranslateException</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Was given invalid JSON, bailing...&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">TranslateException</span><span class="o">.</span><span class="n">from_json</span><span class="p">({},</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="HTTPException"><a class="viewcode-back" href="../../../dev/client.html#translate.client.exceptions.HTTPException">[docs]</a><span class="k">class</span> <span class="nc">HTTPException</span><span class="p">(</span><span class="n">TranslateException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when an error occurs with the HTTP connection to the server</span>
+<span class="sd">    (e.g. host is not available, doesn&#39;t respond, etc.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="RateLimitException"><a class="viewcode-back" href="../../../dev/client.html#translate.client.exceptions.RateLimitException">[docs]</a><span class="k">class</span> <span class="nc">RateLimitException</span><span class="p">(</span><span class="n">TranslateException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exception raised when a client goes over the ratelimit.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="p">,</span> <span class="n">reset</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">per</span> <span class="o">=</span> <span class="n">per</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="n">reset</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;details&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">details</span><span class="p">[</span><span class="s">&#39;limit&#39;</span><span class="p">],</span> <span class="n">per</span><span class="o">=</span><span class="n">details</span><span class="p">[</span><span class="s">&#39;per&#39;</span><span class="p">],</span>
+                       <span class="n">reset</span><span class="o">=</span><span class="n">details</span><span class="p">[</span><span class="s">&#39;reset&#39;</span><span class="p">])</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Received invalid JSON: &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">per</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Rate limit exceeded: {0} reqs / {1}s. Try again at {2}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">per</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="TranslationException"><a class="viewcode-back" href="../../../dev/client.html#translate.client.exceptions.TranslationException">[docs]</a><span class="k">class</span> <span class="nc">TranslationException</span><span class="p">(</span><span class="n">TranslateException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returned on bad parameters to /translate&quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="s">&quot;Bad parameters to translate API method: &quot;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Received invalid JSON: &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="s">&quot;Bad parameters to translate API method.&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="TranslatorException"><a class="viewcode-back" href="../../../dev/client.html#translate.client.exceptions.TranslatorException">[docs]</a><span class="k">class</span> <span class="nc">TranslatorException</span><span class="p">(</span><span class="n">TranslateException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returned when bad parameters are passed to the /translate method. (This</span>
+<span class="sd">    probably indicates some kind of API / Client bug.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang_pair</span><span class="p">,</span> <span class="n">tried</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lang_pair</span> <span class="o">=</span> <span class="n">lang_pair</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tried</span> <span class="o">=</span> <span class="n">tried</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s">&#39;details&#39;</span><span class="p">]</span>
+
+            <span class="n">pair</span> <span class="o">=</span> <span class="p">(</span><span class="n">details</span><span class="p">[</span><span class="s">&#39;from&#39;</span><span class="p">],</span> <span class="n">details</span><span class="p">[</span><span class="s">&#39;to&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">lang_pair</span><span class="o">=</span><span class="n">pair</span><span class="p">,</span> <span class="n">tried</span><span class="o">=</span><span class="n">details</span><span class="p">[</span><span class="s">&#39;tried&#39;</span><span class="p">])</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Received invalid JSON: &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">lang_pair</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;unknown&#39;</span><span class="p">,</span> <span class="s">&#39;unknown&#39;</span><span class="p">),</span> <span class="n">tried</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;unknown&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Failed to translate {0} (tried: {1})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lang_pair</span><span class="p">,</span>
+                                                             <span class="bp">self</span><span class="o">.</span><span class="n">tried</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="BadLanguagePairException"><a class="viewcode-back" href="../../../dev/client.html#translate.client.exceptions.BadLanguagePairException">[docs]</a><span class="k">class</span> <span class="nc">BadLanguagePairException</span><span class="p">(</span><span class="n">TranslateException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when the client tried to translate using a language pair not</span>
+<span class="sd">    supported by the server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang_pair</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lang_pair</span> <span class="o">=</span> <span class="n">lang_pair</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s">&#39;details&#39;</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">lang_pair</span><span class="o">=</span><span class="p">(</span><span class="n">details</span><span class="p">[</span><span class="s">&#39;from&#39;</span><span class="p">],</span> <span class="n">details</span><span class="p">[</span><span class="s">&#39;to&#39;</span><span class="p">]))</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Received invalid JSON: &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">lang_pair</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;unknown&#39;</span><span class="p">,</span> <span class="s">&#39;unknown&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Unsupported language pair: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lang_pair</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../client.html" >translate.client</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Erik Price.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

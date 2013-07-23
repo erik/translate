@@ -136,7 +136,7 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1ed2e60&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1e09758&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is
@@ -277,6 +277,107 @@ issued to the user &#8211; or whatever the proper course of action may be.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-translate.client">
+<span id="translate-client"></span><h3>translate.client<a class="headerlink" href="#module-translate.client" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h4>translate.client<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>Python client for translate server. Provides a simple wrapper around the HTTP
+interface.</p>
+<dl class="class">
+<dt id="translate.client.Client">
+<em class="property">class </em><tt class="descclassname">translate.client.</tt><tt class="descname">Client</tt><big>(</big><em>host</em>, <em>port=5000</em>, <em>scheme='http'</em>, <em>timeout=5</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#translate.client.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>A client for interacting with translate server v1 API</p>
+<dl class="method">
+<dt id="translate.client.Client.batch_translate">
+<tt class="descname">batch_translate</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#translate.client.Client.batch_translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate multiple texts and language pairs in a single
+call. Returns a list of strings containing the resulting translated
+texts, or an Exception object, if the request failed.</p>
+<p>This function won&#8217;t raise any exceptions explicitly, so it&#8217;s important
+to check the results.</p>
+<dl class="docutils">
+<dt>XXX: Is this Pythonic or even good API design? Not sure how else to</dt>
+<dd>handle it.</dd>
+<dt>XXX: Should timeout change? It definitely takes longer for this (with</dt>
+<dd>good reason)</dd>
+</dl>
+<p>params is a list of (text, from_lang, to_lang).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.can_translate">
+<tt class="descname">can_translate</tt><big>(</big><em>from_lang</em>, <em>to_lang</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.can_translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether or not the translate server supports the given
+language pair.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>from_lang</strong> &#8211; Language to translate from.</li>
+<li><strong>to_lang</strong> &#8211; Language to translate to.</li>
+<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.language_pairs">
+<tt class="descname">language_pairs</tt><big>(</big><em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.language_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of supported language pairs. If refresh is True, will
+ignore previously cached results and hit the server again.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.translate">
+<tt class="descname">translate</tt><big>(</big><em>text</em>, <em>from_lang</em>, <em>to_lang</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate a given string of text between languages.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> &#8211; String of text to translate.</li>
+<li><strong>from_lang</strong> &#8211; Language to translate from.</li>
+<li><strong>to_lang</strong> &#8211; Language to translate to.</li>
+<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.translators">
+<tt class="descname">translators</tt><big>(</big><em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.translators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dict containing names of translation services available
+and some basic info about them</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
 <div class="section" id="module-translate.exceptions">
 <span id="translate-exceptions"></span><h3>translate.exceptions<a class="headerlink" href="#module-translate.exceptions" title="Permalink to this headline">¶</a></h3>
 <p>Custom Exception classes for use by the translation server.</p>
@@ -381,6 +482,10 @@ cls: class to find subclasses of</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-translate.backend">translate.backend</a></li>
+<li><a class="reference internal" href="#module-translate.client">translate.client</a><ul>
+<li><a class="reference internal" href="#id2">translate.client</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-translate.exceptions">translate.exceptions</a></li>
 <li><a class="reference internal" href="#module-translate.utils">translate.utils</a></li>
 </ul>

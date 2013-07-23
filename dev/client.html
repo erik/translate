@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Client Documentation &mdash; translate 0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="translate 0 documentation" href="../index.html" />
+    <link rel="up" title="Translate Developer Documentation" href="index.html" />
+    <link rel="next" title="Code Documentation" href="code.html" />
+    <link rel="prev" title="Plugin Documentation" href="plugin.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Code Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plugin.html" title="Plugin Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Translate Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="client-documentation">
+<h1>Client Documentation<a class="headerlink" href="#client-documentation" title="Permalink to this headline">¶</a></h1>
+<p>TODO: Write me</p>
+<div class="section" id="module-translate.client">
+<span id="code-documentation"></span><h2>Code Documentation<a class="headerlink" href="#module-translate.client" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="translate-client">
+<h3>translate.client<a class="headerlink" href="#translate-client" title="Permalink to this headline">¶</a></h3>
+<p>Python client for translate server. Provides a simple wrapper around the HTTP
+interface.</p>
+<dl class="class">
+<dt id="translate.client.Client">
+<em class="property">class </em><tt class="descclassname">translate.client.</tt><tt class="descname">Client</tt><big>(</big><em>host</em>, <em>port=5000</em>, <em>scheme='http'</em>, <em>timeout=5</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#translate.client.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>A client for interacting with translate server v1 API</p>
+<p>Note that almost every function here may raise a
+translate.exceptions.TranslateException, if communication to the server
+fails.</p>
+<dl class="method">
+<dt id="translate.client.Client.batch_translate">
+<tt class="descname">batch_translate</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#translate.client.Client.batch_translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate multiple texts and language pairs in a single
+call. Returns a list of strings containing the resulting translated
+texts, or an Exception object, if the request failed.</p>
+<p>This function won&#8217;t raise any exceptions explicitly, so it&#8217;s important
+to check the results.</p>
+<dl class="docutils">
+<dt>XXX: Is this Pythonic or even good API design? Not sure how else to</dt>
+<dd>handle it.</dd>
+<dt>XXX: Should timeout change? It definitely takes longer for this (with</dt>
+<dd>good reason)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> &#8211; list of (text, from_lang, to_lang).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.can_translate">
+<tt class="descname">can_translate</tt><big>(</big><em>from_lang</em>, <em>to_lang</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.can_translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether or not the translate server supports the given
+language pair.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>from_lang</strong> &#8211; Language to translate from.</li>
+<li><strong>to_lang</strong> &#8211; Language to translate to.</li>
+<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.language_pairs">
+<tt class="descname">language_pairs</tt><big>(</big><em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.language_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of supported language pairs. If refresh is True, will
+ignore previously cached results and hit the server again.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.translate">
+<tt class="descname">translate</tt><big>(</big><em>text</em>, <em>from_lang</em>, <em>to_lang</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate a given string of text between languages.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> &#8211; String of text to translate.</li>
+<li><strong>from_lang</strong> &#8211; Language to translate from.</li>
+<li><strong>to_lang</strong> &#8211; Language to translate to.</li>
+<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.translators">
+<tt class="descname">translators</tt><big>(</big><em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.translators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dict containing names of translation services available
+and some basic info about them</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-translate.client.exceptions"></span><div class="section" id="translate-client-exceptions">
+<h3>translate.client.exceptions<a class="headerlink" href="#translate-client-exceptions" title="Permalink to this headline">¶</a></h3>
+<p>These are exception classes that are used by translate.client.Client. Most of
+these classes are simple wrappers, just to differentiate different types of
+errors. They can be constructed from a requests response object, or JSON
+,returned from an API call.</p>
+<dl class="exception">
+<dt id="translate.client.exceptions.BadLanguagePairException">
+<em class="property">exception </em><tt class="descclassname">translate.client.exceptions.</tt><tt class="descname">BadLanguagePairException</tt><big>(</big><em>lang_pair</em><big>)</big><a class="reference internal" href="../_modules/translate/client/exceptions.html#BadLanguagePairException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.BadLanguagePairException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when the client tried to translate using a language pair not
+supported by the server</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="translate.client.exceptions.HTTPException">
+<em class="property">exception </em><tt class="descclassname">translate.client.exceptions.</tt><tt class="descname">HTTPException</tt><a class="reference internal" href="../_modules/translate/client/exceptions.html#HTTPException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.HTTPException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when an error occurs with the HTTP connection to the server
+(e.g. host is not available, doesn&#8217;t respond, etc.)</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="translate.client.exceptions.RateLimitException">
+<em class="property">exception </em><tt class="descclassname">translate.client.exceptions.</tt><tt class="descname">RateLimitException</tt><big>(</big><em>limit</em>, <em>per</em>, <em>reset</em><big>)</big><a class="reference internal" href="../_modules/translate/client/exceptions.html#RateLimitException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.RateLimitException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception raised when a client goes over the ratelimit.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="translate.client.exceptions.TranslateException">
+<em class="property">exception </em><tt class="descclassname">translate.client.exceptions.</tt><tt class="descname">TranslateException</tt><a class="reference internal" href="../_modules/translate/client/exceptions.html#TranslateException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.TranslateException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mostly empty base class for exceptions relating to translate.</p>
+<p>This class is used as a catch-all for exceptions thrown by the server. If
+possible, a more specific subclass of this exception will be used.</p>
+<dl class="classmethod">
+<dt id="translate.client.exceptions.TranslateException.from_json">
+<em class="property">classmethod </em><tt class="descname">from_json</tt><big>(</big><em>obj</em>, <em>status_code=400</em><big>)</big><a class="reference internal" href="../_modules/translate/client/exceptions.html#TranslateException.from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.TranslateException.from_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the proper exception class from the JSON object returned from
+the server.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="translate.client.exceptions.TranslateException.from_response">
+<em class="property">classmethod </em><tt class="descname">from_response</tt><big>(</big><em>resp</em><big>)</big><a class="reference internal" href="../_modules/translate/client/exceptions.html#TranslateException.from_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.TranslateException.from_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a proper exception from the given requests response object
+and return it.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="translate.client.exceptions.TranslationException">
+<em class="property">exception </em><tt class="descclassname">translate.client.exceptions.</tt><tt class="descname">TranslationException</tt><a class="reference internal" href="../_modules/translate/client/exceptions.html#TranslationException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.TranslationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returned on bad parameters to /translate</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="translate.client.exceptions.TranslatorException">
+<em class="property">exception </em><tt class="descclassname">translate.client.exceptions.</tt><tt class="descname">TranslatorException</tt><big>(</big><em>lang_pair</em>, <em>tried</em><big>)</big><a class="reference internal" href="../_modules/translate/client/exceptions.html#TranslatorException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.TranslatorException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returned when bad parameters are passed to the /translate method. (This
+probably indicates some kind of API / Client bug.)</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Client Documentation</a><ul>
+<li><a class="reference internal" href="#module-translate.client">Code Documentation</a><ul>
+<li><a class="reference internal" href="#translate-client">translate.client</a></li>
+<li><a class="reference internal" href="#translate-client-exceptions">translate.client.exceptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="plugin.html"
+                        title="previous chapter">Plugin Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="code.html"
+                        title="next chapter">Code Documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/client.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Code Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="plugin.html" title="Plugin Documentation"
+             >previous</a> |</li>
+        <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Translate Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Erik Price.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
