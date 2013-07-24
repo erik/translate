@@ -44,7 +44,8 @@ class Coverage(Command):
         pass
 
     def run(self):
-        subprocess.check_call(['coverage', 'run', '--source', 'translate', '-m', 'pytest', 'tests'])
+        subprocess.check_call(['coverage', 'run', '--source', 'translate',
+                               '-m', 'pytest', 'tests'])
         # Generate HTML
         subprocess.check_call(['coverage', 'html'])
 
@@ -66,6 +67,6 @@ setup(name='translate',
       cmdclass={'test': PyTest, 'lint': PyLint, 'cov': Coverage},
       install_requires=requires,
       license='GPLv3',
-      packages = find_packages(),
-      include_package_data = True,
+      packages=find_packages(),
+      include_package_data=True,
       scripts=['bin/translate'])
