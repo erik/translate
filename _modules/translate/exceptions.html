@@ -75,6 +75,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="n">details</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span>
 
 <div class="viewcode-block" id="APIException.jsonify"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.jsonify">[docs]</a>    <span class="k">def</span> <span class="nf">jsonify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a flask Response object containing a JSON representation of</span>
@@ -82,7 +83,7 @@
 <span class="sd">        the request</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">resp</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
-                             <span class="n">url</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+                             <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
                              <span class="n">details</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">details</span><span class="p">)</span>
 
         <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span>
@@ -92,7 +93,7 @@
         <span class="k">return</span> <span class="n">resp</span>
 </div>
     <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="APIException.ratelimit"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.ratelimit">[docs]</a>    <span class="k">def</span> <span class="nf">ratelimit</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="p">):</span>
+<div class="viewcode-block" id="APIException.ratelimit"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.ratelimit">[docs]</a>    <span class="k">def</span> <span class="nf">ratelimit</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="p">,</span> <span class="n">reset</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Class method to construct an APIException for going over the</span>
 <span class="sd">        ratelimit. The optional msg and details parameters can be used to add</span>
 <span class="sd">        additional information to the error.</span>
@@ -100,7 +101,8 @@
         <span class="n">tupl</span> <span class="o">=</span> <span class="n">APIException</span><span class="o">.</span><span class="n">API_ERRORS</span><span class="p">[</span><span class="mi">429</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="mi">429</span><span class="p">,</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                    <span class="p">{</span><span class="s">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span>
-                    <span class="s">&#39;per&#39;</span><span class="p">:</span> <span class="n">per</span><span class="p">})</span>
+                    <span class="s">&#39;per&#39;</span><span class="p">:</span> <span class="n">per</span><span class="p">,</span>
+                    <span class="s">&#39;reset&#39;</span><span class="p">:</span> <span class="n">reset</span><span class="p">})</span>
 </div>
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="APIException.pair"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.pair">[docs]</a>    <span class="k">def</span> <span class="nf">pair</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">from_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>

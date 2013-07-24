@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="translate 0 documentation" href="../index.html" />
     <link rel="up" title="Translate Developer Documentation" href="index.html" />
-    <link rel="prev" title="Plugin Documentation" href="plugin.html" /> 
+    <link rel="prev" title="Client Documentation" href="client.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="plugin.html" title="Plugin Documentation"
+          <a href="client.html" title="Client Documentation"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Translate Developer Documentation</a> &raquo;</li> 
@@ -91,26 +91,26 @@ resets the timer before adding the request in.</p>
 
 <dl class="staticmethod">
 <dt id="translate.app.ratelimit.RateLimit.enable">
-<em class="property">static </em><tt class="descname">enable</tt><big>(</big><em>limit</em>, <em>per</em><big>)</big><a class="headerlink" href="#translate.app.ratelimit.RateLimit.enable" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">enable</tt><big>(</big><em>limit</em>, <em>per</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.enable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.enable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize rate limiting with given limit / per values.</p>
 </dd></dl>
 
 <dl class="staticmethod">
 <dt id="translate.app.ratelimit.RateLimit.over_limit">
-<em class="property">static </em><tt class="descname">over_limit</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="headerlink" href="#translate.app.ratelimit.RateLimit.over_limit" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">over_limit</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.over_limit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.over_limit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Is the current user over the rate limit for the given API method</p>
 </dd></dl>
 
 <dl class="staticmethod">
 <dt id="translate.app.ratelimit.RateLimit.remaining">
-<em class="property">static </em><tt class="descname">remaining</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="headerlink" href="#translate.app.ratelimit.RateLimit.remaining" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">remaining</tt><big>(</big><em>user</em>, <em>key</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.remaining"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.remaining" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return how many request the current user has for the given API
 method during this request period.</p>
 </dd></dl>
 
 <dl class="staticmethod">
 <dt id="translate.app.ratelimit.RateLimit.update_timer">
-<em class="property">static </em><tt class="descname">update_timer</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.app.ratelimit.RateLimit.update_timer" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><tt class="descname">update_timer</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#RateLimit.update_timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.RateLimit.update_timer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset the RateLimit requests, if time has expired</p>
 </dd></dl>
 
@@ -118,13 +118,13 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.get_view_rate_limit_remaining">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_rate_limit_remaining</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.app.ratelimit.get_view_rate_limit_remaining" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_rate_limit_remaining</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#get_view_rate_limit_remaining"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.get_view_rate_limit_remaining" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the ratelimit for the current requester / API method</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.get_view_send_x_headers">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_send_x_headers</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.app.ratelimit.get_view_send_x_headers" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">get_view_send_x_headers</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#get_view_send_x_headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.get_view_send_x_headers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether or not the current view should send X-RateLimit-* headers.</p>
 </dd></dl>
 
@@ -136,7 +136,7 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1e09758&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1fd4758&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is
@@ -287,9 +287,12 @@ interface.</p>
 <dt id="translate.client.Client">
 <em class="property">class </em><tt class="descclassname">translate.client.</tt><tt class="descname">Client</tt><big>(</big><em>host</em>, <em>port=5000</em>, <em>scheme='http'</em>, <em>timeout=5</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#translate.client.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>A client for interacting with translate server v1 API</p>
+<p>Note that almost every function here may raise a
+translate.exceptions.TranslateException, if communication to the server
+fails.</p>
 <dl class="method">
 <dt id="translate.client.Client.batch_translate">
-<tt class="descname">batch_translate</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#translate.client.Client.batch_translate" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">batch_translate</tt><big>(</big><em>params</em>, <em>ignore_timeout=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.batch_translate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translate multiple texts and language pairs in a single
 call. Returns a list of strings containing the resulting translated
 texts, or an Exception object, if the request failed.</p>
@@ -298,10 +301,29 @@ to check the results.</p>
 <dl class="docutils">
 <dt>XXX: Is this Pythonic or even good API design? Not sure how else to</dt>
 <dd>handle it.</dd>
-<dt>XXX: Should timeout change? It definitely takes longer for this (with</dt>
-<dd>good reason)</dd>
 </dl>
-<p>params is a list of (text, from_lang, to_lang).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>params</strong> &#8211; list of (text, from_lang, to_lang).</li>
+<li><strong>ignore_timeout</strong> &#8211; (False) Making N requests will likely take N
+times as long, so it may be a good idea to
+ignore the HTTP request timeout time</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.can_connect">
+<tt class="descname">can_connect</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.client.Client.can_connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to connect to the specified server. If a dummy request succeeds,
+True will be returned. If some kind of connection error (timeout, HTTP
+status != 200, ...) occurs, then False will be returned.</p>
 </dd></dl>
 
 <dl class="method">
@@ -495,8 +517,8 @@ cls: class to find subclasses of</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="plugin.html"
-                        title="previous chapter">Plugin Documentation</a></p>
+  <p class="topless"><a href="client.html"
+                        title="previous chapter">Client Documentation</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/dev/code.txt"
@@ -529,7 +551,7 @@ cls: class to find subclasses of</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="plugin.html" title="Plugin Documentation"
+          <a href="client.html" title="Client Documentation"
              >previous</a> |</li>
         <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
           <li><a href="index.html" >Translate Developer Documentation</a> &raquo;</li> 

@@ -58,77 +58,108 @@
 
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">flask</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 
-<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">update_wrapper</span>
 <span class="kn">from</span> <span class="nn">translate.exceptions</span> <span class="kn">import</span> <span class="n">APIException</span>
 
 
+<span class="n">RATELIMIT_MUTEX</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
 <div class="viewcode-block" id="RateLimit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit">[docs]</a><span class="k">class</span> <span class="nc">RateLimit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">mutex</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;This singleton class manages all API requests, taking care of pruning</span>
+<span class="sd">    and adding them as necessary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">limit_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="n">limit</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">per</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">reset</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">send_x_headers</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">send_x_headers</span> <span class="o">=</span> <span class="n">send_x_headers</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="RateLimit.enable"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.enable">[docs]</a>    <span class="k">def</span> <span class="nf">enable</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize rate limiting with given limit / per values.&quot;&quot;&quot;</span>
 
-        <span class="c"># GIL should take care of us, but just in case, we&#39;ll obtain a lock</span>
-        <span class="n">RateLimit</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span> <span class="o">=</span> <span class="n">per</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">//</span> <span class="n">per</span><span class="p">)</span> <span class="o">*</span> <span class="n">per</span> <span class="o">+</span> <span class="n">per</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="RateLimit.update_timer"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.update_timer">[docs]</a>    <span class="k">def</span> <span class="nf">update_timer</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Reset the RateLimit requests, if time has expired&quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_request</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trim_requests</span><span class="p">()</span>
+        <span class="c"># Limit has expired, flush requests and reset timer</span>
+        <span class="k">if</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">reset</span> <span class="o">&lt;=</span> <span class="n">now</span><span class="p">:</span>
+            <span class="n">RateLimit</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="p">(</span><span class="n">now</span> <span class="o">//</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span><span class="p">)</span> <span class="o">*</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span> <span class="o">+</span>\
+                <span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span> <span class="o">=</span> <span class="p">{}</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="RateLimit.add_request"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.add_request">[docs]</a>    <span class="k">def</span> <span class="nf">add_request</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Record that the given user (IP-address) made a request to the</span>
+<span class="sd">        specified API endpoint (/api/v1/METHOD)</span>
 
-        <span class="n">RateLimit</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-
-<div class="viewcode-block" id="RateLimit.add_request"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.add_request">[docs]</a>    <span class="k">def</span> <span class="nf">add_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Note that the given user made a request to the API method `key`.</span>
-<span class="sd">        Will only append the request onto the list of requests if the user is</span>
-<span class="sd">        under their limit (so as not to further penalize duplicate requests</span>
-<span class="sd">        after the limit is hit).</span>
+<span class="sd">        If the current ratelimit window has expired, clears all requests and</span>
+<span class="sd">        resets the timer before adding the request in.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># GIL should take care of us, but just in case we&#39;ll obtain a lock so</span>
+        <span class="c"># concurrent requests can&#39;t do any harm.</span>
+        <span class="n">RATELIMIT_MUTEX</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">update_timer</span><span class="p">()</span>
+
         <span class="n">key_dict</span> <span class="o">=</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="n">user_reqs</span> <span class="o">=</span> <span class="n">key_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[])</span>
 
-        <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">user_reqs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">):</span>
-            <span class="n">user_reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
+        <span class="c"># Add to requests this user has made</span>
+        <span class="n">key_dict</span><span class="p">[</span><span class="n">user</span><span class="p">]</span> <span class="o">=</span> <span class="n">key_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
-        <span class="n">key_dict</span><span class="p">[</span><span class="n">user</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_reqs</span>
         <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">key_dict</span>
+
+        <span class="n">RATELIMIT_MUTEX</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
 </div>
-<div class="viewcode-block" id="RateLimit.trim_requests"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.trim_requests">[docs]</a>    <span class="k">def</span> <span class="nf">trim_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Automatically remove requests older than the limit.&quot;&quot;&quot;</span>
-        <span class="n">cutoff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> <span class="o">-</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="RateLimit.remaining"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.remaining">[docs]</a>    <span class="k">def</span> <span class="nf">remaining</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return how many request the current user has for the given API</span>
+<span class="sd">        method during this request period.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c"># TODO: This is horrifying, rewrite it.</span>
+        <span class="n">reqs</span> <span class="o">=</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">key</span><span class="p">,</span>
-             <span class="nb">dict</span><span class="p">((</span><span class="n">user</span><span class="p">,</span>
-                   <span class="c"># Take only the requests that are still valid</span>
-                   <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reqs</span> <span class="k">if</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="n">cutoff</span><span class="p">])</span> <span class="k">for</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">reqs</span><span class="p">)</span>
-                  <span class="ow">in</span> <span class="n">users</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="c"># Make sure we never return a negative number of requests remaining</span>
+        <span class="k">if</span> <span class="n">reqs</span> <span class="o">&gt;</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
 
-            <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">users</span><span class="p">)</span> <span class="ow">in</span>
-            <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span> <span class="o">-</span> <span class="n">reqs</span>
 </div>
-    <span class="n">remaining</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
-    <span class="n">over_limit</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">current</span> <span class="o">&gt;=</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span><span class="p">)</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="RateLimit.over_limit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.RateLimit.over_limit">[docs]</a>    <span class="k">def</span> <span class="nf">over_limit</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Is the current user over the rate limit for the given API method&quot;&quot;&quot;</span>
+        <span class="n">reqs</span> <span class="o">=</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">reqs</span> <span class="o">&gt;</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span>
 
-</div>
-<div class="viewcode-block" id="get_view_rate_limit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.get_view_rate_limit">[docs]</a><span class="k">def</span> <span class="nf">get_view_rate_limit</span><span class="p">():</span>
+</div></div>
+<div class="viewcode-block" id="get_view_rate_limit_remaining"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.get_view_rate_limit_remaining">[docs]</a><span class="k">def</span> <span class="nf">get_view_rate_limit_remaining</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Get the ratelimit for the current requester / API method&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="s">&#39;_view_rate_limit&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="s">&#39;_view_rate_limit_remaining&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="on_over_limit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.on_over_limit">[docs]</a><span class="k">def</span> <span class="nf">on_over_limit</span><span class="p">(</span><span class="n">limit</span><span class="p">):</span>
+<div class="viewcode-block" id="get_view_send_x_headers"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.get_view_send_x_headers">[docs]</a><span class="k">def</span> <span class="nf">get_view_send_x_headers</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Whether or not the current view should send X-RateLimit-* headers.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="s">&#39;_send_rate_limit_x_headers&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="on_over_limit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.on_over_limit">[docs]</a><span class="k">def</span> <span class="nf">on_over_limit</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Callback function to call when API method goes over the ratelimit&quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="n">APIException</span><span class="o">.</span><span class="n">ratelimit</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="o">=</span><span class="n">limit</span><span class="o">.</span><span class="n">per</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="n">APIException</span><span class="o">.</span><span class="n">ratelimit</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="o">=</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span><span class="p">,</span>
+                                 <span class="n">reset</span><span class="o">=</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">reset</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="ratelimit"><a class="viewcode-back" href="../../../dev/code.html#translate.app.ratelimit.ratelimit">[docs]</a><span class="k">def</span> <span class="nf">ratelimit</span><span class="p">(</span><span class="n">send_x_headers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">over_limit_func</span><span class="o">=</span><span class="n">on_over_limit</span><span class="p">):</span>
@@ -136,17 +167,25 @@
 
 <span class="sd">    send_x_headers -- should we add X-RateLimit-* headers to the request?</span>
 <span class="sd">    over_limit_func -- function to call instead of API endpoint when limit is</span>
-<span class="sd">                       hit.</span>
+<span class="sd">    hit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">rate_limited</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
-                <span class="n">rlimit</span> <span class="o">=</span> <span class="n">RateLimit</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span><span class="p">,</span>
-                                   <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span>
-                                   <span class="n">send_x_headers</span><span class="p">)</span>
-                <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">_view_rate_limit</span> <span class="o">=</span> <span class="n">rlimit</span>
-                <span class="k">if</span> <span class="n">over_limit_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">rlimit</span><span class="o">.</span><span class="n">over_limit</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">over_limit_func</span><span class="p">(</span><span class="n">rlimit</span><span class="p">)</span>
+                <span class="c"># Base rate limiting on IPs</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">path</span>
+
+                <span class="n">RateLimit</span><span class="o">.</span><span class="n">add_request</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+                <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">_send_rate_limit_x_headers</span> <span class="o">=</span> <span class="n">send_x_headers</span>
+                <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">_view_rate_limit_remaining</span> <span class="o">=</span>\
+                    <span class="n">RateLimit</span><span class="o">.</span><span class="n">remaining</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">over_limit_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>\
+                   <span class="n">RateLimit</span><span class="o">.</span><span class="n">over_limit</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+
+                    <span class="k">return</span> <span class="n">over_limit_func</span><span class="p">()</span>
 
             <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">update_wrapper</span><span class="p">(</span><span class="n">rate_limited</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>

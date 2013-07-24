@@ -72,7 +72,7 @@ translate.exceptions.TranslateException, if communication to the server
 fails.</p>
 <dl class="method">
 <dt id="translate.client.Client.batch_translate">
-<tt class="descname">batch_translate</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#translate.client.Client.batch_translate" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">batch_translate</tt><big>(</big><em>params</em>, <em>ignore_timeout=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.batch_translate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translate multiple texts and language pairs in a single
 call. Returns a list of strings containing the resulting translated
 texts, or an Exception object, if the request failed.</p>
@@ -81,17 +81,29 @@ to check the results.</p>
 <dl class="docutils">
 <dt>XXX: Is this Pythonic or even good API design? Not sure how else to</dt>
 <dd>handle it.</dd>
-<dt>XXX: Should timeout change? It definitely takes longer for this (with</dt>
-<dd>good reason)</dd>
 </dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> &#8211; list of (text, from_lang, to_lang).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>params</strong> &#8211; list of (text, from_lang, to_lang).</li>
+<li><strong>ignore_timeout</strong> &#8211; (False) Making N requests will likely take N
+times as long, so it may be a good idea to
+ignore the HTTP request timeout time</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.can_connect">
+<tt class="descname">can_connect</tt><big>(</big><big>)</big><a class="headerlink" href="#translate.client.Client.can_connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to connect to the specified server. If a dummy request succeeds,
+True will be returned. If some kind of connection error (timeout, HTTP
+status != 200, ...) occurs, then False will be returned.</p>
 </dd></dl>
 
 <dl class="method">

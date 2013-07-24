@@ -51,7 +51,7 @@
  <span class="c"># -*- coding: utf-8 -*-</span>
 
 <span class="kn">from</span> <span class="nn">translate.app</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">log</span>
-<span class="kn">from</span> <span class="nn">translate.app.ratelimit</span> <span class="kn">import</span> <span class="n">get_view_rate_limit</span><span class="p">,</span> <span class="n">ratelimit</span><span class="p">,</span> <span class="n">RateLimit</span>
+<span class="kn">from</span> <span class="nn">translate.app.ratelimit</span> <span class="kn">import</span> <span class="n">ratelimit</span><span class="p">,</span> <span class="n">RateLimit</span>
 <span class="kn">from</span> <span class="nn">translate.exceptions</span> <span class="kn">import</span> <span class="n">APIException</span><span class="p">,</span> <span class="n">TranslationException</span>
 <span class="kn">from</span> <span class="nn">translate</span> <span class="kn">import</span> <span class="n">__version__</span>
 
@@ -72,12 +72,13 @@
 <span class="sd">    endpoint that requires rate-limiting</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">limit</span> <span class="o">=</span> <span class="n">get_view_rate_limit</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">limit</span> <span class="ow">and</span> <span class="n">limit</span><span class="o">.</span><span class="n">send_x_headers</span><span class="p">:</span>
+    <span class="n">remaining</span> <span class="o">=</span> <span class="n">translate</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">ratelimit</span><span class="o">.</span><span class="n">get_view_rate_limit_remaining</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">enabled</span> <span class="ow">and</span> <span class="n">translate</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">ratelimit</span><span class="o">.</span><span class="n">get_view_send_x_headers</span><span class="p">():</span>
         <span class="n">h</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span>
-        <span class="n">h</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;X-RateLimit-Remaining&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="o">.</span><span class="n">remaining</span><span class="p">))</span>
-        <span class="n">h</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;X-RateLimit-Limit&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="o">.</span><span class="n">limit</span><span class="p">))</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;X-RateLimit-Remaining&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">remaining</span><span class="p">))</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;X-RateLimit-Limit&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span><span class="p">))</span>
         <span class="n">h</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;X-RateLimit-Duration&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span><span class="p">))</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;X-RateLimit-Reset&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">reset</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">response</span>
 
 </div>
@@ -93,7 +94,7 @@
     <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;index.html&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">)</span>
 
 
-<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/&#39;</span><span class="p">)</span>
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/info&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">api</span><span class="p">():</span>
     <span class="n">pairs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
@@ -101,24 +102,77 @@
         <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">backend</span><span class="o">.</span><span class="n">language_pairs</span><span class="p">:</span>
             <span class="n">pairs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;api.html&#39;</span><span class="p">,</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span>
+
+    <span class="c"># Sort by from_language</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">pairs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pair</span><span class="p">:</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;info.html&#39;</span><span class="p">,</span>
                            <span class="n">version</span><span class="o">=</span><span class="n">translate</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
                            <span class="n">backends</span><span class="o">=</span><span class="n">manager</span><span class="o">.</span><span class="n">backends</span><span class="p">,</span>
-                           <span class="n">pairs</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">pairs</span><span class="p">))</span>
+                           <span class="n">pairs</span><span class="o">=</span><span class="n">pairs</span><span class="p">)</span>
 
 
-<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/translators&#39;</span><span class="p">)</span>
-<span class="nd">@ratelimit</span><span class="p">()</span>
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/batch&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;POST&#39;</span><span class="p">])</span>
 <span class="nd">@translate.utils.jsonp</span>
-<span class="k">def</span> <span class="nf">list_translators</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span>
-        <span class="n">backends</span><span class="o">=</span><span class="p">[{</span>
-            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-            <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
-            <span class="s">&#39;preference&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">preference</span><span class="p">,</span>
-            <span class="s">&#39;pairs&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">language_pairs</span>
-        <span class="p">}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">backends</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">batch_api</span><span class="p">():</span>
+    <span class="c"># TODO: Should there be a limit on the number of URLs here? Even though</span>
+    <span class="c">#       ratelimiting is handled, this could be a potential target for</span>
+    <span class="c">#       DOSing the server. This batch method is also quite a bit slower</span>
+    <span class="c">#       than direct requests.</span>
+
+    <span class="c"># Flask raises a special error when this isn&#39;t provided</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">urls</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s">&#39;urls&#39;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="c"># TODO: handle this properly</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+
+        <span class="c"># Pretend flask was just given the specified URL</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+
+        <span class="c"># Dispatch URL (error + route handling) as a normal request.</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">full_dispatch_request</span><span class="p">()</span>
+
+        <span class="c"># If we requested an API url, load the serialized JSON so that the</span>
+        <span class="c"># entire response can be loaded by the caller as a single JSON</span>
+        <span class="c"># parse. If we didn&#39;t request an API method, just return a string, to</span>
+        <span class="c"># be JSON-escaped when the final response is created.</span>
+        <span class="c">#</span>
+        <span class="c"># TODO: Maybe require API urls only?</span>
+        <span class="c"># XXX: This isn&#39;t a guarantee. There could be a different kind of error</span>
+        <span class="c"># that causes invalid or no JSON to be returned.</span>
+        <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;/api/v1/&quot;</span><span class="p">):</span>
+            <span class="c"># XXX: It&#39;s also kind of silly to load this and dump it back a few</span>
+            <span class="c">#      lines later...</span>
+            <span class="n">resp_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resp_data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="c"># This will overwrite duplicate headers (resp.headers is a multimap),</span>
+        <span class="c"># but we don&#39;t care about that, since there shouldn&#39;t be any duplicates</span>
+        <span class="c"># returned.</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">headers</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                              <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+                              <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+                              <span class="n">data</span><span class="o">=</span><span class="n">resp_data</span><span class="p">))</span>
+
+        <span class="n">ctx</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="c"># Pretty print</span>
+    <span class="n">js</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">responses</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">js</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">resp</span><span class="p">,</span> <span class="mi">200</span>
 
 
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/pairs&#39;</span><span class="p">)</span>
@@ -135,13 +189,32 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">pairs</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">pairs</span><span class="p">))</span>
 
 
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/ratelimit&#39;</span><span class="p">)</span>
+<span class="nd">@translate.utils.jsonp</span>
+<span class="k">def</span> <span class="nf">ratelimit_info</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span>
+
+        <span class="c"># Make sure the ratelimit information is up to date.</span>
+        <span class="n">RateLimit</span><span class="o">.</span><span class="n">update_timer</span><span class="p">()</span>
+
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">users</span> <span class="ow">in</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">limit_dict</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">methods</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">RateLimit</span><span class="o">.</span><span class="n">remaining</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">per</span><span class="o">=</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">per</span><span class="p">,</span>
+                             <span class="n">reset</span><span class="o">=</span><span class="n">RateLimit</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">()</span>
+
+
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/translate&#39;</span><span class="p">)</span>
 <span class="nd">@ratelimit</span><span class="p">()</span>
 <span class="nd">@translate.utils.jsonp</span>
 <span class="k">def</span> <span class="nf">translate_text</span><span class="p">():</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span> <span class="ow">or</span> <span class="n">text</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">APIException</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s">&#39;No translation text given&#39;</span><span class="p">)</span>
 
     <span class="n">source_lang</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;from&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
@@ -155,17 +228,33 @@
     <span class="c"># Try each translator sequentially (sorted by preference) until one works</span>
     <span class="n">backends</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">source_lang</span><span class="p">,</span> <span class="n">dest_lang</span><span class="p">)</span>
 
+    <span class="c"># List of translator backend names that the client does not want to use</span>
+    <span class="n">excludes</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s">&#39;exclude&#39;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">backends</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">APIException</span><span class="o">.</span><span class="n">pair</span><span class="p">(</span><span class="n">from_lang</span><span class="o">=</span><span class="n">source_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="o">=</span><span class="n">dest_lang</span><span class="p">,</span>
                                 <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
 
+    <span class="n">tried</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="n">backends</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">excludes</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Skipping </span><span class="si">%s</span><span class="s">, client disapproved.&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">tried</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">trans</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">source_lang</span><span class="p">,</span> <span class="n">dest_lang</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">trans</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">TranslationException</span><span class="p">(</span><span class="s">&quot;Received empty result text&quot;</span><span class="p">)</span>
+
             <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
                 <span class="s">&#39;from&#39;</span><span class="p">:</span> <span class="n">source_lang</span><span class="p">,</span>
                 <span class="s">&#39;to&#39;</span><span class="p">:</span> <span class="n">dest_lang</span><span class="p">,</span>
-                <span class="s">&#39;result&#39;</span><span class="p">:</span> <span class="n">trans</span>
+                <span class="s">&#39;result&#39;</span><span class="p">:</span> <span class="n">trans</span><span class="p">,</span>
+                <span class="s">&#39;translator&#39;</span><span class="p">:</span> <span class="n">backend</span><span class="o">.</span><span class="n">name</span>
             <span class="p">}),</span> <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="n">TranslationException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
@@ -173,7 +262,21 @@
                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exc</span><span class="p">))</span>
 
     <span class="k">raise</span> <span class="n">APIException</span><span class="o">.</span><span class="n">translator</span><span class="p">(</span><span class="n">from_lang</span><span class="o">=</span><span class="n">source_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="o">=</span><span class="n">dest_lang</span><span class="p">,</span>
-                                  <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">tried</span><span class="o">=</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">backends</span><span class="p">])</span>
+                                  <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">tried</span><span class="o">=</span><span class="n">tried</span><span class="p">)</span>
+
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/translators&#39;</span><span class="p">)</span>
+<span class="nd">@ratelimit</span><span class="p">()</span>
+<span class="nd">@translate.utils.jsonp</span>
+<span class="k">def</span> <span class="nf">list_translators</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span>
+        <span class="n">backends</span><span class="o">=</span><span class="p">[{</span>
+            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="s">&#39;preference&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">preference</span><span class="p">,</span>
+            <span class="s">&#39;pairs&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">language_pairs</span>
+        <span class="p">}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">backends</span><span class="p">])</span>
 </pre></div>
 
           </div>
