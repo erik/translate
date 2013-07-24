@@ -161,3 +161,11 @@ BACKENDS:
         assert results[0] == 'good'
         assert isinstance(results[1], tce.TranslateException)
         assert results[2] == 'good'
+
+
+    def test_batch_bad_args(self):
+        bad_args = [[()], 'foo', [('a','a')]]
+
+        for bad in bad_args:
+            with pytest.raises(ValueError):
+                self.client.batch_translate(bad)

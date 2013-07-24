@@ -46,7 +46,7 @@ BACKENDS:
 
         # Wait for the server to spin up
         while True:
-            time.sleep(0.25)
+            time.sleep(0.5)
             try:
                 r = requests.get('http://localhost:9876/api/v1/pairs')
                 if r.status_code == 200:
