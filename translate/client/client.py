@@ -109,7 +109,7 @@ class Client(object):
                       from_lang, to_lang, exc)
             raise exc
 
-    def batch_translate(self, params):
+    def batch_translate(self, params, ignore_timeout=False):
         """Translate multiple texts and language pairs in a single
         call. Returns a list of strings containing the resulting translated
         texts, or an Exception object, if the request failed.
@@ -119,11 +119,19 @@ class Client(object):
 
         XXX: Is this Pythonic or even good API design? Not sure how else to
              handle it.
-        XXX: Should timeout change? It definitely takes longer for this (with
-             good reason)
 
         :param params: list of (text, from_lang, to_lang).
+        :param ignore_timeout: (False) Making N requests will likely take N
+                               times as long, so it may be a good idea to
+                               ignore the HTTP request timeout time
         """
+
+        orig_timeout = self.timeout
+
+        if ignore_timeout:
+            # I think 1000 seconds is more than reasonable as a cut off. (Who
+            # would wait >16 minutes for this?)
+            self.timeout = 1000
 
         urls = []
 
@@ -156,6 +164,9 @@ of (text, from, to), got " + repr(tupl))
         except TranslateException as exc:
             log.error("Failed batch translate: %s", str(exc))
             raise exc
+
+        finally:
+            self.timeout = orig_timeout
 
         return results
 
