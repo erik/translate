@@ -122,6 +122,12 @@ BACKENDS:
         assert self.client.scheme == 'http'
         assert self.client.base_url == 'http://localhost:8765/api/v1/'
 
+    def test_can_connect(self):
+        assert self.client.can_connect()
+
+        bad_client = translate.client.Client('foo.bar', port=1234)
+        assert not bad_client.can_connect()
+
     def test_language_pairs(self):
         assert self.client.language_pairs() == [('en', 'en')]
         assert self.client.pairs == [('en', 'en')]

@@ -49,6 +49,21 @@ class Client(object):
         self.backends = None
         self.pairs = None
 
+    def can_connect(self):
+        """Try to connect to the specified server. If a dummy request succeeds,
+        True will be returned. If some kind of connection error (timeout, HTTP
+        status != 200, ...) occurs, then False will be returned.
+        """
+
+        # Let's save some time and do something that will be useful anyway...
+        try:
+            self.language_pairs(refresh=True)
+        except TranslateException as exc:
+            log.warning("Couldn't reach %s: %s", self.base_url, str(exc))
+            return False
+
+        return True
+
     def language_pairs(self, refresh=False):
         """Get the list of supported language pairs. If refresh is True, will
         ignore previously cached results and hit the server again.
