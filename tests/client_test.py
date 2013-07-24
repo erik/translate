@@ -112,10 +112,6 @@ BACKENDS:
             except:
                 pass
 
-    def teardown_class(self):
-        if self.thread.is_alive():
-            self.thread.terminate()
-
     def test_init_sanity(self):
         assert self.client.host == 'localhost'
         assert self.client.port == 8765
@@ -169,3 +165,7 @@ BACKENDS:
         for bad in bad_args:
             with pytest.raises(ValueError):
                 self.client.batch_translate(bad)
+
+    def teardown_class(self):
+        if self.thread.is_alive():
+            self.thread.terminate()

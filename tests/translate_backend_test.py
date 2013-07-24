@@ -54,6 +54,7 @@ BACKENDS:
             except:
                 pass
 
+    def test_activate(self):
         ret = self.backend.activate({
             'active': True,
             'host': 'localhost',
@@ -62,9 +63,6 @@ BACKENDS:
 
         assert ret is True
 
-    def teardown_class(self):
-        if self.thread.is_alive():
-            self.thread.terminate()
 
     def test_langpairs(self):
         assert self.backend.language_pairs == [('en', 'en')]
@@ -73,3 +71,7 @@ BACKENDS:
         result = self.backend.translate('hello, world', 'en', 'en')
 
         assert result == 'hello, world'
+
+    def teardown_class(self):
+        if self.thread.is_alive():
+            self.thread.terminate()
