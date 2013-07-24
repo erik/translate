@@ -33,6 +33,21 @@ class PyTest(Command):
         subprocess.check_call(['py.test', 'tests/'])
 
 
+# Requires coverage + pytest
+class Coverage(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        subprocess.check_call(['coverage', 'run', '--source', 'translate', '-m', 'pytest', 'tests'])
+        # Generate HTML
+        subprocess.check_call(['coverage', 'html'])
+
 packages = [
     'translate'
 ]
@@ -48,7 +63,7 @@ setup(name='translate',
       author_email='erik@erikprice.net',
       url='https://github.com/boredomist/translate',
       tests_require=['pytest'],
-      cmdclass={'test': PyTest, 'lint': PyLint},
+      cmdclass={'test': PyTest, 'lint': PyLint, 'cov': Coverage},
       install_requires=requires,
       license='GPLv3',
       packages = find_packages(),
