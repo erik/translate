@@ -29,8 +29,14 @@ Setting this up should be pretty straightforward. Open an issue on the tracker
 if you run into any issues getting this to work. I'd suggest doing this in a
 virtualenv.
 
-if you want to build the documentation in :code:`docs/`, you'll need Sphinx
+If you want to build the documentation in :code:`docs/`, you'll need Sphinx
 (:code:`pip install Sphinx`).
+
+Running the test suite and checking for linting errors requires a few
+additional dependencies not specified in :code:`requirements.txt`. These are
+not necessary if you aren't going to be working on the server. To install::
+
+    pip install pytest flake8
 
 Currently working with Python 2.6 and 2.7. 3.x support may be included at some
 point in the future, but don't count on it.

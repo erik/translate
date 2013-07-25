@@ -42,8 +42,6 @@ BACKENDS:
                               args=(config, True))
         self.thread.start()
 
-        self.backend = TranslateBackend()
-
         # Wait for the server to spin up
         while True:
             time.sleep(0.5)
@@ -53,6 +51,8 @@ BACKENDS:
                     break
             except:
                 pass
+
+        self.backend = TranslateBackend()
 
     def test_activate(self):
         ret = self.backend.activate({

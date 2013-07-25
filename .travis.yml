@@ -14,5 +14,7 @@ install:
   - sudo apt-get install python-all-dev
   - sudo apt-get install apertium apertium-en-es
   - pip install -r requirements.txt --use-mirrors
+# Development requirements
+  - pip install pytest flake8
 notifications:
   email: false
