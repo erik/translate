@@ -10,6 +10,7 @@ try:
 
     # It seems Apertium Web API sometimes returns a nothing response
     assert obj['responseData'] != []
+    assert r.status_code == 200
 
     class TestApertiumWeb:
 

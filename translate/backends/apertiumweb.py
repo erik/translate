@@ -17,7 +17,7 @@ API_ERRORS = {
     400: 'Bad parameters',
     451: 'Not supported language pair',
     452: 'Not supported format',
-    500: 'Unexpected error',
+    500: 'Server error (500)',
     552: 'Traffic limit reached'
 }
 
@@ -57,7 +57,7 @@ translation platform Apertium"
 
             self.language_pairs.append((source, dest))
 
-        # just in case the API returns duplicates for whatever reason
+        # Just in case the API returns duplicates for whatever reason
         self.language_pairs = list(set(self.language_pairs))
 
         if len(self.language_pairs) == 0:
@@ -72,13 +72,17 @@ translation platform Apertium"
         resp, req = self.api_request('translate', q=text, langpair=langpair,
                                      format="txt")
 
-        # TODO: Actual error handling should go here
-        if resp.get('responseStatus', -1) != 200:
-            error = API_ERRORS.get(resp.get('responseStatus', -1),
-                                   "Unknown error!")
+        status = resp.get('responseStatus', -1)
+        if status != 200:
+            try:
+                error = API_ERRORS[status]
+            # Unknown status
+            except KeyError:
+                error = "Unknown error occurred: %d".format(status)
+
             log.error(error)
 
-            raise TranslationException(repr(error or req))
+            raise TranslationException(repr(error))
 
         return resp.get('responseData').get('translatedText')
 
