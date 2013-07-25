@@ -15,6 +15,7 @@ class APIException(Exception):
     #   HTTP code: (HTTP status message, message)
     API_ERRORS = {
         429: ('Too many requests', 'You went over the ratelimit'),
+        431: ('Text too large', 'Given text was too large for this server'),
         452: ('Translation error', 'Bad params to /translate'),
         453: ('Translator error', 'Failed to translate text'),
         454: ('Bad language pair',
@@ -86,6 +87,16 @@ class APIException(Exception):
         """
         tupl = APIException.API_ERRORS[452]
         return cls(452, tupl[0], msg or tupl[1], details)
+
+    @classmethod
+    def sizelimit(cls, len, limit):
+        """Class method to construct an APIException for /translate requests
+        that are too large for the server to handle.
+        """
+        tupl = APIException.API_ERRORS[431]
+        return cls(431, tupl[0], tupl[1],
+                   {'given': len,
+                    'limit': limit})
 
 
 class TranslationException(Exception):

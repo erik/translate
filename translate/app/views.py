@@ -1,7 +1,7 @@
  # -*- coding: utf-8 -*-
 
-from translate.app import app, log
-from translate.app.ratelimit import ratelimit, RateLimit
+from . import app, log
+from .ratelimit import ratelimit, RateLimit
 from translate.exceptions import APIException, TranslationException
 from translate import __version__
 
@@ -174,6 +174,12 @@ def translate_text():
     dest_lang = request.args.get('to', None)
     if not dest_lang:
         raise APIException.translate(msg='No destination language given')
+
+    bytelen = len(text.decode('utf-8'))
+    conf = app.config['SERVER']['sizelimit']
+
+    if conf['enabled'] and bytelen > conf['limit']:
+        raise APIException.sizelimit(len=bytelen, limit=conf['limit'])
 
     # Try each translator sequentially (sorted by preference) until one works
     backends = manager.find_all(source_lang, dest_lang)

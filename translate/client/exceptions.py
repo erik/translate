@@ -31,6 +31,7 @@ class TranslateException(Exception):
 
         exceptions = {
             429: RateLimitException,
+            431: SizeLimitException,
             452: TranslationException,
             453: TranslatorException,
             454: BadLanguagePairException
@@ -90,6 +91,30 @@ class RateLimitException(TranslateException):
     def __str__(self):
         return "Rate limit exceeded: {0} reqs / {1}s. Try again at {2}".format(
             self.limit, self.per, self.reset)
+
+
+class SizeLimitException(TranslateException):
+    """Exception raised when a client tries to translate a text that is over
+    the server's size limit.
+    """
+
+    def __init__(self, len, limit):
+        self.len = len
+        self.limit = limit
+
+    @classmethod
+    def from_json(cls, obj):
+        try:
+            details = obj['details']
+            return cls(len=details['len'], limit=details['limit'])
+
+        except KeyError:
+            log.error("Received invalid JSON: %s", repr(obj))
+            return cls(len=0, limit=0)
+
+    def __str__(self):
+        return "Specified text was too large: %d bytes. Maximum is %d bytes"\
+            .format(self.len, self.limit)
 
 
 class TranslationException(TranslateException):

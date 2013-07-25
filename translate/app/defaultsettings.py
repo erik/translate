@@ -8,6 +8,13 @@ SERVER = {
         'enabled': False,
         'limit': 0,
         'per': 0
+    },
+
+    # Only allow 10k characters to be translated at once. Larger requests will
+    # be rejected.
+    'sizelimit': {
+        'enabled': False,
+        'limit': 10 * 1024
     }
 }
 
