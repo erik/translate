@@ -5,5 +5,4 @@ Werkzeug==0.8.3
 py==1.4.14
 requests==1.2.3
 -e git+https://github.com/boredomist/translate.git@1bbc06de2f3dafd6a5f5fbccfedf7ba50bcd4c67#egg=translate-dev
-PyYAML==3.10
 wsgiref==0.1.2

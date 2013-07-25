@@ -3,9 +3,9 @@ import translate.app
 from translate.backends.translate_backend import TranslateBackend
 
 import time
-import yaml
 import requests
 import flask
+import json
 
 from multiprocessing import Process
 
@@ -13,23 +13,30 @@ from multiprocessing import Process
 class TestTranslateBackend():
 
     def setup_class(self):
-        config = yaml.load("""
-SERVER:
-  bind: '0.0.0.0'
-  port: 9876
+        config = json.loads("""{
+"SERVER": {
+  "bind": "0.0.0.0",
+  "port": 9876
+},
 
-BACKENDS:
-  dummy:
-    active: true
-  apertium:
-    active: false
-  apertiumweb:
-    active: false
-  translate_backend:
-    active: false
-  yandex:
-    active: false
-""")
+"BACKENDS": {
+  "dummy": {
+    "active": true
+  },
+  "apertium": {
+    "active": false
+  },
+  "apertiumweb": {
+    "active": false
+  },
+  "translate_backend": {
+    "active": false
+  },
+  "yandex": {
+    "active": false
+  }
+}
+}""")
 
         # Hackiness to make sure this is always prefered
         TranslateBackend.preference = 1000

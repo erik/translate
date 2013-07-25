@@ -4,7 +4,6 @@ import translate.client.exceptions as tce
 import translate.app.ratelimit
 
 import time
-import yaml
 import requests
 import pytest
 import json
@@ -78,19 +77,24 @@ class TestClientExceptions():
 class TestClient():
 
     def setup_class(self):
-        config = yaml.load("""
-SERVER:
-  bind: '0.0.0.0'
-  port: 8765
+        config = json.loads("""{
+"SERVER": {
+  "bind": "0.0.0.0",
+  "port": 8765
+},
 
-BACKENDS:
-  dummy:
-    active: true
-  apertium:
-    active: false
-  apertiumweb:
-    active: false
-""")
+"BACKENDS": {
+  "dummy": {
+    "active": true
+  },
+  "apertium": {
+    "active": false
+  },
+  "apertiumweb": {
+    "active": false
+  }
+}
+}""")
         translate.app.ratelimit.RateLimit.enabled = False
         translate.app.views.manager = translate.backend.BackendManager(
             config['BACKENDS'])
