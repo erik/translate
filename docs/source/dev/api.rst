@@ -203,6 +203,15 @@ Custom HTTP Status Codes
         "reset": time stamp when rate limit will reset for each client
       }
 
+:431 Text too large:
+   Returned when a call to :code:`translate` contains a text larger than what
+   the server will handle.::
+
+     "details": {
+       "given": length of given text,
+       "limit": longest string allowed by the server
+     }
+
 :452 Translation error:
    Returned when bad parameters are passed to the :code:`translate` API
    method. The :code:`message` key will give you a human readable form of what
