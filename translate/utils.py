@@ -3,6 +3,7 @@
 """
 translate.utils
 ~~~~~~~~~~~~~~~
+
 This module contains small utility snippets of code adapted to be useful for
 this project. If these were not directly written for the translate project,
 a link to the original source is included in the docstring.

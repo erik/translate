@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Backend for Yandex's free online translation service. Support is mostly for
+
+"""
+translate.backends.yandex
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Backend for Yandex's free online translation service. Support is mostly for
 Slavic languages, with a few large European languages also available.
 API documentation, as well as information on getting an API key (which is
 required) can be found in the developer documentation:

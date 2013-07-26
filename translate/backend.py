@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""This module contains the BackendManager class, which is used to load and use
+"""
+translate.backend
+~~~~~~~~~~~~~~~~~
+
+This module contains the BackendManager class, which is used to load and use
 translation backends, as well as the interface for translation backends to
 inherit from.
 """

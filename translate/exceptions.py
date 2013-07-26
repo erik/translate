@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
-"""Custom Exception classes for use by the translation server."""
+"""
+translate.exceptions
+~~~~~~~~~~~~~~~~~~~~
+
+Custom Exception classes for use by the translation server.
+"""
 
 import flask
 

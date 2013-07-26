@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""Simple IP-based rate-limiting functionality for Flask routes.
+"""
+translate.app.ratelimit
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Simple IP-based rate-limiting functionality for Flask routes.
 
 This code is derived from http://flask.pocoo.org/snippets/70/ but doesn't rely
 on redis. Opts for simple dictionary implementation instead.
