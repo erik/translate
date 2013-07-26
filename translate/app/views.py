@@ -125,6 +125,41 @@ def batch_api():
     return resp, 200
 
 
+@app.route('/api/v1/info')
+@ratelimit()
+@translate.utils.jsonp
+def show_info():
+    if RateLimit.enabled:
+        user = flask.request.remote_addr
+
+        # Make sure the ratelimit information is up to date.
+        RateLimit.update_timer()
+
+        methods = {}
+        for key, users in RateLimit.limit_dict.iteritems():
+            methods[key] = RateLimit.remaining(user, key)
+
+        ratelimit = dict(limit=RateLimit.limit, per=RateLimit.per,
+                         reset=RateLimit.reset, methods=methods)
+    else:
+        ratelimit = dict()
+
+    backends = [{'name': b.name,
+                 'description': b.description,
+                 'url': b.url,
+                 'preference': b.preference,
+                 'pairs': b.language_pairs}
+                for b in manager.backends]
+
+    if app.config['SERVER']['sizelimit']['enabled']:
+        sizelimit = app.config['SERVER']['sizelimit']['limit']
+    else:
+        sizelimit = -1
+
+    return flask.jsonify(ratelimit=ratelimit, sizelimit=sizelimit,
+                         backends=backends)
+
+
 @app.route('/api/v1/pairs')
 @ratelimit()
 @translate.utils.jsonp
