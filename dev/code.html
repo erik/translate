@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="translate 0 documentation" href="../index.html" />
     <link rel="up" title="Translate Developer Documentation" href="index.html" />
-    <link rel="prev" title="Client Documentation" href="client.html" /> 
+    <link rel="prev" title="Plugin Documentation" href="plugin.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="client.html" title="Client Documentation"
+          <a href="plugin.html" title="Plugin Documentation"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Translate Developer Documentation</a> &raquo;</li> 
@@ -136,7 +136,7 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1fd4758&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x20e5500&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is
@@ -433,6 +433,13 @@ additional information to the error.</p>
 </dd></dl>
 
 <dl class="classmethod">
+<dt id="translate.exceptions.APIException.sizelimit">
+<em class="property">classmethod </em><tt class="descname">sizelimit</tt><big>(</big><em>len</em>, <em>limit</em><big>)</big><a class="headerlink" href="#translate.exceptions.APIException.sizelimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class method to construct an APIException for /translate requests
+that are too large for the server to handle.</p>
+</dd></dl>
+
+<dl class="classmethod">
 <dt id="translate.exceptions.APIException.translate">
 <em class="property">classmethod </em><tt class="descname">translate</tt><big>(</big><em>msg=None</em>, <em>details={}</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.translate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class method to construct an APIException for translate related API
@@ -459,6 +466,19 @@ given block of text for whatever reason.</p>
 </div>
 <div class="section" id="module-translate.utils">
 <span id="translate-utils"></span><h3>translate.utils<a class="headerlink" href="#module-translate.utils" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h4>translate.utils<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>This module contains small utility snippets of code adapted to be useful for
+this project. If these were not directly written for the translate project,
+a link to the original source is included in the docstring.</p>
+<dl class="function">
+<dt id="translate.utils.chunk_string">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">chunk_string</tt><big>(</big><em>string</em>, <em>n</em><big>)</big><a class="headerlink" href="#translate.utils.chunk_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yield successive n-byte sized substrings from string.</p>
+<p>TODO: Split on word boundaries instead of middle of word...</p>
+<p>Code adapted from: <a class="reference external" href="http://stackoverflow.com/a/312464">http://stackoverflow.com/a/312464</a></p>
+</dd></dl>
+
 <dl class="function">
 <dt id="translate.utils.find_subclasses">
 <tt class="descclassname">translate.utils.</tt><tt class="descname">find_subclasses</tt><big>(</big><em>path</em>, <em>cls</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#find_subclasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.find_subclasses" title="Permalink to this definition">¶</a></dt>
@@ -486,6 +506,7 @@ cls: class to find subclasses of</p>
 </div>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -509,7 +530,10 @@ cls: class to find subclasses of</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-translate.exceptions">translate.exceptions</a></li>
-<li><a class="reference internal" href="#module-translate.utils">translate.utils</a></li>
+<li><a class="reference internal" href="#module-translate.utils">translate.utils</a><ul>
+<li><a class="reference internal" href="#id3">translate.utils</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -517,8 +541,8 @@ cls: class to find subclasses of</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="client.html"
-                        title="previous chapter">Client Documentation</a></p>
+  <p class="topless"><a href="plugin.html"
+                        title="previous chapter">Plugin Documentation</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/dev/code.txt"
@@ -551,7 +575,7 @@ cls: class to find subclasses of</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="client.html" title="Client Documentation"
+          <a href="plugin.html" title="Plugin Documentation"
              >previous</a> |</li>
         <li><a href="../index.html">translate 0 documentation</a> &raquo;</li>
           <li><a href="index.html" >Translate Developer Documentation</a> &raquo;</li> 
