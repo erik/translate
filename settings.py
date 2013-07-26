@@ -22,6 +22,17 @@ SERVER = {
         # Timeframe for rate limiting. Requests are counted against limit for
         # this many seconds
         'per': 30
+    },
+
+    # Limits for size (in bytes) for texts to translate
+    'sizelimit': {
+        # Should we enable size limits?
+        'enabled': True,
+        # Force texts to be less than or equal to this number of
+        # bytes. Backends (especially web services) may have different limits
+        # and should automatically split up requests into multiple requests
+        # under their limit (not counted individually toward ratelimit).
+        'limit': 10 * 1024
     }
 }
 
