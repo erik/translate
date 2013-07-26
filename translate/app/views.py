@@ -175,7 +175,7 @@ def translate_text():
     if not dest_lang:
         raise APIException.translate(msg='No destination language given')
 
-    bytelen = len(text.decode('utf-8'))
+    bytelen = len(text.encode('utf-8'))
     conf = app.config['SERVER']['sizelimit']
 
     if conf['enabled'] and bytelen > conf['limit']:

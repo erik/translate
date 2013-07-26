@@ -11,6 +11,8 @@ from translate import log
 from translate.backend import IBackend
 from translate.exceptions import TranslationException
 
+import translate.utils
+
 import requests
 import json
 
@@ -26,6 +28,9 @@ API_ERRORS = {
     422: 'Text could not be translated',
     501: 'Specified translation direction is not supported'
 }
+# Yandex claims to only translate 10k bytes at a time, but seems to 500 on
+# texts that size, so try 8k instead.
+API_SIZE_LIMIT = 8 * 1000
 
 
 class YandexBackend(IBackend):
@@ -69,19 +74,26 @@ wrong.")
         pass
 
     def translate(self, text, from_lang, to_lang):
-        pair = "{0}-{1}".format(from_lang, to_lang)
-        js, req = self.api_request('translate', text=text, lang=pair)
 
-        if js.get('code', -1) != 200:
-            error = API_ERRORS.get(js.get('code', -1), "Unknown error!")
+        results = []
+        # Split up requests into blocks of proper size
+        # FIXME: Bytesize vs charsize.
+        for chunk in translate.utils.chunk_string(text, API_SIZE_LIMIT):
+            pair = "{0}-{1}".format(from_lang, to_lang)
+            js, req = self.api_request('translate', text=chunk, lang=pair)
 
-            if error is None:
-                raise TranslationException(repr(req))
-            else:
-                raise TranslationException(repr(error))
+            if js.get('code', -1) != 200:
+                error = API_ERRORS.get(js.get('code', -1), "Unknown error!")
 
-        # Returns an array, so join with new lines
-        return '\n'.join(js.get('text'))
+                if error is None:
+                    raise TranslationException(repr(req))
+                else:
+                    raise TranslationException(repr(error))
+
+            # Returns an array, so join with new lines
+            results.append('\n'.join(js.get('text')))
+
+        return '\n'.join(results)
 
     def api_request(self, method, **kwargs):
         kwargs['key'] = self.key

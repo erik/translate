@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+"""
+translate.utils
+~~~~~~~~~~~~~~~
+This module contains small utility snippets of code adapted to be useful for
+this project. If these were not directly written for the translate project,
+a link to the original source is included in the docstring.
+"""
+
 from . import log
 
 import flask
@@ -91,3 +99,15 @@ def update(d, u, depth=-1):
         else:
             d = {k: u[k]}
     return d
+
+
+def chunk_string(string, n):
+    """Yield successive n-byte sized substrings from string.
+
+    TODO: Split on word boundaries instead of middle of word...
+
+    Code adapted from: http://stackoverflow.com/a/312464
+    """
+
+    for i in xrange(0, len(string.encode('utf-8')), n):
+        yield string[i:i+n]
