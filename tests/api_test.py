@@ -13,6 +13,10 @@ class TestAPIv1():
     def setup_class(self):
         views.manager = BackendManager({})
         app.config['TESTING'] = True
+        app.config['SERVER']['sizelimit'] = {
+            'enabled': True,
+            'limit': 100
+        }
         self.client = app.test_client()
 
     def teardown_class(self):
@@ -182,3 +186,12 @@ exclude=Dummy')
             '/api/v1/translators': 0,
             '/api/v1/pairs': 4
         }
+
+        RateLimit.limit_dict = {}
+        RateLimit.enabled = False
+
+    def test_sizelimit(self):
+        text = 'a' * 101
+        resp = self.client.get('/api/v1/translate?from=en&to=en&text=' + text)
+        assert json.loads(resp.data) is not None
+        assert resp.status_code == 431
