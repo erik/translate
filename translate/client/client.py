@@ -33,10 +33,10 @@ class Client(object):
         """Set up Client object.
 
         :param host: hostname if the translate server to connect to.
-        :param port: (5000) port number translate server is on.
-        :param scheme: ("http") if the server is using SSL, change this to
+        :param port: port number translate server is on.
+        :param scheme: if the server is using SSL, change this to
         'https'
-        :param timeout: (5) number of seconds after which to give up on
+        :param timeout: number of seconds after which to give up on
         requests.
         """
         self.host = host

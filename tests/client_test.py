@@ -33,6 +33,9 @@ class TestClientExceptions():
             (tce.BadLanguagePairException, 454,
              {'details': {'from': 'foo', 'to': 'bar'}},
              {'lang_pair': ('foo', 'bar')}),
+            (tce.SizeLimitException, 431,
+             {'details': {'limit': 123, 'len': 456}},
+             {'limit': 123, 'len': 456}),
             (tce.TranslateException, 500,
              {'something else': 'foobar'}, {})
         ]
@@ -61,7 +64,8 @@ class TestClientExceptions():
             (tce.TranslationException, 452),
             (tce.TranslatorException, 453),
             (tce.BadLanguagePairException, 454),
-            (tce.TranslateException, 500)
+            (tce.TranslateException, 500),
+            (tce.SizeLimitException, 431)
         ]
 
         for err in errs:
