@@ -129,6 +129,9 @@ def batch_api():
 @ratelimit()
 @translate.utils.jsonp
 def show_info():
+    # XXX: Should /info be ratelimited?
+    # TODO: /ratelimit and /translators are reduntant with this one, remove?
+
     if RateLimit.enabled:
         user = flask.request.remote_addr
 

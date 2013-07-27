@@ -19,6 +19,8 @@ log = logging.getLogger(__name__)
 
 # TODO: Handle rate limiting
 # TODO: More (i.e. some) error handling
+# TODO: All of these functions assume good JSON (exc. explicit errors). This is
+#       probably very bad.
 
 
 class Client(object):
@@ -47,8 +49,11 @@ class Client(object):
 
         self.base_url = "{0}://{1}:{2}/api/v1/".format(self.scheme, self.host,
                                                        self.port)
-        self.backends = None
         self.pairs = None
+        self.backends = None
+        self.sizelimit = None
+
+        self.info_fetched = False
 
     def can_connect(self):
         """Try to connect to the specified server. If a dummy request succeeds,
@@ -58,12 +63,40 @@ class Client(object):
 
         # Let's save some time and do something that will be useful anyway...
         try:
-            self.language_pairs(refresh=True)
+            self.info(refresh=True)
         except TranslateException as exc:
             log.warning("Couldn't reach %s: %s", self.base_url, str(exc))
             return False
 
         return True
+
+    def info(self, refresh=False):
+        """Grab server information using the /api/v1/info call"""
+
+        # TODO: Test all of this
+
+        if not self.info_fetched or refresh:
+            obj = self._request('info')
+
+            self.backends = {}
+            # TODO: set all this up.
+
+            for b in obj['backends']:
+                # Convert arrays to tuples
+                b['pairs'] = [(p[0], p[1]) for p in b['pairs']]
+                self.backends[b['name']] = b
+
+            # Make sure these don't get out of sync by forcing language pairs
+            # to regenerate as well
+            self.pairs = None
+
+            self.sizelimit = obj['sizelimit']
+
+            # TODO: fix this to be useful
+            ratelimit = obj['ratelimit']
+
+        return dict(backends=self.backends, sizelimit=self.sizelimit,
+                    ratelimit=ratelimit)
 
     def language_pairs(self, refresh=False):
         """Get the list of supported language pairs. If refresh is True, will
