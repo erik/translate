@@ -72,6 +72,8 @@ function doesn&#8217;t return.</p>
 
 <div class="section" id="module-translate.app.ratelimit">
 <span id="translate-app-ratelimit"></span><h4>translate.app.ratelimit<a class="headerlink" href="#module-translate.app.ratelimit" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id2">
+<h5>translate.app.ratelimit<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h5>
 <p>Simple IP-based rate-limiting functionality for Flask routes.</p>
 <p>This code is derived from <a class="reference external" href="http://flask.pocoo.org/snippets/70/">http://flask.pocoo.org/snippets/70/</a> but doesn&#8217;t rely
 on redis. Opts for simple dictionary implementation instead.</p>
@@ -136,13 +138,14 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x20e5500&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1e2e1b8&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is
 hit.</p>
 </dd></dl>
 
+</div>
 </div>
 <div class="section" id="module-translate.app.views">
 <span id="translate-app-views"></span><h4>translate.app.views<a class="headerlink" href="#module-translate.app.views" title="Permalink to this headline">¶</a></h4>
@@ -157,6 +160,8 @@ endpoint that requires rate-limiting</p>
 </div>
 <div class="section" id="module-translate.backend">
 <span id="translate-backend"></span><h3>translate.backend<a class="headerlink" href="#module-translate.backend" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h4>translate.backend<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>This module contains the BackendManager class, which is used to load and use
 translation backends, as well as the interface for translation backends to
 inherit from.</p>
@@ -277,10 +282,11 @@ issued to the user &#8211; or whatever the proper course of action may be.</p>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-translate.client">
 <span id="translate-client"></span><h3>translate.client<a class="headerlink" href="#module-translate.client" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id2">
-<h4>translate.client<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id4">
+<h4>translate.client<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>Python client for translate server. Provides a simple wrapper around the HTTP
 interface.</p>
 <dl class="class">
@@ -347,6 +353,40 @@ language pair.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="translate.client.Client.info">
+<tt class="descname">info</tt><big>(</big><em>ignore_ratelimit=False</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect information about this instance of the translate
+server.</p>
+<p>This function uses the /api/v1/info method to collect its information.</p>
+<p>A dict is returned containing the relevant info:</p>
+<div class="highlight-python"><pre>{'backends': { NAME : ... },
+ 'ratelimit': { ... }, (False if ratelimit disabled)
+ 'sizelimit': int or False if sizelimit disabled
+}</pre>
+</div>
+<p>See the API documentation for the contents of the &#8216;backends&#8217; and
+&#8216;ratelimit&#8217; dicts.</p>
+<p>Note that if refresh=False and the data has already been collected,
+an additional call to /api/v1/ratelimit will have to be made to avoid
+stale data or guesses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ignore_ratelimit</strong> &#8211; If this is True, won&#8217;t bother to make a
+separate request for ratelimit
+information. This is a bit quicker if you
+don&#8217;t need the info anyway.</li>
+<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="translate.client.Client.language_pairs">
 <tt class="descname">language_pairs</tt><big>(</big><em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.language_pairs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the list of supported language pairs. If refresh is True, will
@@ -402,6 +442,8 @@ and some basic info about them</p>
 </div>
 <div class="section" id="module-translate.exceptions">
 <span id="translate-exceptions"></span><h3>translate.exceptions<a class="headerlink" href="#module-translate.exceptions" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h4>translate.exceptions<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>Custom Exception classes for use by the translation server.</p>
 <dl class="exception">
 <dt id="translate.exceptions.APIException">
@@ -464,10 +506,11 @@ given block of text for whatever reason.</p>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-translate.utils">
 <span id="translate-utils"></span><h3>translate.utils<a class="headerlink" href="#module-translate.utils" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id3">
-<h4>translate.utils<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id6">
+<h4>translate.utils<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
 <p>This module contains small utility snippets of code adapted to be useful for
 this project. If these were not directly written for the translate project,
 a link to the original source is included in the docstring.</p>
@@ -520,18 +563,27 @@ cls: class to find subclasses of</p>
 <li><a class="reference internal" href="#module-translate">translate</a><ul>
 <li><a class="reference internal" href="#id1">translate</a></li>
 <li><a class="reference internal" href="#module-translate.app">translate.app</a><ul>
-<li><a class="reference internal" href="#module-translate.app.ratelimit">translate.app.ratelimit</a></li>
+<li><a class="reference internal" href="#module-translate.app.ratelimit">translate.app.ratelimit</a><ul>
+<li><a class="reference internal" href="#id2">translate.app.ratelimit</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-translate.app.views">translate.app.views</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-translate.backend">translate.backend</a></li>
-<li><a class="reference internal" href="#module-translate.client">translate.client</a><ul>
-<li><a class="reference internal" href="#id2">translate.client</a></li>
+<li><a class="reference internal" href="#module-translate.backend">translate.backend</a><ul>
+<li><a class="reference internal" href="#id3">translate.backend</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-translate.exceptions">translate.exceptions</a></li>
+<li><a class="reference internal" href="#module-translate.client">translate.client</a><ul>
+<li><a class="reference internal" href="#id4">translate.client</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-translate.exceptions">translate.exceptions</a><ul>
+<li><a class="reference internal" href="#id5">translate.exceptions</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-translate.utils">translate.utils</a><ul>
-<li><a class="reference internal" href="#id3">translate.utils</a></li>
+<li><a class="reference internal" href="#id6">translate.utils</a></li>
 </ul>
 </li>
 </ul>

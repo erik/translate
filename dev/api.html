@@ -120,6 +120,45 @@ maintained, of course.</p>
 </tbody>
 </table>
 </li>
+<li><p class="first"><strong>info</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Collects various snippets of information about the server into a single
+JSON object.</p>
+<p><em>This method currently does not count against the ratelimit, but that has
+not been determined for sure.</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt>::</dt>
+<dd><dl class="first docutils">
+<dt>{</dt>
+<dd><p class="first">&#8216;backends&#8217;: See &#8216;/translators&#8217; documentation,
+&#8216;ratelimit&#8217;: See &#8216;/ratelimit&#8217; documentation. If not active, this key</p>
+<blockquote>
+<div><p>is not present,</p>
+</div></blockquote>
+<dl class="last docutils">
+<dt>&#8216;sizelimit&#8217;: Number of bytes /translate will accept at one time. This</dt>
+<dd><p class="first last">key is not present if server doesn&#8217;t implement a
+sizelimit.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
 <li><p class="first"><strong>ratelimit</strong></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

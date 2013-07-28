@@ -57,6 +57,27 @@ Methods
           ...
         ]
 
+- **info**
+
+  :Description:
+     Collects various snippets of information about the server into a single
+     JSON object.
+
+     *This method currently does not count against the ratelimit, but that has
+     not been determined for sure.*
+  :Parameters:
+     None
+  :Returns:
+     ::
+        {
+          'backends': See '/translators' documentation,
+          'ratelimit': See '/ratelimit' documentation. If not active, this key
+                       is not present,
+          'sizelimit': Number of bytes /translate will accept at one time. This
+                       key is not present if server doesn't implement a
+                       sizelimit.
+        }
+
 - **ratelimit**
 
   :Description:
