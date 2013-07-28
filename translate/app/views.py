@@ -126,11 +126,19 @@ def batch_api():
 
 
 @app.route('/api/v1/info')
-@ratelimit()
 @translate.utils.jsonp
 def show_info():
     # XXX: Should /info be ratelimited?
     # TODO: /ratelimit and /translators are reduntant with this one, remove?
+
+    resp_obj = {}
+
+    resp_obj['backends'] = [{'name': b.name,
+                             'description': b.description,
+                             'url': b.url,
+                             'preference': b.preference,
+                             'pairs': b.language_pairs}
+                            for b in manager.backends]
 
     if RateLimit.enabled:
         user = flask.request.remote_addr
@@ -142,25 +150,13 @@ def show_info():
         for key, users in RateLimit.limit_dict.iteritems():
             methods[key] = RateLimit.remaining(user, key)
 
-        ratelimit = dict(limit=RateLimit.limit, per=RateLimit.per,
-                         reset=RateLimit.reset, methods=methods)
-    else:
-        ratelimit = dict()
-
-    backends = [{'name': b.name,
-                 'description': b.description,
-                 'url': b.url,
-                 'preference': b.preference,
-                 'pairs': b.language_pairs}
-                for b in manager.backends]
+        resp_obj['ratelimit'] = dict(limit=RateLimit.limit, per=RateLimit.per,
+                                     reset=RateLimit.reset, methods=methods)
 
     if app.config['SERVER']['sizelimit']['enabled']:
-        sizelimit = app.config['SERVER']['sizelimit']['limit']
-    else:
-        sizelimit = -1
+        resp_obj['sizelimit'] = app.config['SERVER']['sizelimit']['limit']
 
-    return flask.jsonify(ratelimit=ratelimit, sizelimit=sizelimit,
-                         backends=backends)
+    return flask.jsonify(**resp_obj)
 
 
 @app.route('/api/v1/pairs')

@@ -70,16 +70,39 @@ class Client(object):
 
         return True
 
-    def info(self, refresh=False):
-        """Grab server information using the /api/v1/info call"""
+    def info(self, ignore_ratelimit=False, refresh=False):
+        """Collect information about this instance of the translate
+        server.
 
-        # TODO: Test all of this
+        This function uses the /api/v1/info method to collect its information.
+
+        A dict is returned containing the relevant info::
+
+          {'backends': { NAME : ... },
+           'ratelimit': { ... }, (False if ratelimit disabled)
+           'sizelimit': int or False if sizelimit disabled
+          }
+
+        See the API documentation for the contents of the 'backends' and
+        'ratelimit' dicts.
+
+        Note that if refresh=False and the data has already been collected,
+        an additional call to /api/v1/ratelimit will have to be made to avoid
+        stale data or guesses.
+
+        :param ignore_ratelimit: If this is True, won't bother to make a
+                                 separate request for ratelimit
+                                 information. This is a bit quicker if you
+                                 don't need the info anyway.
+        :param refresh: Whether or not to ignore cached data and redownload.
+        """
+        # TODO: use namedtuple instead?
+        # TODO: Test all of this!
 
         if not self.info_fetched or refresh:
             obj = self._request('info')
 
             self.backends = {}
-            # TODO: set all this up.
 
             for b in obj['backends']:
                 # Convert arrays to tuples
@@ -90,12 +113,21 @@ class Client(object):
             # to regenerate as well
             self.pairs = None
 
-            self.sizelimit = obj['sizelimit']
+            if 'sizelimit' in obj:
+                self.sizelimit = obj['sizelimit']
+            else:
+                self.sizelimit = False
 
-            # TODO: fix this to be useful
-            ratelimit = obj['ratelimit']
+            if 'ratelimit' in obj:
+                ratelimit = obj['ratelimit']
 
-        return dict(backends=self.backends, sizelimit=self.sizelimit,
+            self.info_fetched = True
+
+        elif ignore_ratelimit:
+            ratelimit = self._request('ratelimit')
+
+        return dict(backends=self.backends,
+                    sizelimit=self.sizelimit,
                     ratelimit=ratelimit)
 
     def language_pairs(self, refresh=False):
