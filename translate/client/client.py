@@ -99,6 +99,8 @@ class Client(object):
         # TODO: use namedtuple instead?
         # TODO: Test all of this!
 
+        response = {}
+
         if not self.info_fetched or refresh:
             obj = self._request('info')
 
@@ -109,6 +111,8 @@ class Client(object):
                 b['pairs'] = [(p[0], p[1]) for p in b['pairs']]
                 self.backends[b['name']] = b
 
+            response['backends'] = self.backends
+
             # Make sure these don't get out of sync by forcing language pairs
             # to regenerate as well
             self.pairs = None
@@ -118,17 +122,17 @@ class Client(object):
             else:
                 self.sizelimit = False
 
+            response['sizelimit'] = self.sizelimit
+
             if 'ratelimit' in obj:
-                ratelimit = obj['ratelimit']
+                response['ratelimit'] = obj['ratelimit']
 
             self.info_fetched = True
 
         elif ignore_ratelimit:
-            ratelimit = self._request('ratelimit')
+            response['ratelimit'] = self._request('ratelimit')
 
-        return dict(backends=self.backends,
-                    sizelimit=self.sizelimit,
-                    ratelimit=ratelimit)
+        return response
 
     def language_pairs(self, refresh=False):
         """Get the list of supported language pairs. If refresh is True, will
