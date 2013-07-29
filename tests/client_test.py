@@ -87,7 +87,7 @@ class TestClient():
   "port": 8765,
   "sizelimit": {
     "enabled": true,
-    "limit": 987654321
+    "limit": 987
   }
 },
 
@@ -170,18 +170,35 @@ class TestClient():
         assert isinstance(results[1], tce.TranslateException)
         assert results[2] == 'good'
 
-
     def test_batch_bad_args(self):
-        bad_args = [[()], 'foo', [('a','a')]]
-
-        for bad in bad_args:
+        for bad in [[()], 'foo', [('a', 'a')]]:
             with pytest.raises(ValueError):
                 self.client.batch_translate(bad)
 
     def test_info(self):
         resp = self.client.info(ignore_ratelimit=False, refresh=False)
         assert self.client._info_fetched is True
-        assert self.client._sizelimit == 987654321
+        assert self.client._sizelimit == 987
+
+        for key in ['sizelimit', 'backends']:
+            assert key in resp
+
+        self.client._info_fetched = "should not be reset"
+
+        resp = self.client.info(ignore_ratelimit=False, refresh=False)
+        assert self.client._info_fetched is "should not be reset"
+        assert self.client._sizelimit == 987
+
+        for key in ['sizelimit', 'backends']:
+            assert key in resp
+
+        assert resp['sizelimit'] == 987
+
+    def test_sizelimit(self):
+        text = '.' * 988
+
+        with pytest.raises(tce.SizeLimitException):
+            self.client.translate(text, 'en', 'en')
 
     def teardown_class(self):
         if self.thread.is_alive():

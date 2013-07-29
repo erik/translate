@@ -114,8 +114,6 @@ class Client(object):
                 b['pairs'] = [(p[0], p[1]) for p in b['pairs']]
                 self._backends[b['name']] = b
 
-            response['backends'] = self._backends
-
             # Make sure these don't get out of sync by forcing language pairs
             # to regenerate as well
             self._pairs = None
@@ -124,8 +122,6 @@ class Client(object):
                 self._sizelimit = obj['sizelimit']
             else:
                 self._sizelimit = False
-
-            response['sizelimit'] = self._sizelimit
 
             if 'ratelimit' in obj:
                 response['ratelimit'] = obj['ratelimit']
@@ -137,6 +133,13 @@ class Client(object):
 
             if not limit_obj == {}:
                 response['ratelimit'] = limit_obj
+
+        else:
+            if self._ratelimit is not None:
+                response['ratelimit'] = self._ratelimit
+
+        response['backends'] = self._backends
+        response['sizelimit'] = self._sizelimit
 
         if 'ratelimit' in response:
             self._ratelimit = response['ratelimit']
