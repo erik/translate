@@ -52,6 +52,7 @@ class Client(object):
         self.pairs = None
         self.backends = None
         self.sizelimit = None
+        self.ratelimit = None
 
         self.info_fetched = False
 
@@ -96,7 +97,7 @@ class Client(object):
                                  don't need the info anyway.
         :param refresh: Whether or not to ignore cached data and redownload.
         """
-        # TODO: use namedtuple instead?
+        # TODO: use namedtuple instead of dict for response object?
         # TODO: Test all of this!
 
         response = {}
@@ -131,6 +132,13 @@ class Client(object):
 
         elif not ignore_ratelimit:
             response['ratelimit'] = self._request('ratelimit')
+
+        if 'ratelimit' in response:
+            self.ratelimit = response['ratelimit']
+
+            # Don't store transient information
+            del self.ratelimit['reset']
+            del self.ratelimit['methods']
 
         return response
 
