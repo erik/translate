@@ -11,6 +11,7 @@ import logging
 import argparse
 import os
 import sys
+from datetime import datetime
 
 
 if __name__ == '__main__':
@@ -32,6 +33,9 @@ TRANSLATE_PORT. If that is unavailable the default port that translate uses \
     parser.add_argument('-l', '--list-pairs', dest='list_pairs',
                         action='store_true',
                         help='List the available language pairs and quit')
+
+    parser.add_argument('-i', '--info', dest='info', action='store_true',
+                        help='Show information about the server and exit')
 
     parser.add_argument('language_pair', type=str, help='Language pair (in \
 src-dst format) for the languages to translate between', nargs='?')
@@ -61,6 +65,41 @@ read from STDIN, so that piping can be used.')
         if args.list_pairs:
             for pair in client.language_pairs():
                 print("{0}-{1}".format(pair[0], pair[1]))
+
+            sys.exit(0)
+
+        if args.info:
+            info = client.info(refresh=True)
+
+            print("Translate server at %s:" % client.host)
+
+            print("  API URL:\t%s" % client.base_url)
+
+            if info['sizelimit']:
+                print("  Size limit:\t%d bytes" % info['sizelimit'])
+            else:
+                print("  Size limit:\tNone")
+
+            if info['ratelimit']:
+                print("  Rate limit:\t%d reqs / %d seconds" %
+                      (info['ratelimit']['limit'], info['ratelimit']['per']))
+
+                timestamp = datetime.fromtimestamp(info['ratelimit']['reset'])
+
+                print("    resets at:\t%s" %
+                      timestamp.strftime('%Y-%m-%d %H:%M:%S'))
+            else:
+                print("  Rate limit:\tNone")
+
+
+            print("  Supported backends:")
+
+            for name in info['backends']:
+                back = info['backends'][name]
+
+                print("""    %s:
+      %s
+      Preference:  %d""" % (name, back['description'], back['preference']  ))
 
             sys.exit(0)
 

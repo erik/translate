@@ -18,6 +18,7 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 
 # TODO: Handle rate limiting
+# TODO: Handle size limiting automatically (split into multiple requests)
 # TODO: More (i.e. some) error handling
 # TODO: All of these functions assume good JSON (exc. explicit errors). This is
 #       probably very bad.
