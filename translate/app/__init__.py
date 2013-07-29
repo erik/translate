@@ -1,6 +1,9 @@
  # -*- coding: utf-8 -*-
 
 """
+translate.app
+~~~~~~~~~~~~~
+
 Server interface for translate application. This handles the process of
 handling HTTP requests and generating responses.
 """

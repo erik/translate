@@ -198,7 +198,10 @@ class TestClient():
         text = '.' * 988
 
         with pytest.raises(tce.SizeLimitException):
-            self.client.translate(text, 'en', 'en')
+            self.client.translate(text, 'en', 'en', split_text=False)
+
+        assert text == self.client.translate(text, 'en', 'en',
+                                             split_text=True)
 
     def teardown_class(self):
         if self.thread.is_alive():

@@ -10,6 +10,8 @@ import json
 import requests
 import urllib
 
+import translate.utils as utils
+
 from .exceptions import HTTPException, TranslateException, \
     BadLanguagePairException
 
@@ -187,14 +189,35 @@ class Client(object):
 
         return self._backends
 
-    def translate(self, text, from_lang, to_lang, refresh=False):
+    def translate(self, text, from_lang, to_lang, split_text=True,
+                  refresh=False):
         """Translate a given string of text between languages.
 
         :param text: String of text to translate.
         :param from_lang: Language to translate from.
         :param to_lang: Language to translate to.
+        :param split_text: If True, texts will automatically be split into
+                           multiple requests under the server's sizelimit.
         :param refresh: Whether or not to ignore cached data and redownload.
         """
+
+        # If sizelimit is active and our text is larger than the known
+        # sizelimit, split it up into multiple chunks.
+        if split_text:
+
+            # If we haven't learned about the sizelimit yet, make sure to get
+            # that information.
+            if not self._info_fetched:
+                self.info(ignore_ratelimit=True)
+
+            if self._sizelimit and len(text) > self._sizelimit:
+                # Split up the string into proper parameters for a batch call.
+                params = [(s, from_lang, to_lang) for s in
+                          utils.chunk_string(text, self._sizelimit)]
+
+                # XXX: Should we ignore the timeout? Let user specify? What?
+                return ''.join(self.batch_translate(params,
+                                                    ignore_timeout=True))
 
         # Check that we're translating between valid languages
         if (from_lang, to_lang) not in self.language_pairs(refresh=refresh):
@@ -227,6 +250,9 @@ class Client(object):
                                times as long, so it may be a good idea to
                                ignore the HTTP request timeout time
         """
+
+        # TODO: This should handle splitting texts over the size limit if
+        #       necessary.
 
         orig_timeout = self.timeout
 

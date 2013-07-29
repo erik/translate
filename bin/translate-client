@@ -38,7 +38,7 @@ TRANSLATE_PORT. If that is unavailable the default port that translate uses \
                         help='Show information about the server and exit')
 
     parser.add_argument('language_pair', type=str, help='Language pair (in \
-src-dst format) for the languages to translate between', nargs='?')
+src-dst format) for the languages to translate between. e.g. en-es', nargs='?')
 
     parser.add_argument('text', type=str, nargs="*", help='Text to translate \
 between specify languages. If no arguments are specified here, text will be \
