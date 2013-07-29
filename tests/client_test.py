@@ -84,7 +84,11 @@ class TestClient():
         config = json.loads("""{
 "SERVER": {
   "bind": "0.0.0.0",
-  "port": 8765
+  "port": 8765,
+  "sizelimit": {
+    "enabled": true,
+    "limit": 987654321
+  }
 },
 
 "BACKENDS": {
@@ -173,6 +177,11 @@ class TestClient():
         for bad in bad_args:
             with pytest.raises(ValueError):
                 self.client.batch_translate(bad)
+
+    def test_info(self):
+        resp = self.client.info(ignore_ratelimit=False, refresh=False)
+        assert self.client._info_fetched is True
+        assert self.client._sizelimit == 987654321
 
     def teardown_class(self):
         if self.thread.is_alive():
