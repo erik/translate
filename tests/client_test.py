@@ -134,7 +134,7 @@ class TestClient():
 
     def test_language_pairs(self):
         assert self.client.language_pairs() == [('en', 'en')]
-        assert self.client.pairs == [('en', 'en')]
+        assert self.client._pairs == [('en', 'en')]
         assert self.client.language_pairs(True) == [('en', 'en')]
 
     def test_translators(self):

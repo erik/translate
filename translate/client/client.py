@@ -49,12 +49,14 @@ class Client(object):
 
         self.base_url = "{0}://{1}:{2}/api/v1/".format(self.scheme, self.host,
                                                        self.port)
-        self.pairs = None
-        self.backends = None
-        self.sizelimit = None
-        self.ratelimit = None
 
-        self.info_fetched = False
+        # Private variables (a lot more likely to change / be unsuitable for
+        # public API use)
+        self._pairs = None
+        self._backends = None
+        self._sizelimit = None
+        self._ratelimit = None
+        self._info_fetched = False
 
     def can_connect(self):
         """Try to connect to the specified server. If a dummy request succeeds,
@@ -102,43 +104,46 @@ class Client(object):
 
         response = {}
 
-        if not self.info_fetched or refresh:
+        if not self._info_fetched or refresh:
             obj = self._request('info')
 
-            self.backends = {}
+            self._backends = {}
 
             for b in obj['backends']:
                 # Convert arrays to tuples
                 b['pairs'] = [(p[0], p[1]) for p in b['pairs']]
-                self.backends[b['name']] = b
+                self._backends[b['name']] = b
 
-            response['backends'] = self.backends
+            response['backends'] = self._backends
 
             # Make sure these don't get out of sync by forcing language pairs
             # to regenerate as well
-            self.pairs = None
+            self._pairs = None
 
             if 'sizelimit' in obj:
-                self.sizelimit = obj['sizelimit']
+                self._sizelimit = obj['sizelimit']
             else:
-                self.sizelimit = False
+                self._sizelimit = False
 
-            response['sizelimit'] = self.sizelimit
+            response['sizelimit'] = self._sizelimit
 
             if 'ratelimit' in obj:
                 response['ratelimit'] = obj['ratelimit']
 
-            self.info_fetched = True
+            self._info_fetched = True
 
         elif not ignore_ratelimit:
-            response['ratelimit'] = self._request('ratelimit')
+            limit_obj = self._request('ratelimit')
+
+            if not limit_obj == {}:
+                response['ratelimit'] = limit_obj
 
         if 'ratelimit' in response:
-            self.ratelimit = response['ratelimit']
+            self._ratelimit = response['ratelimit']
 
             # Don't store transient information
-            del self.ratelimit['reset']
-            del self.ratelimit['methods']
+            del self._ratelimit['reset']
+            del self._ratelimit['methods']
 
         return response
 
@@ -149,11 +154,11 @@ class Client(object):
         :param refresh: Whether or not to ignore cached data and redownload.
         """
 
-        if refresh or (self.pairs is None):
+        if refresh or (self._pairs is None):
             obj = self._request('pairs')
-            self.pairs = [(p[0], p[1]) for p in obj['pairs']]
+            self._pairs = [(p[0], p[1]) for p in obj['pairs']]
 
-        return self.pairs
+        return self._pairs
 
     def translators(self, refresh=False):
         """Returns a dict containing names of translation services available
@@ -162,21 +167,21 @@ class Client(object):
         :param refresh: Whether or not to ignore cached data and redownload.
         """
 
-        if refresh or (self.backends is None):
+        if refresh or (self._backends is None):
             obj = self._request('translators')
 
-            self.backends = {}
+            self._backends = {}
 
             for b in obj['backends']:
                 # Convert arrays to tuples
                 b['pairs'] = [(p[0], p[1]) for p in b['pairs']]
-                self.backends[b['name']] = b
+                self._backends[b['name']] = b
 
             # Make sure these don't get out of sync by forcing language pairs
             # to regenerate as well
-            self.pairs = None
+            self._pairs = None
 
-        return self.backends
+        return self._backends
 
     def translate(self, text, from_lang, to_lang, refresh=False):
         """Translate a given string of text between languages.
