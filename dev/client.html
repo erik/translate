@@ -127,6 +127,40 @@ language pair.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="translate.client.Client.info">
+<tt class="descname">info</tt><big>(</big><em>ignore_ratelimit=False</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect information about this instance of the translate
+server.</p>
+<p>This function uses the /api/v1/info method to collect its information.</p>
+<p>A dict is returned containing the relevant info:</p>
+<div class="highlight-python"><pre>{'backends': { NAME : ... },
+ 'ratelimit': { ... }, (False if ratelimit disabled)
+ 'sizelimit': int or False if sizelimit disabled
+}</pre>
+</div>
+<p>See the API documentation for the contents of the &#8216;backends&#8217; and
+&#8216;ratelimit&#8217; dicts.</p>
+<p>Note that if refresh=False and the data has already been collected,
+an additional call to /api/v1/ratelimit will have to be made to avoid
+stale data or guesses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ignore_ratelimit</strong> &#8211; If this is True, won&#8217;t bother to make a
+separate request for ratelimit
+information. This is a bit quicker if you
+don&#8217;t need the info anyway.</li>
+<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="translate.client.Client.language_pairs">
 <tt class="descname">language_pairs</tt><big>(</big><em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.language_pairs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the list of supported language pairs. If refresh is True, will
@@ -207,7 +241,7 @@ supported by the server</p>
 
 <dl class="exception">
 <dt id="translate.client.exceptions.SizeLimitException">
-<em class="property">exception </em><tt class="descclassname">translate.client.exceptions.</tt><tt class="descname">SizeLimitException</tt><big>(</big><em>len</em>, <em>limit</em><big>)</big><a class="headerlink" href="#translate.client.exceptions.SizeLimitException" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">translate.client.exceptions.</tt><tt class="descname">SizeLimitException</tt><big>(</big><em>len</em>, <em>limit</em><big>)</big><a class="reference internal" href="../_modules/translate/client/exceptions.html#SizeLimitException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.client.exceptions.SizeLimitException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised when a client tries to translate a text that is over
 the server&#8217;s size limit.</p>
 </dd></dl>

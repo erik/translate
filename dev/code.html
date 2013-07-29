@@ -138,7 +138,7 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1e2e1b8&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x2044a28&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is
@@ -476,7 +476,7 @@ additional information to the error.</p>
 
 <dl class="classmethod">
 <dt id="translate.exceptions.APIException.sizelimit">
-<em class="property">classmethod </em><tt class="descname">sizelimit</tt><big>(</big><em>len</em>, <em>limit</em><big>)</big><a class="headerlink" href="#translate.exceptions.APIException.sizelimit" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">sizelimit</tt><big>(</big><em>len</em>, <em>limit</em><big>)</big><a class="reference internal" href="../_modules/translate/exceptions.html#APIException.sizelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.exceptions.APIException.sizelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class method to construct an APIException for /translate requests
 that are too large for the server to handle.</p>
 </dd></dl>
@@ -516,7 +516,7 @@ this project. If these were not directly written for the translate project,
 a link to the original source is included in the docstring.</p>
 <dl class="function">
 <dt id="translate.utils.chunk_string">
-<tt class="descclassname">translate.utils.</tt><tt class="descname">chunk_string</tt><big>(</big><em>string</em>, <em>n</em><big>)</big><a class="headerlink" href="#translate.utils.chunk_string" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.utils.</tt><tt class="descname">chunk_string</tt><big>(</big><em>string</em>, <em>n</em><big>)</big><a class="reference internal" href="../_modules/translate/utils.html#chunk_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.utils.chunk_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yield successive n-byte sized substrings from string.</p>
 <p>TODO: Split on word boundaries instead of middle of word...</p>
 <p>Code adapted from: <a class="reference external" href="http://stackoverflow.com/a/312464">http://stackoverflow.com/a/312464</a></p>

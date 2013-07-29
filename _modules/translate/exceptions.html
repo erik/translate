@@ -49,7 +49,12 @@
   <h1>Source code for translate.exceptions</h1><div class="highlight"><pre>
 <span class="c"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;Custom Exception classes for use by the translation server.&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">translate.exceptions</span>
+<span class="sd">~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">Custom Exception classes for use by the translation server.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">flask</span>
 
@@ -64,6 +69,7 @@
     <span class="c">#   HTTP code: (HTTP status message, message)</span>
     <span class="n">API_ERRORS</span> <span class="o">=</span> <span class="p">{</span>
         <span class="mi">429</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Too many requests&#39;</span><span class="p">,</span> <span class="s">&#39;You went over the ratelimit&#39;</span><span class="p">),</span>
+        <span class="mi">431</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Text too large&#39;</span><span class="p">,</span> <span class="s">&#39;Given text was too large for this server&#39;</span><span class="p">),</span>
         <span class="mi">452</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Translation error&#39;</span><span class="p">,</span> <span class="s">&#39;Bad params to /translate&#39;</span><span class="p">),</span>
         <span class="mi">453</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Translator error&#39;</span><span class="p">,</span> <span class="s">&#39;Failed to translate text&#39;</span><span class="p">),</span>
         <span class="mi">454</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;Bad language pair&#39;</span><span class="p">,</span>
@@ -135,6 +141,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tupl</span> <span class="o">=</span> <span class="n">APIException</span><span class="o">.</span><span class="n">API_ERRORS</span><span class="p">[</span><span class="mi">452</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="mi">452</span><span class="p">,</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">msg</span> <span class="ow">or</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">details</span><span class="p">)</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="APIException.sizelimit"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.APIException.sizelimit">[docs]</a>    <span class="k">def</span> <span class="nf">sizelimit</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="nb">len</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class method to construct an APIException for /translate requests</span>
+<span class="sd">        that are too large for the server to handle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tupl</span> <span class="o">=</span> <span class="n">APIException</span><span class="o">.</span><span class="n">API_ERRORS</span><span class="p">[</span><span class="mi">431</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="mi">431</span><span class="p">,</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tupl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                   <span class="p">{</span><span class="s">&#39;given&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">,</span>
+                    <span class="s">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">})</span>
 
 </div></div>
 <div class="viewcode-block" id="TranslationException"><a class="viewcode-back" href="../../dev/code.html#translate.exceptions.TranslationException">[docs]</a><span class="k">class</span> <span class="nc">TranslationException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
