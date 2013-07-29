@@ -69,6 +69,7 @@ Methods
      None
   :Returns:
      ::
+
         {
           'backends': See '/translators' documentation,
           'ratelimit': See '/ratelimit' documentation. If not active, this key
@@ -87,6 +88,7 @@ Methods
      None
   :Returns:
      ::
+
         {
           "limit": API rate limit,
           "per":   Rate limit window,
@@ -160,6 +162,7 @@ Methods
         not. Can be included multiple times to ignore multiple
         translators. Do note that the names must be exactly as specified by the
         server::
+
           GET /api/v1/translate?exclude=foo&exclude=bar&...
   :Returns:
      ::

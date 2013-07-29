@@ -134,26 +134,15 @@ not been determined for sure.</em></p>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt>::</dt>
-<dd><dl class="first docutils">
-<dt>{</dt>
-<dd><p class="first">&#8216;backends&#8217;: See &#8216;/translators&#8217; documentation,
-&#8216;ratelimit&#8217;: See &#8216;/ratelimit&#8217; documentation. If not active, this key</p>
-<blockquote>
-<div><p>is not present,</p>
-</div></blockquote>
-<dl class="last docutils">
-<dt>&#8216;sizelimit&#8217;: Number of bytes /translate will accept at one time. This</dt>
-<dd><p class="first last">key is not present if server doesn&#8217;t implement a
-sizelimit.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="last">}</p>
-</dd>
-</dl>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><pre>{
+  'backends': See '/translators' documentation,
+  'ratelimit': See '/ratelimit' documentation. If not active, this key
+               is not present,
+  'sizelimit': Number of bytes /translate will accept at one time. This
+               key is not present if server doesn't implement a
+               sizelimit.
+}</pre>
+</div>
 </td>
 </tr>
 </tbody>
@@ -171,28 +160,17 @@ each API endpoint.</p>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt>::</dt>
-<dd><dl class="first docutils">
-<dt>{</dt>
-<dd><p class="first">&#8220;limit&#8221;: API rate limit,
-&#8220;per&#8221;:   Rate limit window,
-&#8220;reset&#8221;: Unix timestamp (seconds) when old requests will stop</p>
-<blockquote>
-<div><p>counting against ratelimit,</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>&#8220;methods&#8221;: {</dt>
-<dd><p class="first last">&#8220;/api/v1/METHOD&#8221;: number of requests remaining for METHOD,
-...</p>
-</dd>
-</dl>
-<p class="last">}</p>
-</dd>
-</dl>
-<p class="last">}</p>
-</dd>
-</dl>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><pre>{
+  "limit": API rate limit,
+  "per":   Rate limit window,
+  "reset": Unix timestamp (seconds) when old requests will stop
+           counting against ratelimit,
+  "methods": {
+    "/api/v1/METHOD": number of requests remaining for METHOD,
+    ...
+  }
+}</pre>
+</div>
 </td>
 </tr>
 </tbody>
