@@ -200,6 +200,9 @@ class TestClient():
         with pytest.raises(tce.SizeLimitException):
             self.client.translate(text, 'en', 'en', split_text=False)
 
+        # Make sure we hit another if block in translate
+        self.client._info_fetched = False
+
         assert text == self.client.translate(text, 'en', 'en',
                                              split_text=True)
 
