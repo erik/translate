@@ -91,7 +91,7 @@ class Client(object):
         stale data or guesses.
 
         :param ignore_ratelimit: If this is True, won't bother to make a
-                                 separate request for ratelimit
+                                 separate request for current ratelimit
                                  information. This is a bit quicker if you
                                  don't need the info anyway.
         :param refresh: Whether or not to ignore cached data and redownload.
@@ -129,7 +129,7 @@ class Client(object):
 
             self.info_fetched = True
 
-        elif ignore_ratelimit:
+        elif not ignore_ratelimit:
             response['ratelimit'] = self._request('ratelimit')
 
         return response
