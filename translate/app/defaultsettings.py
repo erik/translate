@@ -1,5 +1,13 @@
 # -*- coding: utf-8; -*-
 
+"""
+translate.app.defaultsettings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This module defines the default settings that the translation server will use
+if not overridden by the user's preferences.
+"""
+
 SERVER = {
     'bind': '127.0.0.1',
     'port': 5000,
