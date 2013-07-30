@@ -71,10 +71,11 @@ read from STDIN, so that piping can be used.')
         if args.info:
             info = client.info(refresh=True)
 
-            print("Translate server at %s:" % client.host)
+            print("Translate server v%s at %s:" %
+                  (info['version'], client.host))
 
             print("  API URL:\t%s" % client.base_url)
-
+            print("  API versions:\t%s" % ','.join(info['supported_api']))
             if info['sizelimit']:
                 print("  Size limit:\t%d bytes" % info['sizelimit'])
             else:
