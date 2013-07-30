@@ -71,6 +71,8 @@ Methods
      ::
 
         {
+          'version': Version translate server running,
+          'api_versions': [ API versions supported by this server, ... ],
           'backends': See '/translators' documentation,
           'ratelimit': See '/ratelimit' documentation. If not active, this key
                        is not present,

@@ -24,6 +24,10 @@ from translate.app import views
 from translate.app.ratelimit import RateLimit
 
 
+# API versions that we support (can respond to /api/VERSION/METHOD)
+API_VERSION_SUPPORT = ['v1']
+
+
 @app.before_first_request
 def initialize_flask():
     """Make sure that the flask application is properly configured before it

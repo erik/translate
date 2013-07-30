@@ -131,7 +131,10 @@ def show_info():
     # XXX: Should /info be ratelimited?
     # TODO: /ratelimit and /translators are reduntant with this one, remove?
 
-    resp_obj = {}
+    resp_obj = {
+        'version': translate.__version__,
+        'api_versions': translate.app.API_VERSION_SUPPORT
+    }
 
     resp_obj['backends'] = [{'name': b.name,
                              'description': b.description,
