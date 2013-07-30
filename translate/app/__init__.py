@@ -24,7 +24,8 @@ from translate.app import views
 from translate.app.ratelimit import RateLimit
 
 
-# API versions that we support (can respond to /api/VERSION/METHOD)
+# API versions that we support (can respond to /api/VERSION/METHOD). It is the
+# server's job to be backward compatible, no the client's (at least for now)
 API_VERSION_SUPPORT = ['v1']
 
 

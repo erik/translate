@@ -32,6 +32,9 @@ class Client(object):
     fails.
     """
 
+    # API version that the client requires the server to support.
+    API_VERSION_SUPPORT = 'v1'
+
     def __init__(self, host, port=5000, scheme='http', timeout=5, **kwargs):
         """Set up Client object.
 
@@ -57,17 +60,30 @@ class Client(object):
         self._backends = None
         self._sizelimit = None
         self._ratelimit = None
+        self._server_version = None
+        self._server_supported_versions = None
         self._info_fetched = False
 
     def can_connect(self):
         """Try to connect to the specified server. If a dummy request succeeds,
         True will be returned. If some kind of connection error (timeout, HTTP
         status != 200, ...) occurs, then False will be returned.
+
+        False will also be returned if the server can be reached, but does not
+        support the API version that the Client relies on.
         """
 
         # Let's save some time and do something that will be useful anyway...
         try:
-            self.info(refresh=True)
+            info = self.info(refresh=True)
+
+            # Ensure that we're working with a server with a compatible API
+            # version.
+            if not Client.API_VERSION_SUPPORT in info['supported_api']:
+                log.error('Incompatible server version: supports %s,\
+ we need %s', info['supported_api'], Client.API_VERSION_SUPPORT)
+                return False
+
         except TranslateException as exc:
             log.warning("Couldn't reach %s: %s", self.base_url, str(exc))
             return False
@@ -82,9 +98,11 @@ class Client(object):
 
         A dict is returned containing the relevant info::
 
-          {'backends': { NAME : ... },
+          {'backends': { ... },
            'ratelimit': { ... }, (False if ratelimit disabled)
-           'sizelimit': int or False if sizelimit disabled
+           'sizelimit': int or False if sizelimit disabled,
+           'version': server version number,
+           'supported_api': [ API revisions server supports ]
           }
 
         See the API documentation for the contents of the 'backends' and
@@ -127,6 +145,8 @@ class Client(object):
             if 'ratelimit' in obj:
                 response['ratelimit'] = obj['ratelimit']
 
+            self._server_version = obj['version']
+            self._server_supported_versions = obj['api_versions']
             self._info_fetched = True
 
         elif not ignore_ratelimit:
@@ -141,6 +161,8 @@ class Client(object):
 
         response['backends'] = self._backends
         response['sizelimit'] = self._sizelimit
+        response['version'] = self._server_version
+        response['supported_api'] = self._server_supported_versions
 
         if 'ratelimit' in response:
             self._ratelimit = response['ratelimit']
