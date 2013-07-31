@@ -178,21 +178,23 @@ class TestClient():
     def test_info(self):
         resp = self.client.info(ignore_ratelimit=False, refresh=False)
         assert self.client._info_fetched is True
-        assert self.client._sizelimit == 987
+        assert self.client._info.sizelimit == 987
 
-        for key in ['sizelimit', 'backends']:
-            assert key in resp
+        assert isinstance(resp, translate.client.ServerInformation)
+
+        assert resp.sizelimit == 987
+        assert resp.ratelimit is False
+        assert resp.version == translate.__version__
 
         self.client._info_fetched = "should not be reset"
 
         resp = self.client.info(ignore_ratelimit=False, refresh=False)
         assert self.client._info_fetched is "should not be reset"
-        assert self.client._sizelimit == 987
+        assert self.client._info.sizelimit == 987
 
-        for key in ['sizelimit', 'backends']:
-            assert key in resp
-
-        assert resp['sizelimit'] == 987
+        assert resp.sizelimit == 987
+        assert resp.ratelimit is False
+        assert resp.version == translate.__version__
 
     def test_sizelimit(self):
         text = '.' * 988

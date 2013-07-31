@@ -13,6 +13,6 @@ __version__ = '0.0.0'
 __author__ = 'Erik Price'
 __copyright__ = 'Copyright 2013 Erik Price'
 
-__all__ = ['Client']
+__all__ = ['Client', 'ServerInformation']
 
-from translate.client.client import Client
+from translate.client.client import Client, ServerInformation

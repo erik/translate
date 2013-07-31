@@ -10,6 +10,8 @@ import json
 import requests
 import urllib
 
+from collections import namedtuple
+
 import translate.utils as utils
 
 from .exceptions import HTTPException, TranslateException, \
@@ -22,6 +24,26 @@ log = logging.getLogger(__name__)
 # TODO: Handle rate limiting (blocking, fail instantly, etc.?)
 # TODO: All of these functions assume good JSON (exc. explicit server
 #       errors). This is probably very bad.
+
+
+# Define this as a class so that we can generate Sphinx documentation for it.
+class ServerInformation(
+        namedtuple('ServerInformation',
+                   'backends sizelimit ratelimit version supported_api')):
+    """This named tuple defines the various parameters of the server that the
+    client is working with.
+
+    Members:
+
+      - backends: { ... }
+      - ratelimit: { ... } (False if ratelimit disabled)
+      - sizelimit: int or False if sizelimit disabled
+      - version: server version number
+      - supported_api: [ API revisions server supports ]
+
+    See the API documentation for information on the format of backends and
+    ratelimit.
+    """
 
 
 class Client(object):
@@ -57,11 +79,9 @@ class Client(object):
         # Private variables (a lot more likely to change / be unsuitable for
         # public API use)
         self._pairs = None
-        self._backends = None
-        self._sizelimit = None
-        self._ratelimit = None
-        self._server_version = None
-        self._server_supported_versions = None
+        self._info = ServerInformation(backends=None, sizelimit=None,
+                                       ratelimit=None, version=None,
+                                       supported_api=None)
         self._info_fetched = False
 
     def can_connect(self):
@@ -79,9 +99,9 @@ class Client(object):
 
             # Ensure that we're working with a server with a compatible API
             # version.
-            if not Client.API_VERSION_SUPPORT in info['supported_api']:
+            if not Client.API_VERSION_SUPPORT in info.supported_api:
                 log.error('Incompatible server version: supports %s,\
- we need %s', info['supported_api'], Client.API_VERSION_SUPPORT)
+ we need %s', info.supported_api, Client.API_VERSION_SUPPORT)
                 return False
 
         except TranslateException as exc:
@@ -96,14 +116,8 @@ class Client(object):
 
         This function uses the /api/v1/info method to collect its information.
 
-        A dict is returned containing the relevant info::
-
-          {'backends': { ... },
-           'ratelimit': { ... }, (False if ratelimit disabled)
-           'sizelimit': int or False if sizelimit disabled,
-           'version': server version number,
-           'supported_api': [ API revisions server supports ]
-          }
+        A ServerInformation object is returned containing the relevant
+        info.
 
         See the API documentation for the contents of the 'backends' and
         'ratelimit' dicts.
@@ -126,27 +140,30 @@ class Client(object):
         if not self._info_fetched or refresh:
             obj = self._request('info')
 
-            self._backends = {}
+            self._info = self._info._replace(backends={})
 
             for b in obj['backends']:
                 # Convert arrays to tuples
                 b['pairs'] = [(p[0], p[1]) for p in b['pairs']]
-                self._backends[b['name']] = b
+                self._info.backends[b['name']] = b
 
             # Make sure these don't get out of sync by forcing language pairs
             # to regenerate as well
             self._pairs = None
 
             if 'sizelimit' in obj:
-                self._sizelimit = obj['sizelimit']
+                self._info = self._info._replace(sizelimit=obj['sizelimit'])
             else:
-                self._sizelimit = False
+                self._info = self._info._replace(sizelimit=False)
 
             if 'ratelimit' in obj:
                 response['ratelimit'] = obj['ratelimit']
+            else:
+                response['ratelimit'] = False
 
-            self._server_version = obj['version']
-            self._server_supported_versions = obj['api_versions']
+            self._info = self._info._replace(version=obj['version'])
+            self._info = self._info._replace(supported_api=obj['api_versions'])
+
             self._info_fetched = True
 
         elif not ignore_ratelimit:
@@ -154,24 +171,28 @@ class Client(object):
 
             if not limit_obj == {}:
                 response['ratelimit'] = limit_obj
+            else:
+                response['ratelimit'] = False
 
         else:
-            if self._ratelimit is not None:
-                response['ratelimit'] = self._ratelimit
+            if self._info.ratelimit is not None:
+                response['ratelimit'] = self._info.ratelimit
+            else:
+                response['ratelimit'] = False
 
-        response['backends'] = self._backends
-        response['sizelimit'] = self._sizelimit
-        response['version'] = self._server_version
-        response['supported_api'] = self._server_supported_versions
+        response['backends'] = self._info.backends
+        response['sizelimit'] = self._info.sizelimit
+        response['version'] = self._info.version
+        response['supported_api'] = self._info.supported_api
 
-        if 'ratelimit' in response:
-            self._ratelimit = response['ratelimit']
+        if response['ratelimit']:
+            self._info = self._info._replace(ratelimit=response['ratelimit'])
 
             # Don't store transient information
-            del self._ratelimit['reset']
-            del self._ratelimit['methods']
+            del self._info.ratelimit['reset']
+            del self._info.ratelimit['methods']
 
-        return response
+        return ServerInformation(**response)
 
     def language_pairs(self, refresh=False):
         """Get the list of supported language pairs. If refresh is True, will
@@ -193,21 +214,21 @@ class Client(object):
         :param refresh: Whether or not to ignore cached data and redownload.
         """
 
-        if refresh or (self._backends is None):
+        if refresh or (self._info.backends is None):
             obj = self._request('translators')
 
-            self._backends = {}
+            self._info = self._info._replace(backends={})
 
             for b in obj['backends']:
                 # Convert arrays to tuples
                 b['pairs'] = [(p[0], p[1]) for p in b['pairs']]
-                self._backends[b['name']] = b
+                self._info.backends[b['name']] = b
 
             # Make sure these don't get out of sync by forcing language pairs
             # to regenerate as well
             self._pairs = None
 
-        return self._backends
+        return self._info.backends
 
     def translate(self, text, from_lang, to_lang, split_text=True,
                   refresh=False):
@@ -230,10 +251,10 @@ class Client(object):
             if not self._info_fetched:
                 self.info(ignore_ratelimit=True)
 
-            if self._sizelimit and len(text) > self._sizelimit:
+            if self._info.sizelimit and len(text) > self._info.sizelimit:
                 # Split up the string into proper parameters for a batch call.
                 params = [(s, from_lang, to_lang) for s in
-                          utils.chunk_string(text, self._sizelimit)]
+                          utils.chunk_string(text, self._info.sizelimit)]
 
                 # XXX: Should we ignore the timeout? Let user specify? What?
                 return ''.join(self.batch_translate(params,
