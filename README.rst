@@ -47,13 +47,18 @@ Setup process::
     python setup.py develop
     # edit settings.py as needed
 
-That should be it. Installing is currently working, but not terribly useful. To
-run::
+That should be it. Try running the executables with the :code:`--help` flag to
+get a sense of how to work with them::
 
-    ./bin/translate [--debug]
+    ./bin/translate --help
+    ./bin/translate-client --help
 
 The debug flag is useful if you're doing any kind of development, as it will
-reload the server when a changed file is detected.
+reload the server when a changed file is detected and print out some useful
+information.
+
+You can also install the executables and translate modules using the standard
+:code:`python setup.py install` method.
 
 Alternatively, using uWSGI (other systems should be similar)::
 

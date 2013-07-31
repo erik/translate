@@ -68,6 +68,6 @@ setup(name='translate',
       install_requires=requires,
       license='GPLv3',
       packages=find_packages(),
-      data_files=[('', ['settings.py'])],
       include_package_data=True,
+      data_files=[('', ['settings.py'])],
       scripts=['bin/translate', 'bin/translate-client'])
