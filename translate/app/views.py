@@ -14,6 +14,14 @@
 # You should have received a copy of the GNU General Public License along with
 # translate.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+translate.app.views
+~~~~~~~~~~~~~~~~~~~
+
+This module defines the Flask routes (URL endpoints) that the translate server
+specifies. All HTML and JSON responses are generated here.
+"""
+
 from . import app, log
 from .ratelimit import ratelimit, RateLimit
 from translate.exceptions import APIException, TranslationException
@@ -26,6 +34,7 @@ import flask
 from flask import render_template, request
 
 import json
+
 
 manager = None
 
@@ -190,25 +199,6 @@ def list_pairs():
     return flask.jsonify(pairs=list(pairs))
 
 
-@app.route('/api/v1/ratelimit')
-@translate.utils.jsonp
-def ratelimit_info():
-    if RateLimit.enabled:
-        user = flask.request.remote_addr
-
-        # Make sure the ratelimit information is up to date.
-        RateLimit.update_timer()
-
-        methods = {}
-        for key, users in RateLimit.limit_dict.iteritems():
-            methods[key] = RateLimit.remaining(user, key)
-
-        return flask.jsonify(limit=RateLimit.limit, per=RateLimit.per,
-                             reset=RateLimit.reset, methods=methods)
-
-    return flask.jsonify()
-
-
 @app.route('/api/v1/translate')
 @ratelimit()
 @translate.utils.jsonp
@@ -270,17 +260,3 @@ def translate_text():
 
     raise APIException.translator(from_lang=source_lang, to_lang=dest_lang,
                                   text=text, tried=tried)
-
-
-@app.route('/api/v1/translators')
-@ratelimit()
-@translate.utils.jsonp
-def list_translators():
-    return flask.jsonify(
-        backends=[{
-            'name': b.name,
-            'description': b.description,
-            'url': b.url,
-            'preference': b.preference,
-            'pairs': b.language_pairs
-        } for b in manager.backends])

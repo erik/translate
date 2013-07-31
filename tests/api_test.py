@@ -24,11 +24,12 @@ class TestAPIv1():
 
     def test_jsonp(self):
         for path in ['/api/v1/pairs?callback=foo',
-                     '/api/v1/translators?callback=foo',
                      '/api/v1/translate?callback=foo',
-                     '/api/v1/ratelimit?callback=foo']:
+                     '/api/v1/info?callback=foo']:
             resp = self.client.get(path)
             assert resp.data.startswith('foo(')
+            # XXX: Should it end with ;? Does it matter?
+            assert resp.data.endswith(')')
 
             # Strip jsonp (doesn't parse here)
             assert json.loads(resp.data[4:-1]) is not None
@@ -41,8 +42,8 @@ class TestAPIv1():
             assert js is not None
             assert 'pairs' in js
 
-    def test_translators_good_input(self):
-        for path in ['/api/v1/translators']:
+    def test_info_good_input(self):
+        for path in ['/api/v1/info']:
             resp = self.client.get(path)
             assert resp.status_code == 200
             js = json.loads(resp.data)
@@ -120,7 +121,7 @@ exclude=Dummy')
         assert resp.status_code == 200
 
     def test_batch_good(self):
-        urls = ['/api/v1/pairs', '/api/v1/translators',
+        urls = ['/api/v1/pairs', '/api/v1/pairs',
                 '/api/v1/pairs']
 
         resp = self.client.post('/api/v1/batch',
@@ -136,7 +137,7 @@ exclude=Dummy')
 
     def test_batch_mixed(self):
         urls = ['/api/v1/pairs', '/api/v1/translate?from=bad',
-                '/api/v1/translators']
+                '/api/v1/pairs']
 
         resp = self.client.post('/api/v1/batch',
                                 data={'urls': json.dumps(urls)})
@@ -158,10 +159,10 @@ exclude=Dummy')
         reset = time.time() + 100
         RateLimit.reset = reset
 
-        resp = self.client.get('/api/v1/ratelimit')
+        resp = self.client.get('/api/v1/info')
 
         assert resp.status_code == 200
-        assert json.loads(resp.data) == {
+        assert json.loads(resp.data)['ratelimit'] == {
             'reset': reset,
             'limit': 5,
             'per': 5,
@@ -170,20 +171,18 @@ exclude=Dummy')
 
         for _ in xrange(6):
             self.client.get('/api/v1/translate')
-            self.client.get('/api/v1/translators')
 
         self.client.get('/api/v1/pairs')
 
-        resp = self.client.get('/api/v1/ratelimit')
+        resp = self.client.get('/api/v1/info')
         assert resp.status_code == 200
 
-        js = json.loads(resp.data)
+        js = json.loads(resp.data)['ratelimit']
         assert js['limit'] == 5
         assert js['per'] == 5
         assert js['reset'] == reset
         assert js['methods'] == {
             '/api/v1/translate': 0,
-            '/api/v1/translators': 0,
             '/api/v1/pairs': 4
         }
 

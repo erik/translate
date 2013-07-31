@@ -14,7 +14,7 @@ class TestRateLimit():
     reset = 0
 
     def setup_class(self):
-        views.manager = BackendManager({})
+        views.manager = BackendManager({'dummy': {'enabled': True}})
         app.config['TESTING'] = True
 
         # 5 reqs / 1 sec
@@ -36,7 +36,6 @@ class TestRateLimit():
 
     def test_returns_limit_headers(self):
         for path in ['/api/v1/pairs',
-                     '/api/v1/translators',
                      '/api/v1/translate']:
             resp = self.client.get(path)
 
@@ -90,9 +89,11 @@ class TestRateLimit():
         # Make sure we can still access other methods while throttled for
         # /pairs
         assert time.time() < TestRateLimit.reset
-        resp = self.client.get('/api/v1/translators')
+        resp = self.client.get('/api/v1/translate')
 
-        assert resp.status_code == 200
+        # We want this to fail because it has bad params, not because it's
+        # ratelimited
+        assert resp.status_code == 452
 
     def test_limit_clear(self):
         # wait until old requests expire

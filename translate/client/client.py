@@ -146,7 +146,6 @@ class Client(object):
                                  don't need the info anyway.
         :param refresh: Whether or not to ignore cached data and redownload.
         """
-        # TODO: use namedtuple instead of dict for response object?
         # TODO: Test all of this!
 
         response = {}
@@ -171,33 +170,20 @@ class Client(object):
                 self._info = self._info._replace(sizelimit=False)
 
             if 'ratelimit' in obj:
-                response['ratelimit'] = obj['ratelimit']
+                self._info = self._info._replace(ratelimit=obj['ratelimit'])
             else:
-                response['ratelimit'] = False
+                self._info = self._info._replace(ratelimit=False)
 
             self._info = self._info._replace(version=obj['version'])
             self._info = self._info._replace(supported_api=obj['api_versions'])
 
             self._info_fetched = True
 
-        elif not ignore_ratelimit:
-            limit_obj = self._request('ratelimit')
-
-            if not limit_obj == {}:
-                response['ratelimit'] = limit_obj
-            else:
-                response['ratelimit'] = False
-
-        else:
-            if self._info.ratelimit is not None:
-                response['ratelimit'] = self._info.ratelimit
-            else:
-                response['ratelimit'] = False
-
         response['backends'] = self._info.backends
+        response['ratelimit'] = self._info.ratelimit
         response['sizelimit'] = self._info.sizelimit
-        response['version'] = self._info.version
         response['supported_api'] = self._info.supported_api
+        response['version'] = self._info.version
 
         if response['ratelimit']:
             self._info = self._info._replace(ratelimit=response['ratelimit'])
@@ -228,21 +214,8 @@ class Client(object):
         :param refresh: Whether or not to ignore cached data and redownload.
         """
 
-        if refresh or (self._info.backends is None):
-            obj = self._request('translators')
-
-            self._info = self._info._replace(backends={})
-
-            for b in obj['backends']:
-                # Convert arrays to tuples
-                b['pairs'] = [(p[0], p[1]) for p in b['pairs']]
-                self._info.backends[b['name']] = b
-
-            # Make sure these don't get out of sync by forcing language pairs
-            # to regenerate as well
-            self._pairs = None
-
-        return self._info.backends
+        info = self.info(refresh=refresh, ignore_ratelimit=True)
+        return info.backends
 
     def translate(self, text, from_lang, to_lang, split_text=True,
                   refresh=False):
