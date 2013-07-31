@@ -25,7 +25,7 @@ from translate.app.ratelimit import RateLimit
 
 
 # API versions that we support (can respond to /api/VERSION/METHOD). It is the
-# server's job to be backward compatible, no the client's (at least for now)
+# server's job to be backward compatible, not the client's (at least for now)
 API_VERSION_SUPPORT = ['v1']
 
 
@@ -46,7 +46,8 @@ def initialize_flask():
 
     def deinitialize_manager():
         """Do any cleanup that needs to be done (for backends in particular)
-        before the server terminates."""
+        before the server terminates.
+        """
 
         log.info("Shutting down server...")
         views.manager.shutdown()

@@ -69,4 +69,4 @@ setup(name='translate',
       license='GPLv3',
       packages=find_packages(),
       include_package_data=True,
-      scripts=['bin/translate'])
+      scripts=['bin/translate', 'bin/translate-client'])
