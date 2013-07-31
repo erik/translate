@@ -181,7 +181,10 @@
     <span class="c"># XXX: Should /info be ratelimited?</span>
     <span class="c"># TODO: /ratelimit and /translators are reduntant with this one, remove?</span>
 
-    <span class="n">resp_obj</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">resp_obj</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;version&#39;</span><span class="p">:</span> <span class="n">translate</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
+        <span class="s">&#39;api_versions&#39;</span><span class="p">:</span> <span class="n">translate</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">API_VERSION_SUPPORT</span>
+    <span class="p">}</span>
 
     <span class="n">resp_obj</span><span class="p">[</span><span class="s">&#39;backends&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                              <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>

@@ -104,6 +104,8 @@ ignore the HTTP request timeout time</li>
 <dd><p>Try to connect to the specified server. If a dummy request succeeds,
 True will be returned. If some kind of connection error (timeout, HTTP
 status != 200, ...) occurs, then False will be returned.</p>
+<p>False will also be returned if the server can be reached, but does not
+support the API version that the Client relies on.</p>
 </dd></dl>
 
 <dl class="method">
@@ -132,12 +134,8 @@ language pair.</p>
 <dd><p>Collect information about this instance of the translate
 server.</p>
 <p>This function uses the /api/v1/info method to collect its information.</p>
-<p>A dict is returned containing the relevant info:</p>
-<div class="highlight-python"><pre>{'backends': { NAME : ... },
- 'ratelimit': { ... }, (False if ratelimit disabled)
- 'sizelimit': int or False if sizelimit disabled
-}</pre>
-</div>
+<p>A ServerInformation object is returned containing the relevant
+info.</p>
 <p>See the API documentation for the contents of the &#8216;backends&#8217; and
 &#8216;ratelimit&#8217; dicts.</p>
 <p>Note that if refresh=False and the data has already been collected,
@@ -149,7 +147,7 @@ stale data or guesses.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>ignore_ratelimit</strong> &#8211; If this is True, won&#8217;t bother to make a
-separate request for ratelimit
+separate request for current ratelimit
 information. This is a bit quicker if you
 don&#8217;t need the info anyway.</li>
 <li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
@@ -177,7 +175,7 @@ ignore previously cached results and hit the server again.</p>
 
 <dl class="method">
 <dt id="translate.client.Client.translate">
-<tt class="descname">translate</tt><big>(</big><em>text</em>, <em>from_lang</em>, <em>to_lang</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.translate" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">translate</tt><big>(</big><em>text</em>, <em>from_lang</em>, <em>to_lang</em>, <em>split_text=True</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.translate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translate a given string of text between languages.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -187,6 +185,8 @@ ignore previously cached results and hit the server again.</p>
 <li><strong>text</strong> &#8211; String of text to translate.</li>
 <li><strong>from_lang</strong> &#8211; Language to translate from.</li>
 <li><strong>to_lang</strong> &#8211; Language to translate to.</li>
+<li><strong>split_text</strong> &#8211; If True, texts will automatically be split into
+multiple requests under the server&#8217;s sizelimit.</li>
 <li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
 </ul>
 </td>
@@ -210,6 +210,24 @@ and some basic info about them</p>
 </table>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="translate.client.ServerInformation">
+<em class="property">class </em><tt class="descclassname">translate.client.</tt><tt class="descname">ServerInformation</tt><a class="headerlink" href="#translate.client.ServerInformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This named tuple defines the various parameters of the server that the client is working with.</p>
+<p>Members:</p>
+<blockquote>
+<div><ul class="simple">
+<li>backends: { ... }</li>
+<li>ratelimit: { ... } (False if ratelimit disabled)</li>
+<li>sizelimit: int or False if sizelimit disabled</li>
+<li>version: server version number</li>
+<li>supported_api: [ API revisions server supports ]</li>
+</ul>
+</div></blockquote>
+<p>See the API documentation for information on the format of backends and
+ratelimit.</p>
 </dd></dl>
 
 </div>
