@@ -58,17 +58,24 @@ def inject_x_rate_headers(response):
 @app.errorhandler(APIException)
 @translate.utils.jsonp
 def bad_request(error):
-
+    """If an APIException is raised, generate a response (.jsonify() creates a
+    proper flask response)
+    """
     return error.jsonify()
 
 
 @app.route('/')
-def index():
+def html_index():
+    """Index page, obviously enough."""
     return render_template('index.html', version=__version__)
 
 
 @app.route('/info')
-def api():
+def html_info():
+    """Show information about the server, in HTML form."""
+
+    # TODO: Show ratelimit/sizelimit info here
+
     pairs = set()
 
     for backend in manager.backends:
@@ -89,6 +96,7 @@ def api():
 @app.route('/api/v1/batch', methods=['POST'])
 @translate.utils.jsonp
 def batch_api():
+    """Batch multiple API calls into a single request."""
     # TODO: Should there be a limit on the number of URLs here? Even though
     #       ratelimiting is handled, this could be a potential target for
     #       DOSing the server. This batch method is also quite a bit slower
@@ -151,6 +159,8 @@ def batch_api():
 @app.route('/api/v1/info')
 @translate.utils.jsonp
 def show_info():
+    """JSON version of server information"""
+
     # XXX: Should /info be ratelimited?
 
     resp_obj = {
@@ -188,6 +198,7 @@ def show_info():
 @ratelimit()
 @translate.utils.jsonp
 def list_pairs():
+    """Deduplicated list of language pairs that the server supports."""
 
     pairs = set()
 
@@ -202,6 +213,7 @@ def list_pairs():
 @ratelimit()
 @translate.utils.jsonp
 def translate_text():
+    """Translate some text"""
 
     text = request.args.get('text', None)
     if not text or text == "":
