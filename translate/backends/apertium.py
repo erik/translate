@@ -50,7 +50,7 @@ class ApertiumBackend(IBackend):
             for file_name in [os.path.basename(f) for f in
                               glob.glob(modes_dir + '/*.mode')]:
 
-                matches = re.search('(.*?)-(.*)\.mode', file_name)
+                matches = re.search(r'(.*?)-(.*)\.mode', file_name)
 
                 self.language_pairs.add(matches.groups())
 

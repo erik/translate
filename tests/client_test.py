@@ -176,7 +176,7 @@ class TestClient():
                 self.client.batch_translate(bad)
 
     def test_info(self):
-        resp = self.client.info(ignore_ratelimit=False, refresh=False)
+        resp = self.client.info(refresh=False)
         assert self.client._info_fetched is True
         assert self.client._info.sizelimit == 987
 
@@ -188,7 +188,7 @@ class TestClient():
 
         self.client._info_fetched = "should not be reset"
 
-        resp = self.client.info(ignore_ratelimit=False, refresh=False)
+        resp = self.client.info(refresh=False)
         assert self.client._info_fetched is "should not be reset"
         assert self.client._info.sizelimit == 987
 

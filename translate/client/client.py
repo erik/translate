@@ -55,6 +55,13 @@ class ServerInformation(
       - version: server version number
       - supported_api: [ API revisions server supports ]
 
+    The dict specified by the 'ratelimit' member will contain keys representing
+    the reset time of the rate limit window, as well as the current ratelimit
+    status (how many requests left per method). This information should be
+    considered out of date as soon as the request completes, and will not
+    update unless client.info(refresh=True) is called again. It is only stored
+    as a convenience.
+
     See the API documentation for information on the format of backends and
     ratelimit.
     """
@@ -124,7 +131,7 @@ class Client(object):
 
         return True
 
-    def info(self, ignore_ratelimit=False, refresh=False):
+    def info(self, refresh=False):
         """Collect information about this instance of the translate
         server.
 
@@ -140,10 +147,6 @@ class Client(object):
         an additional call to /api/v1/ratelimit will have to be made to avoid
         stale data or guesses.
 
-        :param ignore_ratelimit: If this is True, won't bother to make a
-                                 separate request for current ratelimit
-                                 information. This is a bit quicker if you
-                                 don't need the info anyway.
         :param refresh: Whether or not to ignore cached data and redownload.
         """
         # TODO: Test all of this!
@@ -188,10 +191,6 @@ class Client(object):
         if response['ratelimit']:
             self._info = self._info._replace(ratelimit=response['ratelimit'])
 
-            # Don't store transient information
-            del self._info.ratelimit['reset']
-            del self._info.ratelimit['methods']
-
         return ServerInformation(**response)
 
     def language_pairs(self, refresh=False):
@@ -214,7 +213,7 @@ class Client(object):
         :param refresh: Whether or not to ignore cached data and redownload.
         """
 
-        info = self.info(refresh=refresh, ignore_ratelimit=True)
+        info = self.info(refresh=refresh)
         return info.backends
 
     def translate(self, text, from_lang, to_lang, split_text=True,
@@ -236,7 +235,7 @@ class Client(object):
             # If we haven't learned about the sizelimit yet, make sure to get
             # that information.
             if not self._info_fetched:
-                self.info(ignore_ratelimit=True)
+                self.info()
 
             if self._info.sizelimit and len(text) > self._info.sizelimit:
                 # Split up the string into proper parameters for a batch call.

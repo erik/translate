@@ -152,7 +152,6 @@ def batch_api():
 @translate.utils.jsonp
 def show_info():
     # XXX: Should /info be ratelimited?
-    # TODO: /ratelimit and /translators are reduntant with this one, remove?
 
     resp_obj = {
         'version': translate.__version__,
