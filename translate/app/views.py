@@ -87,9 +87,31 @@ def html_info():
     # Sort by from_language
     pairs = sorted(pairs, key=lambda pair: pair[0])
 
+    if app.config['SERVER']['sizelimit']['enabled']:
+        sizelimit = app.config['SERVER']['sizelimit']['limit']
+    else:
+        sizelimit = False
+
+    if RateLimit.enabled:
+
+        RateLimit.update_timer()
+
+        user = flask.request.remote_addr
+        methods = {}
+        for key, users in RateLimit.limit_dict.iteritems():
+            methods[key] = RateLimit.remaining(user, key)
+
+        ratelimit = dict(limit=RateLimit.limit, per=RateLimit.per,
+                         reset=RateLimit.reset, methods=methods)
+    else:
+        ratelimit = False
+
     return render_template('info.html',
                            version=translate.__version__,
+                           supported_api=translate.app.API_VERSION_SUPPORT,
                            backends=manager.backends,
+                           sizelimit=sizelimit,
+                           ratelimit=ratelimit,
                            pairs=pairs)
 
 

@@ -12,7 +12,7 @@
 
   <body class="subpage">
     <div class="grid" id="wrapper">
-      <h3 class="center"> Server Information</h3>
+      <h3 class="center"> Server Information </h3>
 
       <div class="col_12">
         <p>
@@ -32,6 +32,61 @@
             </li>
         {% endfor %}
           </ul>
+
+          <h4> API Support </h4>
+          This server supports the following HTTP API revisions:
+          <ul class="alt" id="apis">
+            {% for api in supported_api %}
+            <li>
+              {{ api }}
+            </li>
+            {% endfor %}
+          </ul>
+
+          <h4> Limiting </h4>
+          <h5> Size Limit </h5>
+          {% if sizelimit %}
+            <p>
+              Server limits translation requests to {{ sizelimit }}
+              bytes.
+            </p>
+          {% else %}
+            <p>
+              Server does not limit individual translation request sizes.
+            </p>
+          {% endif %}
+
+          <h5> Rate Limit </h5>
+          {% if ratelimit %}
+          <p>
+            Server limits API requests to {{ ratelimit.limit }} requests every
+            {{ ratelimit.per }} seconds.
+          </p>
+
+          <table class="tight striped sortable">
+            <thead>
+              <tr>
+                <th>API endpoint</th>
+                <th>Remaining requests</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for key in ratelimit.methods %}
+              <tr>
+                <td> <pre>{{ key }}</pre> </td>
+                <td> {{ ratelimit.methods[key] }} </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {% else %}
+            <p>
+              Server does not rate limit API requests.
+            </p>
+          {% endif %}
+          <hr />
         </div>
 
         <div class="col_6">
