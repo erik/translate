@@ -127,6 +127,8 @@ maintained, of course.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Collects various snippets of information about the server into a single
 JSON object.</p>
+<p>If rate limiting or size limiting are not active on the server, the
+corresponding keys in the returned object will not be present.</p>
 <p><em>This method currently does not count against the ratelimit, but that has
 not been determined for sure.</em></p>
 </td>
@@ -135,77 +137,25 @@ not been determined for sure.</em></p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><pre>{
-  'version': Version translate server running,
-  'api_versions': [ API versions supported by this server, ... ],
-  'backends': See '/translators' documentation,
-  'ratelimit': See '/ratelimit' documentation. If not active, this key
-               is not present,
-  'sizelimit': Number of bytes /translate will accept at one time. This
-               key is not present if server doesn't implement a
-               sizelimit.
+  "version": Version translate server running,
+  "api_versions": [ API versions supported by this server, ... ],
+  "backends": [{"name": "Backend Name",
+                "pairs": [["from-lang", "to-lang"], ...],
+                "preference": 999,
+                "description": "Description of this backend"
+               }, ...],
+  "ratelimit": {"limit": API rate limit,
+                "per":   Rate limit window length (in seconds),
+                "reset": Unix timestamp (seconds) when old requests
+                         will stop counting against ratelimit,
+                "methods": {
+                  "/api/v1/METHOD": number of requests remaining for METHOD,
+                  ...}
+                },
+  "sizelimit": Maximum number of bytes this server will accept for a
+               translation requests
+
 }</pre>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><p class="first"><strong>ratelimit</strong></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Returns current ratelimit status, the number of requests remaining for
-each API endpoint.</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><pre>{
-  "limit": API rate limit,
-  "per":   Rate limit window,
-  "reset": Unix timestamp (seconds) when old requests will stop
-           counting against ratelimit,
-  "methods": {
-    "/api/v1/METHOD": number of requests remaining for METHOD,
-    ...
-  }
-}</pre>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><p class="first"><strong>translators</strong></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Returns information on all the available translation backends that this
-server can support.</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><div class="first last highlight-python"><div class="highlight"><pre><span class="p">{</span>
-  <span class="s">&quot;backends&quot;</span><span class="p">:</span> <span class="p">[</span>
-  <span class="p">{</span>
-    <span class="s">&quot;pairs&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">[</span>
-        <span class="s">&quot;from-lang&quot;</span><span class="p">,</span>
-        <span class="s">&quot;to-lang&quot;</span>
-      <span class="p">],</span> <span class="o">...</span>
-    <span class="p">],</span>
-    <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Backend Name&quot;</span><span class="p">,</span>
-    <span class="s">&quot;preference&quot;</span><span class="p">:</span> <span class="mi">999</span><span class="p">,</span>
-    <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Description of this backend&quot;</span>
-  <span class="p">},</span> <span class="o">...</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
 </div>
 </td>
 </tr>
@@ -219,6 +169,8 @@ server can support.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Returns a list of every pair of (source language, destination language)
 that this server can handle.</p>
+<p>This data can be generated manually from a call to <tt class="code docutils literal"><span class="pre">/api/v1/info</span></tt>,
+but, this API method serves as a convenience to handle that automatically.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">None</p>
