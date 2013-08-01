@@ -25,7 +25,7 @@ to multiple machine translation services.
 import logging
 
 __title__ = 'translate'
-__version__ = '0.0.0'
+__version__ = '0.1.0-beta'
 __author__ = 'Erik Price'
 __copyright__ = 'Copyright 2013 Erik Price'
 
