@@ -9,7 +9,7 @@ URL scheme :code:`/api/v<version>/<method>?<params...>`
 For each URL, the parameter :code:`?callback=jsonp` can be used to wrap the
 returned JSON data using the name `jsonp`. For example::
 
-  GET /api/v1/translators?callback=foo
+  GET /api/v1/info?callback=foo
 
   foo({...})
 
@@ -90,7 +90,7 @@ Methods
                           ...}
                         },
           "sizelimit": Maximum number of bytes this server will accept for a
-                       translation requests
+                       translation request
 
         }
 
