@@ -63,6 +63,9 @@ Methods
      Collects various snippets of information about the server into a single
      JSON object.
 
+     If rate limiting or size limiting are not active on the server, the
+     corresponding keys in the returned object will not be present.
+
      *This method currently does not count against the ratelimit, but that has
      not been determined for sure.*
   :Parameters:
@@ -71,61 +74,24 @@ Methods
      ::
 
         {
-          'version': Version translate server running,
-          'api_versions': [ API versions supported by this server, ... ],
-          'backends': See '/translators' documentation,
-          'ratelimit': See '/ratelimit' documentation. If not active, this key
-                       is not present,
-          'sizelimit': Number of bytes /translate will accept at one time. This
-                       key is not present if server doesn't implement a
-                       sizelimit.
-        }
+          "version": Version translate server running,
+          "api_versions": [ API versions supported by this server, ... ],
+          "backends": [{"name": "Backend Name",
+                        "pairs": [["from-lang", "to-lang"], ...],
+                        "preference": 999,
+                        "description": "Description of this backend"
+                       }, ...],
+          "ratelimit": {"limit": API rate limit,
+                        "per":   Rate limit window length (in seconds),
+                        "reset": Unix timestamp (seconds) when old requests
+                                 will stop counting against ratelimit,
+                        "methods": {
+                          "/api/v1/METHOD": number of requests remaining for METHOD,
+                          ...}
+                        },
+          "sizelimit": Maximum number of bytes this server will accept for a
+                       translation requests
 
-- **ratelimit**
-
-  :Description:
-     Returns current ratelimit status, the number of requests remaining for
-     each API endpoint.
-  :Parameters:
-     None
-  :Returns:
-     ::
-
-        {
-          "limit": API rate limit,
-          "per":   Rate limit window,
-          "reset": Unix timestamp (seconds) when old requests will stop
-                   counting against ratelimit,
-          "methods": {
-            "/api/v1/METHOD": number of requests remaining for METHOD,
-            ...
-          }
-        }
-
-- **translators**
-
-  :Description:
-     Returns information on all the available translation backends that this
-     server can support.
-  :Parameters:
-     None
-  :Returns:
-     ::
-
-        {
-          "backends": [
-          {
-            "pairs": [
-              [
-                "from-lang",
-                "to-lang"
-              ], ...
-            ],
-            "name": "Backend Name",
-            "preference": 999,
-            "description": "Description of this backend"
-          }, ...
-          ]
         }
 
 - **pairs**
@@ -133,6 +99,9 @@ Methods
   :Description:
      Returns a list of every pair of (source language, destination language)
      that this server can handle.
+
+     This data can be generated manually from a call to :code:`/api/v1/info`,
+     but, this API method serves as a convenience to handle that automatically.
   :Parameters:
      None
   :Returns:
