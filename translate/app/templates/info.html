@@ -20,18 +20,6 @@
         </p>
 
         <div class="col_6">
-          <h4>Backends</h4>
-
-          <ul class="alt" id="translators">
-        {% for backend in backends %}
-            <li>
-              <a href="{{ backend.url }}">
-                <b> {{ backend.name }} </b>
-              </a>
-              <p> {{ backend.description }} </p>
-            </li>
-        {% endfor %}
-          </ul>
 
           <h4> API Support </h4>
           This server supports the following HTTP API revisions:
@@ -43,20 +31,22 @@
             {% endfor %}
           </ul>
 
+          <h4>Backends</h4>
+          <ul class="alt" id="translators">
+            {% for backend in backends %}
+              <li>
+                <a href="{{ backend.url }}">
+                  <b> {{ backend.name }} </b>
+                </a>
+                <p> {{ backend.description }} </p>
+              </li>
+            {% endfor %}
+          </ul>
+
           <h4> Limiting </h4>
-          <h5> Size Limit </h5>
-          {% if sizelimit %}
-            <p>
-              Server limits translation requests to {{ sizelimit }}
-              bytes.
-            </p>
-          {% else %}
-            <p>
-              Server does not limit individual translation request sizes.
-            </p>
-          {% endif %}
 
           <h5> Rate Limit </h5>
+
           {% if ratelimit %}
           <p>
             Server limits API requests to {{ ratelimit.limit }} requests every
@@ -86,6 +76,19 @@
               Server does not rate limit API requests.
             </p>
           {% endif %}
+
+          <h5> Size Limit </h5>
+          {% if sizelimit %}
+            <p>
+              Server limits translation requests to {{ sizelimit }}
+              bytes.
+            </p>
+          {% else %}
+            <p>
+              Server does not limit individual translation request sizes.
+            </p>
+          {% endif %}
+
           <hr />
         </div>
 
