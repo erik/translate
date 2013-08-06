@@ -130,7 +130,7 @@ language pair.</p>
 
 <dl class="method">
 <dt id="translate.client.Client.info">
-<tt class="descname">info</tt><big>(</big><em>ignore_ratelimit=False</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.info" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">info</tt><big>(</big><em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collect information about this instance of the translate
 server.</p>
 <p>This function uses the /api/v1/info method to collect its information.</p>
@@ -145,14 +145,7 @@ stale data or guesses.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>ignore_ratelimit</strong> &#8211; If this is True, won&#8217;t bother to make a
-separate request for current ratelimit
-information. This is a bit quicker if you
-don&#8217;t need the info anyway.</li>
-<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</td>
 </tr>
 </tbody>
 </table>
@@ -168,6 +161,48 @@ ignore previously cached results and hit the server again.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.languages_from">
+<tt class="descname">languages_from</tt><big>(</big><em>from_lang</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.languages_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a list of languages that the server reports being able to
+translate to, given the &#8220;from&#8221; language.</p>
+<p>Return value will be a list of strings containing the possible &#8220;to&#8221;
+languages, or the empty list if none exist.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>from_lang</strong> &#8211; The language to search for possible translation pairs</li>
+<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translate.client.Client.languages_to">
+<tt class="descname">languages_to</tt><big>(</big><em>to_lang</em>, <em>refresh=False</em><big>)</big><a class="headerlink" href="#translate.client.Client.languages_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a list of languages that the server reports being able to
+translate from, given the &#8220;to&#8221; language.</p>
+<p>Return value will be a list of strings containing the possible &#8220;from&#8221;
+languages, or the empty list if none exist.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>to_lang</strong> &#8211; The language to search for possible translation pairs</li>
+<li><strong>refresh</strong> &#8211; Whether or not to ignore cached data and redownload.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -227,6 +262,12 @@ client is working with.</p>
 <li>supported_api: [ API revisions server supports ]</li>
 </ul>
 </div></blockquote>
+<p>The dict specified by the &#8216;ratelimit&#8217; member will contain keys representing
+the reset time of the rate limit window, as well as the current ratelimit
+status (how many requests left per method). This information should be
+considered out of date as soon as the request completes, and will not
+update unless client.info(refresh=True) is called again. It is only stored
+as a convenience.</p>
 <p>See the API documentation for information on the format of backends and
 ratelimit.</p>
 </dd></dl>

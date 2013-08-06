@@ -84,11 +84,11 @@
 </div>
 <span class="nd">@app.errorhandler</span><span class="p">(</span><span class="n">APIException</span><span class="p">)</span>
 <span class="nd">@translate.utils.jsonp</span>
-<span class="k">def</span> <span class="nf">bad_request</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+<div class="viewcode-block" id="bad_request"><a class="viewcode-back" href="../../../dev/code.html#translate.app.views.bad_request">[docs]</a><span class="k">def</span> <span class="nf">bad_request</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">error</span><span class="o">.</span><span class="n">jsonify</span><span class="p">()</span>
 
-
+</div>
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;index.html&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">)</span>
@@ -115,7 +115,7 @@
 
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/batch&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;POST&#39;</span><span class="p">])</span>
 <span class="nd">@translate.utils.jsonp</span>
-<span class="k">def</span> <span class="nf">batch_api</span><span class="p">():</span>
+<div class="viewcode-block" id="batch_api"><a class="viewcode-back" href="../../../dev/code.html#translate.app.views.batch_api">[docs]</a><span class="k">def</span> <span class="nf">batch_api</span><span class="p">():</span>
     <span class="c"># TODO: Should there be a limit on the number of URLs here? Even though</span>
     <span class="c">#       ratelimiting is handled, this could be a potential target for</span>
     <span class="c">#       DOSing the server. This batch method is also quite a bit slower</span>
@@ -174,10 +174,10 @@
 
     <span class="k">return</span> <span class="n">resp</span><span class="p">,</span> <span class="mi">200</span>
 
-
+</div>
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/info&#39;</span><span class="p">)</span>
 <span class="nd">@translate.utils.jsonp</span>
-<span class="k">def</span> <span class="nf">show_info</span><span class="p">():</span>
+<div class="viewcode-block" id="show_info"><a class="viewcode-back" href="../../../dev/code.html#translate.app.views.show_info">[docs]</a><span class="k">def</span> <span class="nf">show_info</span><span class="p">():</span>
     <span class="c"># XXX: Should /info be ratelimited?</span>
     <span class="c"># TODO: /ratelimit and /translators are reduntant with this one, remove?</span>
 
@@ -211,11 +211,11 @@
 
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="o">**</span><span class="n">resp_obj</span><span class="p">)</span>
 
-
+</div>
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/pairs&#39;</span><span class="p">)</span>
 <span class="nd">@ratelimit</span><span class="p">()</span>
 <span class="nd">@translate.utils.jsonp</span>
-<span class="k">def</span> <span class="nf">list_pairs</span><span class="p">():</span>
+<div class="viewcode-block" id="list_pairs"><a class="viewcode-back" href="../../../dev/code.html#translate.app.views.list_pairs">[docs]</a><span class="k">def</span> <span class="nf">list_pairs</span><span class="p">():</span>
 
     <span class="n">pairs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
@@ -225,7 +225,7 @@
 
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">pairs</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">pairs</span><span class="p">))</span>
 
-
+</div>
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/ratelimit&#39;</span><span class="p">)</span>
 <span class="nd">@translate.utils.jsonp</span>
 <span class="k">def</span> <span class="nf">ratelimit_info</span><span class="p">():</span>
@@ -248,7 +248,7 @@
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/translate&#39;</span><span class="p">)</span>
 <span class="nd">@ratelimit</span><span class="p">()</span>
 <span class="nd">@translate.utils.jsonp</span>
-<span class="k">def</span> <span class="nf">translate_text</span><span class="p">():</span>
+<div class="viewcode-block" id="translate_text"><a class="viewcode-back" href="../../../dev/code.html#translate.app.views.translate_text">[docs]</a><span class="k">def</span> <span class="nf">translate_text</span><span class="p">():</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span> <span class="ow">or</span> <span class="n">text</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
@@ -307,7 +307,7 @@
     <span class="k">raise</span> <span class="n">APIException</span><span class="o">.</span><span class="n">translator</span><span class="p">(</span><span class="n">from_lang</span><span class="o">=</span><span class="n">source_lang</span><span class="p">,</span> <span class="n">to_lang</span><span class="o">=</span><span class="n">dest_lang</span><span class="p">,</span>
                                   <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">tried</span><span class="o">=</span><span class="n">tried</span><span class="p">)</span>
 
-
+</div>
 <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/api/v1/translators&#39;</span><span class="p">)</span>
 <span class="nd">@ratelimit</span><span class="p">()</span>
 <span class="nd">@translate.utils.jsonp</span>
