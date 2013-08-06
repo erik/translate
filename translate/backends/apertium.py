@@ -50,9 +50,15 @@ class ApertiumBackend(IBackend):
             for file_name in [os.path.basename(f) for f in
                               glob.glob(modes_dir + '/*.mode')]:
 
-                matches = re.search(r'(.*?)-(.*)\.mode', file_name)
+                # This ignores bogus 'eco-.*' matches as well as '*-multi',
+                # which aren't what we want to handle right now.
+                #
+                # TODO: Maybe handle these eventually.
+                match = re.search(r'^(?!(?:eco-))([^\-]+)-([^\-]+)\.mode$',
+                                  file_name)
 
-                self.language_pairs.add(matches.groups())
+                if match is not None:
+                    self.language_pairs.add(match.groups())
 
             self.language_pairs = list(self.language_pairs)
 
