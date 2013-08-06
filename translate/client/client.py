@@ -206,6 +206,50 @@ class Client(object):
 
         return self._pairs
 
+    # XXX: Don't really like the naming of this
+    # TODO: Requires testing.
+    def languages_from(self, from_lang, refresh=False):
+        """Generate a list of languages that the server reports being able to
+        translate to, given the "from" language.
+
+        Return value will be a list of strings containing the possible "to"
+        languages, or the empty list if none exist.
+
+        :param from_lang: The language to search for possible translation pairs
+        :param refresh: Whether or not to ignore cached data and redownload.
+        """
+
+        langs = []
+
+        for pair in self.language_pairs(refresh):
+            if pair[0] == from_lang:
+                langs.append(pair[1])
+
+        # Dedup
+        return list(set(langs))
+
+    # XXX: Don't really like the naming of this
+    # TODO: Requires testing.
+    def languages_to(self, to_lang, refresh=False):
+        """Generate a list of languages that the server reports being able to
+        translate from, given the "to" language.
+
+        Return value will be a list of strings containing the possible "from"
+        languages, or the empty list if none exist.
+
+        :param to_lang: The language to search for possible translation pairs
+        :param refresh: Whether or not to ignore cached data and redownload.
+        """
+
+        langs = []
+
+        for pair in self.language_pairs(refresh):
+            if pair[1] == to_lang:
+                langs.append(pair[0])
+
+        # Dedup
+        return list(set(langs))
+
     def translators(self, refresh=False):
         """Returns a dict containing names of translation services available
         and some basic info about them
