@@ -196,6 +196,13 @@ class TestClient():
         assert resp.ratelimit is False
         assert resp.version == translate.__version__
 
+    def test_languages(self):
+        assert self.client.languages_from("en") == ['en']
+        assert self.client.languages_to("en") == ['en']
+
+        assert self.client.languages_from("foo") == []
+        assert self.client.languages_to("bar") == []
+
     def test_sizelimit(self):
         text = '.' * 988
 
