@@ -206,8 +206,7 @@ class Client(object):
 
         return self._pairs
 
-    # XXX: Don't really like the naming of this
-    # TODO: Requires testing.
+    # XXX: Don't really like the naming of this.
     def languages_from(self, from_lang, refresh=False):
         """Generate a list of languages that the server reports being able to
         translate to, given the "from" language.
@@ -228,8 +227,7 @@ class Client(object):
         # Dedup
         return list(set(langs))
 
-    # XXX: Don't really like the naming of this
-    # TODO: Requires testing.
+    # XXX: Don't really like the naming of this.
     def languages_to(self, to_lang, refresh=False):
         """Generate a list of languages that the server reports being able to
         translate from, given the "to" language.
