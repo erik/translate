@@ -16,7 +16,7 @@ convenient interface to many machine translation backends, automatically, as
 well as a Python API to utilize this server.
 
 For some more complete information on how to use this server / client, check
-out `the documentation <http://boredomist.github.io/translate>`.
+out `the documentation <http://boredomist.github.io/translate>`_.
 
 And yes, the actual name is pending.
 
