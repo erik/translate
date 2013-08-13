@@ -393,7 +393,13 @@ of (text, from, to), got " + repr(tupl))
         if req.status_code != 200:
             raise TranslateException.from_response(req)
 
-        obj = json.loads(req.text)
+        # Don't assume that we'll always get valid JSON (could get HTTP 500 or
+        # similar)
+
+        try:
+            obj = json.loads(req.text)
+        except ValueError:
+            raise HTTPException("Invalid JSON: " + req.text)
 
         return obj
 
