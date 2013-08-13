@@ -97,7 +97,7 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
     <span class="c"># Hostname to listen on. 0.0.0.0 makes this server available to everyone</span>
     <span class="s">&#39;bind&#39;</span><span class="p">:</span> <span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span>
     <span class="c"># Port to listen on</span>
-    <span class="s">&#39;port&#39;</span><span class="p">:</span> <span class="mi">5006</span><span class="p">,</span>
+    <span class="s">&#39;port&#39;</span><span class="p">:</span> <span class="mi">5005</span><span class="p">,</span>
 
     <span class="c"># Rate limiting options (defaults to off)</span>
     <span class="s">&#39;ratelimit&#39;</span><span class="p">:</span> <span class="p">{</span>
@@ -145,7 +145,7 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="s">&#39;timeout&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
         <span class="c"># API key (optional) for webservice. Find more information on</span>
         <span class="c"># api.apertium.org</span>
-        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="s">&#39;foobar&#39;</span>
+        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;APERTIUM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
     <span class="p">},</span>
 
     <span class="c"># Daisy-chained translation server</span>
