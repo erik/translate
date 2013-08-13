@@ -11,19 +11,17 @@ _____
 This project is part of Google Summer of Code 2013, working with the `Sugar Labs
 <http://sugarlabs.org>`_ project.
 
-This README will become more useful over time, but for now, a more complete
-overview of the goals that I intend to accomplish with this project can be found
-`on the Sugar Labs wiki
-<http://wiki.sugarlabs.org/go/Summer_of_Code/Translation_Server>`_.
-
 In brief, this project aims to create a server application that provides a
 convenient interface to many machine translation backends, automatically, as
 well as a Python API to utilize this server.
 
+For some more complete information on how to use this server / client, check
+out `the documentation <http://boredomist.github.io/translate>`.
+
 And yes, the actual name is pending.
 
-Setup
-_____
+Developing
+__________
 
 Setting this up should be pretty straightforward. Open an issue on the tracker
 if you run into any issues getting this to work. I'd suggest doing this in a
@@ -56,44 +54,6 @@ get a sense of how to work with them::
 The debug flag is useful if you're doing any kind of development, as it will
 reload the server when a changed file is detected and print out some useful
 information.
-
-You can also install the executables and translate modules using the standard
-:code:`python setup.py install` method.
-
-Alternatively, using uWSGI (other systems should be similar)::
-
-    uwsgi -s /tmp/mysock.sock -w translate.app:app [--http 127.0.0.1:8080]
-
-The http flag tells uwsgi to use its HTTP server. Don't use it if
-you're using some other server (Apache, nginx, ...).
-
-
-Setup with nginx
-~~~~~~~~~~~~~~~~
-
-This is an example setup of translate using a internet-facing nginx server and
-uWSGI to serve up the translate app. Modify as necessary. Eventually, I'll
-create a fabric deployment script (issue #14) to make this simpler.
-
-Here is the relevant section of :code:`/etc/nginx/nginx.conf`. Make sure you
-make any necessary adjustments::
-
-  server {
-    server_name translate.example.com;
-
-    location / { try_files $uri @translate; }
-    location @translate {
-      include uwsgi_params;
-      uwsgi_pass unix:///tmp/translate.sock;
-    }
-  }
-
-
-After we have that setup, all that's left is to start uWSGI. Take a look at
-:code:`translate.uwsgi` for a base configuration. I dropped everything in
-:code:`/var/www/translate/`, but it can be placed wherever, so long as you
-update the configuration.
-
 
 License
 ______
