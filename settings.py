@@ -59,7 +59,7 @@ BACKENDS = {
         'timeout': 5,
         # API key (optional) for webservice. Find more information on
         # api.apertium.org
-        'key': 'foobar'
+        'key': os.environ.get('APERTIUM_KEY', None)
     },
 
     # Daisy-chained translation server
