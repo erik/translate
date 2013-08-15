@@ -11,6 +11,10 @@ _____
 This project is part of Google Summer of Code 2013, working with the `Sugar Labs
 <http://sugarlabs.org>`_ project.
 
+A live instance of this project is hosted at `translate.erikprice.net
+<http://translate.erikprice.net>`_. I wouldn't rely on it for production, but
+feel free to use it as a test.
+
 In brief, this project aims to create a server application that provides a
 convenient interface to many machine translation backends, automatically, as
 well as a Python API to utilize this server.
