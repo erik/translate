@@ -28,7 +28,7 @@ try to get it working.
 
 I would recommend that you set this up in a virtualenv, so that global
 dependency management isn't a nightmare. There isn't any difference in the rest
-of the setup if you don't use a virtualenv. In our case, it would be::
+of the setup if you don't use a virtualenv however. In our case, it would be::
 
   $ virtualenv -p python2.7 env
   $ source env/bin/activate
@@ -90,11 +90,14 @@ is an application server for WSGI.
 More documentation on uWSGI is `here
 <http://uwsgi-docs.readthedocs.org/en/latest/>`_
 
-Translate comes with a sample uWSGI configuration file, which you can edit to
-fit your needs:
+Translate comes with a sample uWSGI configuration file in
+:code:`translate.uwsgi`, which you can edit to fit your needs:
 
 .. literalinclude:: ../../../translate.uwsgi
    :language: ini
+
+Setting up uWSGI to use a port rather than a socket for communication is
+slightly easier, and may fit your use better.
 
 Once you've customized this to your satisfaction, you can run uWSGI like so::
 
@@ -125,4 +128,4 @@ including this in your :code:`/etc/nginx/nginx.conf`::
 
 *Note: Make sure you have socket permissions correct! nginx will refuse to
 start if the user/group aren't correct (which is the point of the
-:code:`ch*-socket` configuration options).*
+:code:`ch{own,grp,mod}-socket` configuration options).*

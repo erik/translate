@@ -74,7 +74,7 @@ tested or implemented yet. If this is important to you, let me know and I&#8217;
 try to get it working.</p>
 <p>I would recommend that you set this up in a virtualenv, so that global
 dependency management isn&#8217;t a nightmare. There isn&#8217;t any difference in the rest
-of the setup if you don&#8217;t use a virtualenv. In our case, it would be:</p>
+of the setup if you don&#8217;t use a virtualenv however. In our case, it would be:</p>
 <div class="highlight-python"><pre>$ virtualenv -p python2.7 env
 $ source env/bin/activate</pre>
 </div>
@@ -90,10 +90,15 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
 
 <span class="c"># Customize this file if necessary. (Hopefully) sane defaults are applied</span>
 <span class="c"># automatically, and any settings here take preference over those.</span>
+<span class="c">#</span>
+<span class="c"># By default, all backends are disabled, so make sure you explicitly indicate</span>
+<span class="c"># those that you want to enable by setting the relevant &#39;active&#39; key to True</span>
 
-<span class="c"># These server settings are only useful when standalone server is launched via</span>
-<span class="c"># bin/translate</span>
+<span class="c"># Configuration options to manage the server&#39;s functionality.</span>
 <span class="n">SERVER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># The &#39;bind&#39; and &#39;port&#39; settings are only useful when standalone server is</span>
+    <span class="c"># launched via the bin/translate executable.</span>
+
     <span class="c"># Hostname to listen on. 0.0.0.0 makes this server available to everyone</span>
     <span class="s">&#39;bind&#39;</span><span class="p">:</span> <span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span>
     <span class="c"># Port to listen on</span>
@@ -110,7 +115,7 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="s">&#39;per&#39;</span><span class="p">:</span> <span class="mi">30</span>
     <span class="p">},</span>
 
-    <span class="c"># Limits for size (in bytes) for texts to translate</span>
+    <span class="c"># Limits for size (in bytes) for texts to translate (defaults to off)</span>
     <span class="s">&#39;sizelimit&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="c"># Should we enable size limits?</span>
         <span class="s">&#39;enabled&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
@@ -126,14 +131,16 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
 <span class="c">#</span>
 <span class="c"># Each backend has a preset preference that can be overridden using the</span>
 <span class="c"># &#39;preference&#39; key here. Use this if you want to try a specific backend before</span>
-<span class="c"># other possibilities.</span>
+<span class="c"># other possibilities. Higher preferences indicate a higher priority to try to</span>
+<span class="c"># use that backend when possible.</span>
 <span class="n">BACKENDS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c"># Dummy backend, doesn&#39;t do anything useful (translates between en-en)</span>
+    <span class="c"># Dummy backend, doesn&#39;t do anything useful (translates between en-en), for</span>
+    <span class="c"># testing purposes only.</span>
     <span class="s">&#39;dummy&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s">&#39;active&#39;</span><span class="p">:</span> <span class="bp">False</span>
     <span class="p">},</span>
 
-    <span class="c"># Local apertium service</span>
+    <span class="c"># Local apertium service. You must have `apertium` on the PATH.</span>
     <span class="s">&#39;apertium&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s">&#39;active&#39;</span><span class="p">:</span> <span class="bp">True</span>
     <span class="p">},</span>
@@ -148,7 +155,8 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;APERTIUM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
     <span class="p">},</span>
 
-    <span class="c"># Daisy-chained translation server</span>
+    <span class="c"># Daisy-chained translation server. Use this to fallback to a second</span>
+    <span class="c"># translate server when this one can&#39;t handle the given request.</span>
     <span class="s">&#39;translate_backend&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s">&#39;active&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
         <span class="c"># Hostname of the translation server to use</span>
@@ -162,7 +170,7 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="s">&#39;active&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
         <span class="c"># Sign up for a key at https://translate.yandex.com/apikeys</span>
         <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;YANDEX_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
-        <span class="c"># Timeout afterwhich to give up on request</span>
+        <span class="c"># Timeout after which to give up on request</span>
         <span class="s">&#39;timeout&#39;</span><span class="p">:</span> <span class="mi">5</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -205,8 +213,8 @@ of these links for information:</p>
 <p>A slightly more complicated setup runs the translate server using uWSGI, which
 is an application server for WSGI.</p>
 <p>More documentation on uWSGI is <a class="reference external" href="http://uwsgi-docs.readthedocs.org/en/latest/">here</a></p>
-<p>Translate comes with a sample uWSGI configuration file, which you can edit to
-fit your needs:</p>
+<p>Translate comes with a sample uWSGI configuration file in
+<tt class="code docutils literal"><span class="pre">translate.uwsgi</span></tt>, which you can edit to fit your needs:</p>
 <div class="highlight-ini"><div class="highlight"><pre><span class="c1"># For more information on uWSGI configuration, see http://uwsgi-docs.readthedocs.org/en/latest/Options.html</span>
 <span class="c1"># To load this configuration file, try `uwsgi --ini translate.uwsgi`. Depending</span>
 <span class="c1"># on your setup, you may need to run as root.</span>
@@ -241,6 +249,8 @@ fit your needs:</p>
 <span class="na">callable</span> <span class="o">=</span> <span class="s">app</span>
 </pre></div>
 </div>
+<p>Setting up uWSGI to use a port rather than a socket for communication is
+slightly easier, and may fit your use better.</p>
 <p>Once you&#8217;ve customized this to your satisfaction, you can run uWSGI like so:</p>
 <div class="highlight-python"><pre>$ uwsgi --ini /path/to/translate.uwsgi</pre>
 </div>
@@ -265,7 +275,7 @@ including this in your <tt class="code docutils literal"><span class="pre">/etc/
 </div>
 <p><em>Note: Make sure you have socket permissions correct! nginx will refuse to
 start if the user/group aren&#8217;t correct (which is the point of the
-:code:`ch</em>-socket` configuration options).*</p>
+:code:`ch{own,grp,mod}-socket` configuration options).</em></p>
 </div>
 </div>
 </div>

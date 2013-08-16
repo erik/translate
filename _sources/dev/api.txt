@@ -2,7 +2,7 @@ API Documentation
 =================
 
 translate provides a very straightforward API using rather simple URLs. All API
-calls are HTTP GETs, returning JSON data.
+calls are HTTP GETs or POSTs, returning JSON data.
 
 URL scheme :code:`/api/v<version>/<method>?<params...>`
 
@@ -17,7 +17,9 @@ returned JSON data using the name `jsonp`. For example::
 API Version 1
 -------------
 
-Base URL :code:`/api/v1/<method>?<params...>`
+This is the current API version.
+
+Base URL: :code:`/api/v1/<method>?<params...>`
 
 Methods
 ~~~~~~~

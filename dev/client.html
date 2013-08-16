@@ -56,7 +56,18 @@
             
   <div class="section" id="client-documentation">
 <h1>Client Documentation<a class="headerlink" href="#client-documentation" title="Permalink to this headline">¶</a></h1>
-<p>TODO: Write me</p>
+<p>Part of translate is the client implementation, also written in Python. It
+provides a very simple interface to a translate server, and relies only on the
+requests library (<tt class="code docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">requests</span></tt>).:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">translate.client</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s">&#39;my.translate.server.com&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">can_connect</span><span class="p">()</span> <span class="c">#=&gt; True</span>
+<span class="n">c</span><span class="o">.</span><span class="n">language_pairs</span><span class="p">()</span> <span class="c">#=&gt; [(&#39;en&#39;, &#39;es&#39;), (&#39;it&#39;, &#39;ru&#39;), ...]</span>
+<span class="n">c</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s">&#39;Hello&#39;</span><span class="p">,</span> <span class="s">&#39;en&#39;</span><span class="p">,</span> <span class="s">&#39;es&#39;</span><span class="p">)</span> <span class="c">#=&gt; &quot;Hola&quot;</span>
+</pre></div>
+</div>
 <div class="section" id="module-translate.client">
 <span id="code-documentation"></span><h2>Code Documentation<a class="headerlink" href="#module-translate.client" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="translate-client">

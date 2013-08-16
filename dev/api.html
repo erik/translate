@@ -57,7 +57,7 @@
   <div class="section" id="api-documentation">
 <h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
 <p>translate provides a very straightforward API using rather simple URLs. All API
-calls are HTTP GETs, returning JSON data.</p>
+calls are HTTP GETs or POSTs, returning JSON data.</p>
 <p>URL scheme <tt class="code docutils literal"><span class="pre">/api/v&lt;version&gt;/&lt;method&gt;?&lt;params...&gt;</span></tt></p>
 <p>For each URL, the parameter <tt class="code docutils literal"><span class="pre">?callback=jsonp</span></tt> can be used to wrap the
 returned JSON data using the name <cite>jsonp</cite>. For example:</p>
@@ -67,7 +67,8 @@ foo({...})</pre>
 </div>
 <div class="section" id="api-version-1">
 <h2>API Version 1<a class="headerlink" href="#api-version-1" title="Permalink to this headline">¶</a></h2>
-<p>Base URL <tt class="code docutils literal"><span class="pre">/api/v1/&lt;method&gt;?&lt;params...&gt;</span></tt></p>
+<p>This is the current API version.</p>
+<p>Base URL: <tt class="code docutils literal"><span class="pre">/api/v1/&lt;method&gt;?&lt;params...&gt;</span></tt></p>
 <div class="section" id="methods">
 <h3>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h3>
 <ul>
