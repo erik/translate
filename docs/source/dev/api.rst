@@ -41,8 +41,11 @@ Methods
   :Returns:
      Unless there is an error with the batch call itself, this method will
      always return HTTP status 200 with a body in the form of a JSON array of
-     dicts containing the response data for the specified API calls. Order is
-     maintained, of course.
+     dicts containing the response data for the specified API calls.
+
+     **Note:** The exception to this rule is if the input is not correct. If
+     you try to post with an incorrectly formatted (or nonexistent) 'urls'
+     parameter, you will receive a blank HTTP 400 response.
      ::
 
         [

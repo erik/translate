@@ -74,8 +74,6 @@ def html_index():
 def html_info():
     """Show information about the server, in HTML form."""
 
-    # TODO: Show ratelimit/sizelimit info here
-
     pairs = set()
 
     for backend in manager.backends:
@@ -128,7 +126,7 @@ def batch_api():
     try:
         urls = json.loads(request.form['urls'])
     except (KeyError, ValueError):
-        # TODO: handle this properly
+        # Die with a 400 BAD REQUEST if we're given... a bad request.
         flask.abort(400)
 
     responses = []
@@ -148,12 +146,11 @@ def batch_api():
         # be JSON-escaped when the final response is created.
         #
         # TODO: Maybe require API urls only?
-        # XXX: This isn't a guarantee. There could be a different kind of error
-        # that causes invalid or no JSON to be returned.
         if url.startswith("/api/v1/"):
-            # XXX: It's also kind of silly to load this and dump it back a few
-            #      lines later...
-            resp_data = json.loads(resp.data)
+            try:
+                resp_data = json.loads(resp.data)
+            except ValueError:
+                resp_data = {'error': "Bad JSON returned %s" % resp.data}
         else:
             resp_data = resp.data
 
@@ -182,8 +179,6 @@ def batch_api():
 @translate.utils.jsonp
 def show_info():
     """JSON version of server information"""
-
-    # XXX: Should /info be ratelimited?
 
     resp_obj = {
         'version': translate.__version__,
@@ -216,6 +211,7 @@ def show_info():
     return flask.jsonify(**resp_obj)
 
 
+# XXX: Should this really be limited? I think no...
 @app.route('/api/v1/pairs')
 @ratelimit()
 @translate.utils.jsonp

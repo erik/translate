@@ -149,7 +149,6 @@ class Client(object):
 
         :param refresh: Whether or not to ignore cached data and redownload.
         """
-        # TODO: Test all of this!
 
         response = {}
 
