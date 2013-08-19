@@ -69,6 +69,13 @@ BACKENDS = {
         'key': os.environ.get('APERTIUM_KEY', None)
     },
 
+    # XXX: documentation
+    'freetranslation': {
+        'active': True,
+        'timeout': 5,
+        'key': os.environ.get('FREETRANSLATION_KEY', None)
+    },
+
     # Daisy-chained translation server. Use this to fallback to a second
     # translate server when this one can't handle the given request.
     'translate_backend': {

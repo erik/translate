@@ -54,6 +54,11 @@ BACKENDS = {
         'timeout': 5
     },
 
+    'freetranslation': {
+        'active': False,
+        'timeout': 5
+    },
+
     'translate_backend': {
         'active': False
     },

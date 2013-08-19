@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License along with
 # translate.  If not, see <http://www.gnu.org/licenses/>.
 
+
 from translate.backend import IBackend
 from translate.exceptions import TranslationException
 
@@ -24,91 +25,69 @@ import logging
 log = logging.getLogger(__name__)
 
 
-API_URL = 'http://api.apertium.org/json/'
+API_URL = 'https://api.beglobal.com/'
 API_TIMEOUT = 5
 API_ERRORS = {
-    -1:  'Request timed out',
-    400: 'Bad parameters',
-    451: 'Not supported language pair',
-    452: 'Not supported format',
-    500: 'Server error (500)',
-    552: 'Traffic limit reached'
+    401: 'Unauthorized: bad API key',
+    420: 'Request failed',
+    422: 'Semantic error within request',
+    500: 'Internal server error'
 }
 
+# API key is passed in a request header: "Authorization: BeGlobal apiKey=KEY"
 
-class ApertiumWebBackend(IBackend):
-    name = "Apertium Web"
-    description = "Web translation API using the free/open-source machine\
-translation platform Apertium"
-    url = 'http://api.apertium.org'
-    preference = 40
+
+class FreeTranslationBackend(IBackend):
+    name = "FreeTranslation"
+    description = "Web translation service from freetranslation.com"
+    url = 'http://freetranslation.com'
+    preference = 30
     language_pairs = []
 
     def activate(self, config):
         self.config = config
 
-        if not self.config.get('active', True):
+        if not self.config.get('active', False):
             return False
 
-        self.key = self.config.get('key')
+        if 'key' not in config:
+            log.error("Don't have an API key, can't proceed")
+            return False
+
+        self.key = config['key']
         self.timeout = self.config.get('timeout', API_TIMEOUT)
 
-        response, _ = self._api_request('listPairs')
-
-        if response.get('responseStatus') != 200:
-            log.warning('Apertium Web API request failed, bailing out')
-            return False
+        resp, _ = self._api_request('languages', quality='Q1')
 
         self.language_pairs = []
 
-        for pair in response.get('responseData', {}):
-            source = pair.get('sourceLanguage')
-            dest = pair.get('targetLanguage')
+        for obj in resp['languageExpertise']['Q1']:
+            # XXX: This is ISO 639 (3 char), not 2.
+            from_lang = obj['languagePair']['from']['code']
+            to_lang = obj['languagePair']['to']['code']
 
-            if source is None or dest is None:
-                log.error('Badly formatted responseData, skipping')
-                continue
-
-            self.language_pairs.append((source, dest))
+            self.language_pairs.append((from_lang, to_lang))
 
         # Just in case the API returns duplicates for whatever reason
         self.language_pairs = list(set(self.language_pairs))
 
         if len(self.language_pairs) == 0:
-            log.error('Got zero translation pairs, aborting.')
+            log.error('Got zero translation pairs, aborting')
             return False
 
         return True
 
     def translate(self, text, from_lang, to_lang):
-        langpair = "{0}|{1}".format(from_lang, to_lang)
-
-        resp, req = self._api_request('translate', q=text, langpair=langpair,
-                                      format="txt")
-
-        status = resp.get('responseStatus', -1)
-        if status != 200:
-            try:
-                error = API_ERRORS[status]
-            # Unknown status
-            except KeyError:
-                error = "Unknown error occurred: %d".format(status)
-
-            log.error(error)
-
-            raise TranslationException(repr(error))
-
-        return resp.get('responseData').get('translatedText')
+        # TODO
+        raise TranslationException('Not implemented yet')
 
     def deactivate(self):
         pass
 
     def _api_request(self, method, **kwargs):
-        if self.key is not None:
-            kwargs['key'] = self.key
-
         try:
             r = requests.get(API_URL + method, params=kwargs,
+                             headers={'Authorization', self.auth_header},
                              timeout=self.timeout)
             return json.loads(r.text), r
 
@@ -124,3 +103,7 @@ translation platform Apertium"
             log.error(repr(exc))
 
             return dict(), exc
+
+    def _api_post_request(self, path, **params):
+        # TODO
+        pass
