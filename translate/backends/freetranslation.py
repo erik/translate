@@ -17,6 +17,7 @@
 
 from translate.backend import IBackend
 from translate.exceptions import TranslationException
+from translate.utils import iso639_convert
 
 import requests
 import json
@@ -77,9 +78,11 @@ class FreeTranslationBackend(IBackend):
         self.language_pairs = []
 
         for obj in jsobj['languageExpertise']['Q1']:
-            # XXX: This is ISO 639 (3 char), not 2.
             from_lang = obj['languagePair']['from']['code'].lower()
             to_lang = obj['languagePair']['to']['code'].lower()
+
+            from_lang = iso639_convert(from_lang)
+            to_lang = iso639_convert(to_lang)
 
             self.language_pairs.append((from_lang, to_lang))
 
@@ -93,6 +96,11 @@ class FreeTranslationBackend(IBackend):
         return True
 
     def translate(self, text, from_lang, to_lang):
+
+        # Switch to 3 char codes
+        from_lang = iso639_convert(from_lang)
+        to_lang = iso639_convert(to_lang)
+
         params = {'from': from_lang, 'to': to_lang, 'text': text}
 
         try:
