@@ -36,6 +36,10 @@ API_ERRORS = {
 
 # API key is passed in a request header: "Authorization: BeGlobal apiKey=KEY"
 
+# XXX: Currently, this backend returns and deals with ISO639-2 3 character
+#      codes. This is more accurate, but everywhere else uses the 2 char 639-1
+#      codes.
+
 
 class FreeTranslationBackend(IBackend):
     name = "FreeTranslation"
@@ -57,14 +61,22 @@ class FreeTranslationBackend(IBackend):
         self.key = config['key']
         self.timeout = self.config.get('timeout', API_TIMEOUT)
 
-        resp, _ = self._api_request('languages', quality='Q1')
+        self.auth_header = 'BeGlobal apiKey=%s' % self.key
+
+        print(self.auth_header)
+
+        try:
+            resp = self._api_get_request('languages', quality='Q1')
+            jsobj = json.loads(resp.text)
+        except (ValueError, requests.exceptions.RequestException):
+            return False
 
         self.language_pairs = []
 
-        for obj in resp['languageExpertise']['Q1']:
+        for obj in jsobj['languageExpertise']['Q1']:
             # XXX: This is ISO 639 (3 char), not 2.
-            from_lang = obj['languagePair']['from']['code']
-            to_lang = obj['languagePair']['to']['code']
+            from_lang = obj['languagePair']['from']['code'].lower()
+            to_lang = obj['languagePair']['to']['code'].lower()
 
             self.language_pairs.append((from_lang, to_lang))
 
@@ -78,32 +90,63 @@ class FreeTranslationBackend(IBackend):
         return True
 
     def translate(self, text, from_lang, to_lang):
-        # TODO
-        raise TranslationException('Not implemented yet')
+        params = {'from': from_lang, 'to': to_lang, 'text': text}
+
+        try:
+            resp = self._api_post_request('translate', **params)
+
+            if resp.status_code != 200:
+                error = API_ERRORS.get(resp.status_code, "Unknown error")
+                raise TranslationException("Failed to translate: %s" % error)
+
+            jsobj = json.loads(resp.text)
+            return jsobj['translation']
+
+        except (ValueError, requests.exceptions.RequestException) as exc:
+            raise TranslationException('Translation request failed: %s' %
+                                       str(exc))
 
     def deactivate(self):
         pass
 
-    def _api_request(self, method, **kwargs):
+    def _api_get_request(self, method, **kwargs):
         try:
             r = requests.get(API_URL + method, params=kwargs,
-                             headers={'Authorization', self.auth_header},
+                             headers={'Authorization': self.auth_header,
+                                      'Content-type': 'application/json'},
                              timeout=self.timeout)
-            return json.loads(r.text), r
+            return r
 
         except ValueError as exc:
             log.error('API request {0} params={1} returned bad JSON'.format(
                 method, kwargs))
 
-            return dict(), exc
+            raise exc
 
         except requests.exceptions.RequestException as exc:
             log.error('API request {0} params={1} failed!'
                       .format(method, kwargs))
             log.error(repr(exc))
 
-            return dict(), exc
+            raise exc
 
-    def _api_post_request(self, path, **params):
-        # TODO
-        pass
+    def _api_post_request(self, method, **kwargs):
+        try:
+            r = requests.post(API_URL + method, data=json.dumps(kwargs),
+                              headers={'Authorization': self.auth_header,
+                                       'Content-type': 'application/json'},
+                              timeout=self.timeout)
+            return r
+
+        except ValueError as exc:
+            log.error('API request {0} params={1} returned bad JSON'.format(
+                method, kwargs))
+
+            raise exc
+
+        except requests.exceptions.RequestException as exc:
+            log.error('API request {0} params={1} failed!'
+                      .format(method, kwargs))
+            log.error(repr(exc))
+
+            raise exc
