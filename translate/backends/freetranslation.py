@@ -63,10 +63,13 @@ class FreeTranslationBackend(IBackend):
 
         self.auth_header = 'BeGlobal apiKey=%s' % self.key
 
-        print(self.auth_header)
-
         try:
             resp = self._api_get_request('languages', quality='Q1')
+
+            if resp.status_code != 200:
+                log.error("Request failed: %s", resp.text)
+                return False
+
             jsobj = json.loads(resp.text)
         except (ValueError, requests.exceptions.RequestException):
             return False
