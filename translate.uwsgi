@@ -23,6 +23,7 @@ virtualenv = /var/www/translate/env/
 
 # Set variables if necessary (for e.g. yandex, api.apertium.org, ...)
 # env = API_KEY=foobar
+# env = API2_KEY='Multiple entries for multiple envvars'
 
 # You could also use a port, but I'm opting for a UNIX socket here.
 socket = /tmp/translate.sock

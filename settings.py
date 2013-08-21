@@ -82,7 +82,7 @@ BACKENDS = {
         'timeout': 5,
         # API key (optional) for webservice. Find more information on
         # api.apertium.org
-        'key': os.environ.get('APERTIUM_KEY', None)
+        'key': os.environ.get('APERTIUM_KEY')
     },
 
     # Backend using freetranslation.com
@@ -92,7 +92,7 @@ BACKENDS = {
         'timeout': 5,
         # Mandatory API key. You can sign up for a key here:
         # https://www.beglobal.com/developers/sign-up/
-        'key': os.environ.get('FREETRANSLATION_KEY', None)
+        'key': os.environ.get('FREETRANSLATION_KEY')
     },
 
     # Daisy-chained translation server. Use this to fallback to a second
@@ -109,7 +109,7 @@ BACKENDS = {
     'yandex': {
         'active': True,
         # Sign up for a key at https://translate.yandex.com/apikeys
-        'key': os.environ.get('YANDEX_KEY', None),
+        'key': os.environ.get('YANDEX_KEY'),
         # Timeout after which to give up on request
         'timeout': 5
     }

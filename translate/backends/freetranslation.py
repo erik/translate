@@ -55,7 +55,7 @@ class FreeTranslationBackend(IBackend):
         if not self.config.get('active', False):
             return False
 
-        if 'key' not in config:
+        if config.get('key') is None:
             log.error("Don't have an API key, can't proceed")
             return False
 
