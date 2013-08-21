@@ -37,10 +37,6 @@ API_ERRORS = {
 
 # API key is passed in a request header: "Authorization: BeGlobal apiKey=KEY"
 
-# XXX: Currently, this backend returns and deals with ISO639-2 3 character
-#      codes. This is more accurate, but everywhere else uses the 2 char 639-1
-#      codes.
-
 
 class FreeTranslationBackend(IBackend):
     name = "FreeTranslation"

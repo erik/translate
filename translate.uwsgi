@@ -22,6 +22,8 @@ chdir = /var/www/translate/
 virtualenv = /var/www/translate/env/
 
 # Set variables if necessary (for e.g. yandex, api.apertium.org, ...)
+# NOTE: key=value pairs must escape '%' characters. That means "env foo=%a"
+#       becomes "env foo=%%a"
 # env = API_KEY=foobar
 # env = API2_KEY='Multiple entries for multiple envvars'
 
