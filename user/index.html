@@ -96,8 +96,8 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
 
 <span class="c"># Configuration options to manage the server&#39;s functionality.</span>
 <span class="n">SERVER</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c"># The &#39;bind&#39; and &#39;port&#39; settings are only useful when standalone server is</span>
-    <span class="c"># launched via the bin/translate executable.</span>
+    <span class="c"># The &#39;bind&#39;, &#39;port&#39;, and &#39;ssl&#39; settings are only useful when standalone</span>
+    <span class="c"># server is launched via the bin/translate executable.</span>
 
     <span class="c"># Hostname to listen on. 0.0.0.0 makes this server available to everyone</span>
     <span class="s">&#39;bind&#39;</span><span class="p">:</span> <span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span>
@@ -113,6 +113,22 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="c"># Timeframe for rate limiting. Requests are counted against limit for</span>
         <span class="c"># this many seconds</span>
         <span class="s">&#39;per&#39;</span><span class="p">:</span> <span class="mi">30</span>
+    <span class="p">},</span>
+
+    <span class="c"># Specify SSL key and certificates to use, for use with bin/translate. It&#39;s</span>
+    <span class="c"># probably better to use a front end server (nginx etc.) to do this for</span>
+    <span class="c"># you.</span>
+    <span class="c">#</span>
+    <span class="c"># This requires &#39;pyopenssl&#39; (pip install pyopenssl)</span>
+    <span class="c">#</span>
+    <span class="c"># To create private key / certificate:</span>
+    <span class="c">#</span>
+    <span class="c">#   $ openssl genrsa 2048 &gt; ssl.key</span>
+    <span class="c">#   $ openssl req -new -x509 -nodes -sha1 -days 365 -key ssl.key &gt; ssl.cert</span>
+    <span class="s">&#39;ssl&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;enabled&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="s">&#39;ssl.key&#39;</span><span class="p">,</span>
+        <span class="s">&#39;cert&#39;</span><span class="p">:</span> <span class="s">&#39;ssl.cert&#39;</span>
     <span class="p">},</span>
 
     <span class="c"># Limits for size (in bytes) for texts to translate (defaults to off)</span>
