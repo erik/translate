@@ -10,8 +10,8 @@ import os
 
 # Configuration options to manage the server's functionality.
 SERVER = {
-    # The 'bind' and 'port' settings are only useful when standalone server is
-    # launched via the bin/translate executable.
+    # The 'bind', 'port', and 'ssl' settings are only useful when standalone
+    # server is launched via the bin/translate executable.
 
     # Hostname to listen on. 0.0.0.0 makes this server available to everyone
     'bind': '0.0.0.0',
@@ -27,6 +27,22 @@ SERVER = {
         # Timeframe for rate limiting. Requests are counted against limit for
         # this many seconds
         'per': 30
+    },
+
+    # Specify SSL key and certificates to use, for use with bin/translate. It's
+    # probably better to use a front end server (nginx etc.) to do this for
+    # you.
+    #
+    # This requires 'pyopenssl' (pip install pyopenssl)
+    #
+    # To create private key / certificate:
+    #
+    #   $ openssl genrsa 2048 > ssl.key
+    #   $ openssl req -new -x509 -nodes -sha1 -days 365 -key ssl.key > ssl.cert
+    'ssl': {
+        'enabled': False,
+        'key': 'ssl.key',
+        'cert': 'ssl.cert'
     },
 
     # Limits for size (in bytes) for texts to translate (defaults to off)

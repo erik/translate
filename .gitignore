@@ -7,3 +7,5 @@ env/
 *.pyc
 .coverage
 htmlcov/
+ssl.key
+ssl.cert

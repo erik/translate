@@ -85,4 +85,13 @@ def start_server(custom_config={}, debug=True):
 
     log.info("Starting server on port {0}, using host {1}".format(port, host))
 
-    app.run(host=host, port=port, debug=debug)
+    # Extra, optional arguments to be passed as kwargs.
+    options = {}
+
+    if server_conf['ssl']['enabled']:
+        log.info('Using SSL')
+
+        options['ssl_context'] = (server_conf['ssl']['cert'],
+                                  server_conf['ssl']['key'])
+
+    app.run(host=host, port=port, debug=debug, **options)

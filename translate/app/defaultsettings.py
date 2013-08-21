@@ -32,6 +32,12 @@ SERVER = {
         'per': 0
     },
 
+    'ssl': {
+        'enabled': False,
+        'key': 'ssl.key',
+        'cert': 'ssl.cert'
+    },
+
     # Only allow 10k characters to be translated at once. Larger requests will
     # be rejected.
     'sizelimit': {
