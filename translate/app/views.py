@@ -25,7 +25,6 @@ specifies. All HTML and JSON responses are generated here.
 from . import app, log
 from .ratelimit import ratelimit, RateLimit
 from translate.exceptions import APIException, TranslationException
-from translate import __version__
 
 import translate.app
 import translate.utils
@@ -67,7 +66,7 @@ def bad_request(error):
 @app.route('/')
 def html_index():
     """Index page, obviously enough."""
-    return render_template('index.html', version=__version__)
+    return render_template('index.html')
 
 
 @app.route('/info')
