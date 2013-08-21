@@ -168,7 +168,7 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="s">&#39;timeout&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
         <span class="c"># API key (optional) for webservice. Find more information on</span>
         <span class="c"># api.apertium.org</span>
-        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;APERTIUM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;APERTIUM_KEY&#39;</span><span class="p">)</span>
     <span class="p">},</span>
 
     <span class="c"># Backend using freetranslation.com</span>
@@ -178,7 +178,7 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="s">&#39;timeout&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
         <span class="c"># Mandatory API key. You can sign up for a key here:</span>
         <span class="c"># https://www.beglobal.com/developers/sign-up/</span>
-        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;FREETRANSLATION_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;FREETRANSLATION_KEY&#39;</span><span class="p">)</span>
     <span class="p">},</span>
 
     <span class="c"># Daisy-chained translation server. Use this to fallback to a second</span>
@@ -195,7 +195,7 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
     <span class="s">&#39;yandex&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s">&#39;active&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
         <span class="c"># Sign up for a key at https://translate.yandex.com/apikeys</span>
-        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;YANDEX_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;YANDEX_KEY&#39;</span><span class="p">),</span>
         <span class="c"># Timeout after which to give up on request</span>
         <span class="s">&#39;timeout&#39;</span><span class="p">:</span> <span class="mi">5</span>
     <span class="p">}</span>
@@ -268,7 +268,10 @@ is an application server for WSGI.</p>
 <span class="na">virtualenv</span> <span class="o">=</span> <span class="s">/var/www/translate/env/</span>
 
 <span class="c1"># Set variables if necessary (for e.g. yandex, api.apertium.org, ...)</span>
+<span class="c1"># NOTE: key=value pairs must escape &#39;%&#39; characters. That means &quot;env foo=%a&quot;</span>
+<span class="c1">#       becomes &quot;env foo=%%a&quot;</span>
 <span class="c1"># env = API_KEY=foobar</span>
+<span class="c1"># env = API2_KEY=&#39;Multiple entries for multiple envvars&#39;</span>
 
 <span class="c1"># You could also use a port, but I&#39;m opting for a UNIX socket here.</span>
 <span class="na">socket</span> <span class="o">=</span> <span class="s">/tmp/translate.sock</span>
