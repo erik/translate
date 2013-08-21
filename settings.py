@@ -69,10 +69,13 @@ BACKENDS = {
         'key': os.environ.get('APERTIUM_KEY', None)
     },
 
-    # XXX: documentation
+    # Backend using freetranslation.com
     'freetranslation': {
         'active': True,
+        # Number of seconds to wait for connections to complete
         'timeout': 5,
+        # Mandatory API key. You can sign up for a key here:
+        # https://www.beglobal.com/developers/sign-up/
         'key': os.environ.get('FREETRANSLATION_KEY', None)
     },
 
