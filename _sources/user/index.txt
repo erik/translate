@@ -73,6 +73,11 @@ have been installed during the setup. ::
 That's it! If you include the :code:`--debug` flag, you'll see some detailed
 information printed to the console.
 
+**Note:** wsgiref (the server that Werkzeug uses) has `some issues
+<http://stackoverflow.com/a/481952>`_, and probably shouldn't be used for
+production use. There is also a tendency for it to be somewhat slower than
+other WSGI servers.
+
 If you'd like, you can set up a reverse proxy to the translate server using
 nginx, Apache, ..., but I won't document that process here. Checkout out some
 of these links for information:

@@ -155,6 +155,16 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;APERTIUM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
     <span class="p">},</span>
 
+    <span class="c"># Backend using freetranslation.com</span>
+    <span class="s">&#39;freetranslation&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;active&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="c"># Number of seconds to wait for connections to complete</span>
+        <span class="s">&#39;timeout&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="c"># Mandatory API key. You can sign up for a key here:</span>
+        <span class="c"># https://www.beglobal.com/developers/sign-up/</span>
+        <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;FREETRANSLATION_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="p">},</span>
+
     <span class="c"># Daisy-chained translation server. Use this to fallback to a second</span>
     <span class="c"># translate server when this one can&#39;t handle the given request.</span>
     <span class="s">&#39;translate_backend&#39;</span><span class="p">:</span> <span class="p">{</span>
@@ -199,6 +209,9 @@ have been installed during the setup.</p>
 </div>
 <p>That&#8217;s it! If you include the <tt class="code docutils literal"><span class="pre">--debug</span></tt> flag, you&#8217;ll see some detailed
 information printed to the console.</p>
+<p><strong>Note:</strong> wsgiref (the server that Werkzeug uses) has <a class="reference external" href="http://stackoverflow.com/a/481952">some issues</a>, and probably shouldn&#8217;t be used for
+production use. There is also a tendency for it to be somewhat slower than
+other WSGI servers.</p>
 <p>If you&#8217;d like, you can set up a reverse proxy to the translate server using
 nginx, Apache, ..., but I won&#8217;t document that process here. Checkout out some
 of these links for information:</p>

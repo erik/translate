@@ -141,7 +141,7 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x2115aa0&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1c7fc08&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is
@@ -639,6 +639,14 @@ a link to the original source is included in the docstring.</p>
 <dd><p>Return a list of tuples containing (subclass, modulename).</p>
 <p>path: path to search for subclasses
 cls: class to find subclasses of</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="translate.utils.iso639_convert">
+<tt class="descclassname">translate.utils.</tt><tt class="descname">iso639_convert</tt><big>(</big><em>code</em><big>)</big><a class="headerlink" href="#translate.utils.iso639_convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert ISO639-2 language codes into ISO639-1 codes, and vice
+versa.</p>
+<p>Returns the code unchanged when no conversion is possible.</p>
 </dd></dl>
 
 <dl class="function">
