@@ -4,7 +4,6 @@ from translate.backends.translate_backend import TranslateBackend
 
 import time
 import requests
-import flask
 import json
 
 from multiprocessing import Process
@@ -69,7 +68,6 @@ class TestTranslateBackend():
         })
 
         assert ret is True
-
 
     def test_langpairs(self):
         assert self.backend.language_pairs == [('en', 'en')]

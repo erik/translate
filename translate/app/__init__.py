@@ -71,7 +71,7 @@ def initialize_flask():
     atexit.register(deinitialize_manager)
 
 
-def start_server(custom_config={}, debug=True):
+def start_server(custom_config, debug=True):
     """Start the flask Server using flask's built in Werkzeug server. This
     function doesn't return.
     """

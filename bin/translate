@@ -23,16 +23,72 @@ import logging
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Pluggable translation server')
-    parser.add_argument('--debug', dest='debug', help='Whether or not to use run' +
-                        'the application in debug mode', action='store_true',
-                        default=False)
+    parser = argparse.ArgumentParser(
+        description='Pluggable translation server',
+        epilog="Any options that aren't specified here will be drawn from the \
+settings in settings.py.")
+
+    parser.add_argument('-d', '--debug', dest='debug', help='Whether or not to \
+run the application in debug mode', action='store_true', default=False)
+
+    parser.add_argument('-b', '--bind', dest='bind', help='Hostname to bind to.')
+
+    parser.add_argument('-p', '--port', dest='port', help='Port for the server to \
+listen on.')
+
+    parser.add_argument('-s', '--ssl', dest='ssl', help='Enable SSL support. \
+By default, will try to use "ssl.key" and "ssl.cert", but this can be changed \
+with the --ssl-key and --ssl-cert flags', action='store_true', default=False)
+
+    parser.add_argument('-k', '--ssl-key', dest='key', help='Specify SSL \
+private key to use. This option does nothing if the --ssl flag is not also \
+set')
+
+    parser.add_argument('-c', '--ssl-cert', dest='cert', help='Specfiy \
+SSL certificate to use. This flag requires that the --ssl flag is also set')
+
+    parser.add_argument('-r', '--ratelimit', dest='ratelimit',
+                        help='Restrict requests to the specified number. See \
+--ratelimit-seconds to set how long each ratelimit window should be.')
+
+    parser.add_argument('--ratelimit-seconds', dest='seconds', help='Specify \
+the interval of each rate limit window (time until current requests are \
+cleared.)')
+
+    parser.add_argument('--size-limit', dest='size', help='Specify the maximum \
+number of bytes that this server will accept in a single request.')
+
 
     args = parser.parse_args()
+    config = {}
+
+    if args.bind is not None:
+        config['bind'] = args.bind
+
+    if args.port is not None:
+        config['port'] = int(args.port)
+
+    if args.ssl:
+        config['ssl'] = {'enabled': True}
+
+        if args.key is not None:
+            config['ssl']['key'] = args.key
+
+        if args.cert is not None:
+            config['ssl']['cert'] = args.cert
+
+    if args.ratelimit is not None:
+        config['ratelimit'] = {'enabled': True, 'limit': int(args.ratelimit)}
+
+        if args.seconds is not None:
+            config['ratelimit']['per'] = int(args.seconds)
+
+    if args.size is not None:
+        config['sizelimit'] = {'enabled': True, 'limit': int(args.size)}
 
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
 
     print('Translate v{0}'.format(translate.__version__))
 
-    translate.app.start_server({}, args.debug)
+    translate.app.start_server({'SERVER': config}, args.debug)
