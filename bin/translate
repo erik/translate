@@ -31,7 +31,8 @@ settings in settings.py.")
     parser.add_argument('-d', '--debug', dest='debug', help='Whether or not to \
 run the application in debug mode', action='store_true', default=False)
 
-    parser.add_argument('-b', '--bind', dest='bind', help='Hostname to bind to.')
+    parser.add_argument('--host', dest='host', help='Hostname to listen \
+on. Setting this to 0.0.0.0 will make the server available externally.')
 
     parser.add_argument('-p', '--port', dest='port', help='Port for the server to \
 listen on.')
@@ -62,8 +63,8 @@ number of bytes that this server will accept in a single request.')
     args = parser.parse_args()
     config = {}
 
-    if args.bind is not None:
-        config['bind'] = args.bind
+    if args.host is not None:
+        config['host'] = args.host
 
     if args.port is not None:
         config['port'] = int(args.port)

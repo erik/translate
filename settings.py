@@ -3,18 +3,19 @@
 import os
 
 # Customize this file if necessary. (Hopefully) sane defaults are applied
-# automatically, and any settings here take preference over those.
+# automatically (from translate/app/defaultsettings.py), and any settings
+# here take preference over those.
 #
 # By default, all backends are disabled, so make sure you explicitly indicate
 # those that you want to enable by setting the relevant 'active' key to True
 
 # Configuration options to manage the server's functionality.
 SERVER = {
-    # The 'bind', 'port', and 'ssl' settings are only useful when standalone
+    # The 'host', 'port', and 'ssl' settings are only useful when standalone
     # server is launched via the bin/translate executable.
 
     # Hostname to listen on. 0.0.0.0 makes this server available to everyone
-    'bind': '0.0.0.0',
+    'host': '0.0.0.0',
     # Port to listen on
     'port': 5005,
 
