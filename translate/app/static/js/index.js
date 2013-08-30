@@ -156,6 +156,8 @@ Translate.translateText = function(text, from_lang, to_lang) {
         // success
         if('result' in data) {
             $("#to_area").html(data.result);
+            $('#used-translator').css("visibility: visible;");
+            $('#translator').text(data.translator)
         }
 
         // error
