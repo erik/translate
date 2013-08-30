@@ -82,7 +82,7 @@ class BackendManager(object):
         backends = [b for b in self.backends
                     if (src, dst) in b.language_pairs]
 
-        return sorted(backends, key=lambda b: b.preference)
+        return sorted(backends, reverse=True, key=lambda b: b.preference)
 
     def find_best(self, src, dst):
         """Find the best backend service for a given language pair"""
