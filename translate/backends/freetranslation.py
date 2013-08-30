@@ -124,12 +124,6 @@ class FreeTranslationBackend(IBackend):
                              timeout=self.timeout)
             return r
 
-        except ValueError as exc:
-            log.error('API request {0} params={1} returned bad JSON'.format(
-                method, kwargs))
-
-            raise exc
-
         except requests.exceptions.RequestException as exc:
             log.error('API request {0} params={1} failed!'
                       .format(method, kwargs))
@@ -144,12 +138,6 @@ class FreeTranslationBackend(IBackend):
                                        'Content-type': 'application/json'},
                               timeout=self.timeout)
             return r
-
-        except ValueError as exc:
-            log.error('API request {0} params={1} returned bad JSON'.format(
-                method, kwargs))
-
-            raise exc
 
         except requests.exceptions.RequestException as exc:
             log.error('API request {0} params={1} failed!'

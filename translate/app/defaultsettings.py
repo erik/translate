@@ -65,6 +65,10 @@ BACKENDS = {
         'timeout': 5
     },
 
+    'frengly': {
+        'active': False,
+    },
+
     'translate_backend': {
         'active': False
     },

@@ -96,6 +96,17 @@ BACKENDS = {
         'key': os.environ.get('FREETRANSLATION_KEY')
     },
 
+    # Backend using frengly. Sign up for an account at frengly.com
+    'frengly': {
+        'active': True,
+        # Number of seconds to wait for connections to complete
+        'timeout': 5,
+        # Email and password for account (these are unfortunately sent in the
+        # URL as plain text)
+        'email': os.environ.get('FRENGLY_EMAIL'),
+        'password': os.environ.get('FRENGLY_PASSWORD')
+    },
+
     # Daisy-chained translation server. Use this to fallback to a second
     # translate server when this one can't handle the given request.
     'translate_backend': {

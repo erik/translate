@@ -8,6 +8,8 @@ before_script:
 # Please don't abuse these keys. They're just for testing here.
   - export YANDEX_KEY='trnsl.1.1.20130706T202805Z.b7d63d1fa6f4f01e.53032bf4bed3ebc43b7589eb27acc4cb090595bf'
   - export FREETRANSLATION_KEY='i8NfRRAbJJtXN9G%2B2SNZxA%3D%3D'
+  - export FRENGLY_EMAIL='sa9383@adzek.com'
+  - export FRENGLY_PASSWORD='sa9383@adzek.com'
 script:
   - flake8 translate
   - py.test tests
