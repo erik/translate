@@ -67,7 +67,7 @@ class TestBackendManager:
         assert 'Dummy' in [b.name for b in backends]
 
         prefs = [b.preference for b in backends]
-        assert sorted(prefs) == prefs
+        assert sorted(prefs, reverse=True) == prefs
 
     def test_raise_bad_data(self):
         """Make sure all backends fail on bad input"""
