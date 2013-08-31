@@ -86,20 +86,20 @@ read from STDIN, so that piping can be used.')
             info = client.info(refresh=True)
 
             print("Translate server v%s at %s:" %
-                  (info['version'], client.host))
+                  (info.version, client.host))
 
             print("  API URL:\t%s" % client.base_url)
-            print("  API versions:\t%s" % ','.join(info['supported_api']))
-            if info['sizelimit']:
-                print("  Size limit:\t%d bytes" % info['sizelimit'])
+            print("  API versions:\t%s" % ','.join(info.supported_api))
+            if info.sizelimit:
+                print("  Size limit:\t%d bytes" % info.sizelimit)
             else:
                 print("  Size limit:\tNone")
 
-            if info['ratelimit']:
+            if info.ratelimit:
                 print("  Rate limit:\t%d reqs / %d seconds" %
-                      (info['ratelimit']['limit'], info['ratelimit']['per']))
+                      (info.ratelimit['limit'], info.ratelimit['per']))
 
-                timestamp = datetime.fromtimestamp(info['ratelimit']['reset'])
+                timestamp = datetime.fromtimestamp(info.ratelimit['reset'])
 
                 print("    resets at:\t%s" %
                       timestamp.strftime('%Y-%m-%d %H:%M:%S'))
@@ -109,8 +109,8 @@ read from STDIN, so that piping can be used.')
 
             print("  Supported backends:")
 
-            for name in info['backends']:
-                back = info['backends'][name]
+            for name in info.backends:
+                back = info.backends[name]
 
                 print("""    %s:
       %s
