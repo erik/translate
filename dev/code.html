@@ -67,7 +67,7 @@ to multiple machine translation services.</p>
 handling HTTP requests and generating responses.</p>
 <dl class="function">
 <dt id="translate.app.start_server">
-<tt class="descclassname">translate.app.</tt><tt class="descname">start_server</tt><big>(</big><em>custom_config={}</em>, <em>debug=True</em><big>)</big><a class="reference internal" href="../_modules/translate/app.html#start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.start_server" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.</tt><tt class="descname">start_server</tt><big>(</big><em>custom_config</em>, <em>debug=True</em><big>)</big><a class="reference internal" href="../_modules/translate/app.html#start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.start_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the flask Server using flask&#8217;s built in Werkzeug server. This
 function doesn&#8217;t return.</p>
 </dd></dl>
@@ -141,7 +141,7 @@ method during this request period.</p>
 
 <dl class="function">
 <dt id="translate.app.ratelimit.ratelimit">
-<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1c80b90&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">translate.app.ratelimit.</tt><tt class="descname">ratelimit</tt><big>(</big><em>send_x_headers=True</em>, <em>over_limit_func=&lt;function on_over_limit at 0x1c81b90&gt;</em><big>)</big><a class="reference internal" href="../_modules/translate/app/ratelimit.html#ratelimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translate.app.ratelimit.ratelimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to allow current Flask route to be rate-limited.</p>
 <p>send_x_headers &#8211; should we add X-RateLimit-* headers to the request?
 over_limit_func &#8211; function to call instead of API endpoint when limit is

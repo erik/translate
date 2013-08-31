@@ -89,18 +89,19 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="c"># Customize this file if necessary. (Hopefully) sane defaults are applied</span>
-<span class="c"># automatically, and any settings here take preference over those.</span>
+<span class="c"># automatically (from translate/app/defaultsettings.py), and any settings</span>
+<span class="c"># here take preference over those.</span>
 <span class="c">#</span>
 <span class="c"># By default, all backends are disabled, so make sure you explicitly indicate</span>
 <span class="c"># those that you want to enable by setting the relevant &#39;active&#39; key to True</span>
 
 <span class="c"># Configuration options to manage the server&#39;s functionality.</span>
 <span class="n">SERVER</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c"># The &#39;bind&#39;, &#39;port&#39;, and &#39;ssl&#39; settings are only useful when standalone</span>
+    <span class="c"># The &#39;host&#39;, &#39;port&#39;, and &#39;ssl&#39; settings are only useful when standalone</span>
     <span class="c"># server is launched via the bin/translate executable.</span>
 
     <span class="c"># Hostname to listen on. 0.0.0.0 makes this server available to everyone</span>
-    <span class="s">&#39;bind&#39;</span><span class="p">:</span> <span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span>
+    <span class="s">&#39;host&#39;</span><span class="p">:</span> <span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span>
     <span class="c"># Port to listen on</span>
     <span class="s">&#39;port&#39;</span><span class="p">:</span> <span class="mi">5005</span><span class="p">,</span>
 
@@ -179,6 +180,17 @@ for configuration, so it shouldn&#8217;t be too difficult to modify.</p>
         <span class="c"># Mandatory API key. You can sign up for a key here:</span>
         <span class="c"># https://www.beglobal.com/developers/sign-up/</span>
         <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;FREETRANSLATION_KEY&#39;</span><span class="p">)</span>
+    <span class="p">},</span>
+
+    <span class="c"># Backend using frengly. Sign up for an account at frengly.com</span>
+    <span class="s">&#39;frengly&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;active&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="c"># Number of seconds to wait for connections to complete</span>
+        <span class="s">&#39;timeout&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="c"># Email and password for account (these are unfortunately sent in the</span>
+        <span class="c"># URL as plain text)</span>
+        <span class="s">&#39;email&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;FRENGLY_EMAIL&#39;</span><span class="p">),</span>
+        <span class="s">&#39;password&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;FRENGLY_PASSWORD&#39;</span><span class="p">)</span>
     <span class="p">},</span>
 
     <span class="c"># Daisy-chained translation server. Use this to fallback to a second</span>
