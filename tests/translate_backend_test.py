@@ -90,5 +90,7 @@ class TestTranslateBackend():
         assert result == 'hello, world'
 
     def teardown_class(self):
+        time.sleep(2)
+
         if self.thread.is_alive():
             self.thread.terminate()
