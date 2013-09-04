@@ -21,6 +21,7 @@ from translate.utils import iso639_convert
 
 import requests
 import json
+import urllib
 
 import logging
 log = logging.getLogger(__name__)
@@ -97,7 +98,10 @@ class FreeTranslationBackend(IBackend):
         from_lang = iso639_convert(from_lang)
         to_lang = iso639_convert(to_lang)
 
-        params = {'from': from_lang, 'to': to_lang, 'text': text}
+        # Free translate requires text to be URI-encoded
+        quoted = urllib.quote(text)
+
+        params = {'from': from_lang, 'to': to_lang, 'text': quoted}
 
         try:
             resp = self._api_post_request('translate', **params)
