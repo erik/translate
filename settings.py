@@ -97,6 +97,8 @@ BACKENDS = {
     },
 
     # Backend using frengly. Sign up for an account at frengly.com
+    # WARNING: frengly currently seems to have pretty subpar results. Check if
+    #          it works for your needs first.
     'frengly': {
         'active': True,
         # Number of seconds to wait for connections to complete
