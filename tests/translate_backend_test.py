@@ -1,6 +1,8 @@
 import translate.app
 
 from translate.backends.translate_backend import TranslateBackend
+from translate.exceptions import TranslationException
+from translate.client.exceptions import TranslateException
 
 import time
 import requests
@@ -79,7 +81,7 @@ class TestTranslateBackend():
             try:
                 result = self.backend.translate('hello, world', 'en', 'en')
                 break
-            except TranslationException as exc:
+            except (TranslationException, TranslateException) as exc:
                 print("Failed %d: %s" % (i, str(exc)))
 
             # Sleep a bit before retrying
