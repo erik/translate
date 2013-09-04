@@ -99,7 +99,7 @@ class FreeTranslationBackend(IBackend):
         to_lang = iso639_convert(to_lang)
 
         # Free translate requires text to be URI-encoded
-        quoted = urllib.quote(text)
+        quoted = urllib.quote(text.encode('utf8'))
 
         params = {'from': from_lang, 'to': to_lang, 'text': quoted}
 
@@ -111,7 +111,8 @@ class FreeTranslationBackend(IBackend):
                 raise TranslationException("Failed to translate: %s" % error)
 
             jsobj = json.loads(resp.text)
-            return jsobj['translation']
+            text = jsobj['translation']
+            return urllib.unquote(text)
 
         except (ValueError, requests.exceptions.RequestException) as exc:
             raise TranslationException('Translation request failed: %s' %
